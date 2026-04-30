@@ -20,11 +20,50 @@ UIS is a comprehensive, multi-role platform designed to bridge the gap between u
 - **Earnings Dashboard:** Track completed orders and total earnings.
 
 ### 🛠️ Admin Dashboard (MVC Panel)
-- **System Overview:** Real-time statistics on users, orders, and financial transactions.
-- **User Management:** Full control over users, roles, and permissions.
-- **KYC Review:** Dedicated interface for approving or rejecting executor applications.
-- **Order & Dispute Resolution:** Ability to intervene in orders and resolve support tickets.
-- **Dynamic Configuration:** Manage system settings, email templates, and SMTP configurations on the fly.
+- **Advanced Dashboard:** Real-time visual data on user growth, order volume, and financial metrics.
+- **Granular RBAC Management:** Full control over roles and specific permissions for platform staff.
+- **Identity (KYC) Hub:** A professional verification pipeline for reviewing and approving Executor applications.
+- **Marketplace Control:** Manage the service catalog, categories, and pricing structures.
+- **Financial Oversight:** Monitor all payments, escrow statuses, and platform earnings.
+- **Support & Mediation:** Direct access to all support tickets and order-linked chats for dispute resolution.
+
+---
+
+## 🛡️ Administrative Capabilities
+
+The UIS platform includes a powerful, integrated MVC Admin Panel that serves as the command center for the entire system.
+
+### 👥 User & Role Management
+- **User Directory:** Search, filter, and manage all registered Students and Executors. View detailed profiles including their order history and financial status.
+- **RBAC (Role-Based Access Control):** Define custom roles and assign specific permissions (e.g., `ManageOrders`, `ApproveKYC`, `ViewPayments`) to different staff members.
+- **Account Controls:** Instantly activate, suspend, or modify user roles (e.g., manually granting Executor status).
+
+### 🛡️ Identity Verification (KYC)
+- **Review Pipeline:** Access a dedicated queue of pending KYC submissions.
+- **Document Inspection:** View high-resolution images of National IDs (Front/Back) and verify phone numbers.
+- **Approval Logic:** Approving a request automatically updates the user's role to Executor and notifies them instantly.
+- **Rejection Management:** Provide specific rejection reasons that are communicated to the user for re-submission.
+
+### 📦 Marketplace & Content Management
+- **Service Catalog:** Create, edit, and toggle services. Upload service thumbnails and set base prices.
+- **Categories:** Organize services into logical groups with a full CRUD interface for categories.
+- **Order Tracking:** Monitor the lifecycle of every order on the platform, from "Pending" to "Completed" or "Disputed".
+
+### 💳 Financial & Escrow Management
+- **Payment Logs:** View all transaction details, including payment gateway references and timestamps.
+- **Escrow Oversight:** Monitor funds currently held in escrow to ensure platform liquidity and security.
+- **Earnings Tracking:** Audit executor earnings and platform commissions.
+
+### 💬 Communication & Support
+- **Support Ticket System:** A centralized helpdesk to respond to user inquiries and resolve technical issues.
+- **Order Mediation:** Admins can enter order-specific chats to mediate between Students and Executors when a dispute is raised.
+- **System Notifications:** Send platform-wide or user-specific notifications for important updates.
+
+### 🔑 Admin Access & Credentials
+- **URL:** `http://localhost:5035/Admin` (Local)
+- **Default Username:** `admin@uis.com`
+- **Default Password:** `admin123`
+*(Note: These credentials are seeded automatically during the first database migration).*
 
 ---
 

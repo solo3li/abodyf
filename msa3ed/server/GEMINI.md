@@ -6,7 +6,7 @@ This document provides specialized context for the UIS (University Interface Sys
 The UIS Backend is a hybrid application providing a **RESTful Web API** for the mobile frontend and an **MVC Admin Panel** for platform management. It handles user authentication, service cataloging, order processing, secure payments (escrow), and real-time communication.
 
 - **Framework:** ASP.NET Core 10.0
-- **Database:** PostgreSQL (via Entity Framework Core 10)
+- **Database:** SQLite (via Entity Framework Core 10)
 - **Real-time:** SignalR (for Chat and Notifications)
 - **Auth:** JWT with Email-based OTP verification (Real email sending via MailKit using fps60y@gmail.com)
 - **Infrastructure:** Docker & Docker Compose
@@ -38,7 +38,7 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
     ```powershell
     docker-compose up -d
     ```
-    *Starts PostgreSQL (`localhost:5432`) and pgAdmin (`localhost:5050`).*
+    *Starts the application container.*
 
 2.  **Apply Migrations:**
     ```powershell
@@ -101,4 +101,6 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - **Server:** `smtp.gmail.com:587`
 - **User:** `fps60y@gmail.com`
 - **Status:** Dynamic management enabled via Admin Panel.
+
+nt enabled via Admin Panel.
 

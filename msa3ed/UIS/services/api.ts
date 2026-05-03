@@ -1,18 +1,10 @@
 import { Platform } from 'react-native';
 
 // Dynamically determine the local API URL based on the platform and environment.
-let LOCAL_URL = 'http://localhost:5035';
+const PRODUCTION_URL = 'https://server-production-8fb9.up.railway.app';
+const DEVELOPMENT_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5035' : 'http://localhost:5035';
 
-if (Platform.OS === 'android') {
-  // Android emulators need 10.0.2.2 to reach the host machine's localhost
-  LOCAL_URL = 'http://10.0.2.2:5035';
-} else if (Platform.OS === 'web' && typeof window !== 'undefined') {
-  // If running in a web browser, use the actual hostname the browser is accessing
-  // to avoid CORS mismatch when accessing via a local network IP (e.g., 192.168.x.x)
-  LOCAL_URL = `http://${window.location.hostname}:5035`;
-}
-
-export const API_BASE_URL = LOCAL_URL; 
+export const API_BASE_URL = PRODUCTION_URL; 
 
 export const API_URL = `${API_BASE_URL}/api`;
 

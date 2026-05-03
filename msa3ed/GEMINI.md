@@ -6,7 +6,7 @@ This document provides essential context and instructions for the UIS project, a
 UIS is a multi-role platform (Student and Executor) designed for university services. It includes a mobile application for users and a backend API for management and data persistence.
 
 - **Frontend:** A cross-platform mobile application built with **Expo (React Native)**.
-- **Backend:** A functional **ASP.NET Core 10.0 Web API** using **PostgreSQL** and **SignalR**.
+- **Backend:** A functional **ASP.NET Core 10.0 Web API** using **SQLite** and **SignalR**.
 - **Admin Panel:** An MVC application integrated into the ASP.NET Core project for platform management.
 
 ## 📂 Directory Structure

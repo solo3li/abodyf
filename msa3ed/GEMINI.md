@@ -12,7 +12,7 @@ UIS is a multi-role platform (Student and Executor) designed for university serv
 ## 📂 Directory Structure
 - `/UIS`: The Expo mobile application source code.
   - `/UIS/app`: Uses Expo Router for file-based navigation.
-    - `/(auth)`: Login, Register, OTP, Forgot Password.
+    - `/(auth)`: Login, Register, Forgot Password.
     - `/student`: Unified tab-based navigation and screens for both Students and Executors.
     - `/executor`: KYC submission and status screens.
     - `/shared`: Shared screens (Chat, Orders details, Support tickets, Settings).
@@ -39,8 +39,7 @@ UIS is a multi-role platform (Student and Executor) designed for university serv
 - **Framework:** ASP.NET Core 10.0 (Web API + MVC)
 - **Database:** PostgreSQL with Entity Framework Core 10
 - **Real-time:** SignalR (for Chat)
-- **Auth:** JWT with Email-based OTP logic (Real email sending via MailKit using fps60y@gmail.com)
-- **Auth:** JWT with Email-based OTP logic (Real email sending via MailKit using fps60y@gmail.com with a modern, responsive HTML template)
+- **Auth:** JWT Authentication
 
 ## 🏃 Getting Started
 
@@ -63,7 +62,7 @@ All screens for both Student and Executor roles have been implemented according 
 The ASP.NET Core backend has been updated to include all necessary REST API endpoints mapping directly to the frontend screens (Auth, Users/Me, Services, Orders, Payments, Chat, Tickets, KYC).
 The system now fully supports `multipart/form-data` uploads for `Services` (images) and `Chat`/`Tickets` (images, files, voice notes).
 The frontend has been completely integrated with the backend using Redux Toolkit. All static dummy data (`dummyData.ts`) has been removed and replaced with dynamic data fetched via `apiFetch` within Redux slices (`authSlice`, `catalogSlice`, `ordersSlice`, `chatSlice`, `ticketsSlice`, `kycSlice`).
-The Auth workflow is fully functional with real email OTP verification, featuring a modern responsive email template and improved mobile UI (auto-passing email to verify screen, OTP timer, etc.).
+The Auth workflow is fully functional.
 
 ### Backend (server)
 1. Navigate to the `server` directory:
@@ -96,7 +95,7 @@ The Auth workflow is fully functional with real email OTP verification, featurin
 - `docker-compose.yml` is set up with PostgreSQL and pgAdmin.
 - `Dockerfile` is ready for deployment.
 - Entity Framework Core models (`User`, `Role`, `Permission`, `Order`, `Service`, `Chat`, `Ticket`, `KycRequest`, etc.) are mapped and seeded with comprehensive dummy data.
-- JWT Authentication, Email-based OTP, and SignalR (`ChatHub`) are configured.
+- JWT Authentication and SignalR (`ChatHub`) are configured.
 - The Admin Panel (MVC) is fully functional with dashboards, user management, order tracking, KYC approvals, and role/permission management.
 - The Web API endpoints are complete for the mobile application.
 
@@ -105,9 +104,8 @@ The Auth workflow is fully functional with real email OTP verification, featurin
 The ASP.NET Core backend exposes the following REST API endpoints for the mobile application. All authenticated routes require a valid JWT token in the `Authorization: Bearer <token>` header.
 
 ### 🔐 Authentication (`/api/Auth`)
-- `POST /login` - Authenticate a user and trigger an OTP email.
+- `POST /login` - Authenticate a user and return a token and user details immediately.
 - `POST /register` - Register a new user (defaults to 'Student' role).
-- `POST /verify-otp` - Verify the OTP and return user details (`id`, `name`, `email`, `isExecutor`, `roles`).
 
 ### 👤 Users (`/api/Users`)
 - `GET /Me` **[Auth]** - Fetch the current authenticated user's profile and roles.
@@ -148,7 +146,7 @@ The ASP.NET Core backend exposes the following REST API endpoints for the mobile
 ## 📋 Key Features (from PRD)
 - **Student Role:** Browse services, create orders, chat with executors, pay via Paymob, track order status.
 - **Executor Role:** KYC submission, browse available orders, execute and deliver files, manage earnings.
-- **Common:** Authentication (Login/Register/OTP), Direct & Order Chat, Support Tickets.
+- **Common:** Authentication (Login/Register), Direct & Order Chat, Support Tickets.
 
 ## 🛑 Important Notes
 - **Do not create two separate apps.** Use a single Role-Based Expo app.
@@ -160,6 +158,7 @@ The ASP.NET Core backend exposes the following REST API endpoints for the mobile
 ### 🌐 Network & Access
 - **Backend Port:** 5035
 - **Local URL:** `http://localhost:5035` (or `http://10.0.2.2:5035` for Android Emulator)
+- **Remote Server:** `http://47.84.69.17:5035/`
 
 ### 📧 SMTP Configuration
 - **Server:** `smtp.gmail.com:587`
@@ -176,4 +175,3 @@ The ASP.NET Core backend exposes the following REST API endpoints for the mobile
 7. [DONE] Integrate SignalR for real-time chat and support tickets.
 8. [DONE] Adapt frontend features and map fields perfectly to the backend API (Reset password, Profile data, Orders, Earnings).
 9. [SKIPPED] Implement Paymob integration for student payments (Payment bypass logic implemented for now).
-

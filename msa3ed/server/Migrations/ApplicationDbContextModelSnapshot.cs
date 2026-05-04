@@ -73,31 +73,6 @@ namespace Uis.Server.Migrations
                     b.ToTable("Chats");
                 });
 
-            modelBuilder.Entity("Uis.Server.Models.EmailOtp", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EmailOtps");
-                });
-
             modelBuilder.Entity("Uis.Server.Models.Escrow", b =>
                 {
                     b.Property<Guid>("Id")

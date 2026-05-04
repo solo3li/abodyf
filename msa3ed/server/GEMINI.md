@@ -6,9 +6,10 @@ This document provides specialized context for the UIS (University Interface Sys
 The UIS Backend is a hybrid application providing a **RESTful Web API** for the mobile frontend and an **MVC Admin Panel** for platform management. It handles user authentication, service cataloging, order processing, secure payments (escrow), and real-time communication.
 
 - **Framework:** ASP.NET Core 10.0
-- **Database:** SQLite (via Entity Framework Core 10)
+- **Database:** PostgreSQL (via Entity Framework Core 10)
 - **Real-time:** SignalR (for Chat and Notifications)
-- **Auth:** JWT with Email-based OTP verification (Real email sending via MailKit using fps60y@gmail.com)
+- **Auth:** JWT with direct Login (OTP verification removed).
+- **Real email sending:** via MailKit using fps60y@gmail.com for Welcome and Service emails.
 - **Infrastructure:** Docker & Docker Compose
 
 ## 📂 Architecture & Directory Structure
@@ -34,23 +35,11 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - Docker Desktop (for PostgreSQL and pgAdmin)
 
 ### Setup Environment
-1.  **Start Database:**
-    ```powershell
-    docker-compose up -d
-    ```
-    *Starts the application container.*
-
-2.  **Apply Migrations:**
-    ```powershell
-    dotnet ef database update
-    ```
-    *Or use the local tool: `dotnet dotnet-ef database update`*
-
-3.  **Run Application:**
+1.  **Run Application locally:**
     ```powershell
     dotnet run
     ```
-    *The server starts at `http://localhost:5035` by default.*
+    *The server starts at `http://localhost:5035` by default. SQLite database will be created automatically.*
 
 4.  **API Documentation (Swagger):**
     Access Swagger UI at `http://localhost:5035/swagger` to explore and test API endpoints.
@@ -86,7 +75,7 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 ## 📈 Current State
 - The ASP.NET Core backend is fully implemented and operational.
 - The **MVC Admin Panel** includes comprehensive views for User/Role Management, Orders, Services, Categories, KYC, Payments, and Tickets.
-- The **RESTful Web API** provides endpoints for Authentication, OTP verification, Orders, Services, Chats, and KYC submission.
+- The **RESTful Web API** provides endpoints for Authentication, Orders, Services, Chats, and KYC submission.
 - Real-time chatting and notifications are functional via SignalR (`ChatHub`).
 - The database is successfully seeded with test entities, sample orders, payments, and KYC records via `DbSeeder`.
 
@@ -102,5 +91,11 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - **User:** `fps60y@gmail.com`
 - **Status:** Dynamic management enabled via Admin Panel.
 
-nt enabled via Admin Panel.
+https://transmit-cambridge-plus-colon.trycloudflare.com`
+- **Tunnel Process PID:** 22480
+
+### 📧 SMTP Configuration
+- **Server:** `smtp.gmail.com:587`
+- **User:** `fps60y@gmail.com`
+- **Status:** Dynamic management enabled via Admin Panel.
 

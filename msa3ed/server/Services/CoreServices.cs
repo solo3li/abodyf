@@ -16,7 +16,6 @@ namespace Uis.Server.Services;
 public interface IEmailService 
 { 
     Task SendEmailAsync(string to, string subject, string body); 
-    Task SendOtpEmailAsync(string to, string code);
     Task SendWelcomeEmailAsync(string to, string name);
     Task SendTemplatedEmailAsync(string to, string subject, string title, string message, string? buttonText = null, string? buttonUrl = null); 
 }
@@ -44,30 +43,24 @@ public class EmailService : IEmailService {
         var senderEmail = await GetSettingAsync("Email.SenderEmail", _config["EmailSettings:SenderEmail"] ?? "");
         var password = await GetSettingAsync("Email.Password", _config["EmailSettings:Password"] ?? "");
 
-        var email = new MimeMessage();
-        email.From.Add(new MailboxAddress(senderName, senderEmail));
-        email.To.Add(MailboxAddress.Parse(to));
-        email.Subject = subject;
-        email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
+        try
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(senderName, senderEmail));
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = subject;
+            email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
-        using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
-        await smtp.AuthenticateAsync(senderEmail, password);
-        await smtp.SendAsync(email);
-        await smtp.DisconnectAsync(true);
-    }
-
-    public async Task SendOtpEmailAsync(string to, string code)
-    {
-        var baseTemplate = await GetSettingAsync("Email.Template.Base", EmailTemplates.GetDefaultBaseTemplate());
-        var body = EmailTemplates.Wrap("تأكيد هويتك", $@"
-            <p>مرحباً بك في UIS! لإتمام عملية الدخول، يرجى استخدام رمز التحقق التالي:</p>
-            <div style='margin: 35px 0; background-color: #f8fafc; border: 2px dashed #6366F1; border-radius: 24px; padding: 30px; display: inline-block;'>
-                <span style='font-size: 48px; font-weight: 900; color: #6366F1; letter-spacing: 15px; font-family: monospace;'>{code}</span>
-            </div>
-            <p style='font-size: 14px; font-weight: 500;'>الرمز صالح لمدة 10 دقائق فقط. لا تشارك هذا الرمز مع أي شخص.</p>", baseTemplate: baseTemplate);
-        
-        await SendEmailAsync(to, "رمز التحقق الخاص بك - UIS", body);
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(senderEmail, password);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Dev/Local Error] Failed to send email to {to}. Subject: {subject}. Error: {ex.Message}");
+        }
     }
 
     public async Task SendWelcomeEmailAsync(string to, string name)
@@ -91,8 +84,8 @@ public class EmailService : IEmailService {
 
 public interface IAuthService { Task<string?> LoginAsync(LoginDto dto); Task<bool> RegisterAsync(RegisterDto dto); }
 public class AuthService : IAuthService {
-    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt; private readonly IOtpService _otp;
-    public AuthService(ApplicationDbContext db, IJwtService jwt, IOtpService otp) { _db = db; _jwt = jwt; _otp = otp; }
+    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt;
+    public AuthService(ApplicationDbContext db, IJwtService jwt) { _db = db; _jwt = jwt; }
     public async Task<string?> LoginAsync(LoginDto dto) {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || user.PasswordHash != dto.Password) return null;
@@ -120,28 +113,6 @@ public class AuthService : IAuthService {
         user.Roles.Add(studentRole);
 
         _db.Users.Add(user); await _db.SaveChangesAsync(); return true;
-    }
-}
-
-public interface IOtpService { Task<string> GenerateOtpAsync(string email); Task<bool> VerifyOtpAsync(string email, string code); }
-public class OtpService : IOtpService {
-    private readonly ApplicationDbContext _db; 
-    private readonly IEmailService _emailService;
-    public OtpService(ApplicationDbContext db, IEmailService emailService) { _db = db; _emailService = emailService; }
-    public async Task<string> GenerateOtpAsync(string email) {
-        var code = new Random().Next(1000, 9999).ToString();
-        var otp = new EmailOtp { Email = email, Code = code, ExpiryDate = DateTime.UtcNow.AddMinutes(10) };
-        _db.EmailOtps.Add(otp); 
-        await _db.SaveChangesAsync(); 
-        
-        await _emailService.SendOtpEmailAsync(email, code);
-        
-        return otp.Code;
-    }
-    public async Task<bool> VerifyOtpAsync(string email, string code) {
-        var otp = await _db.EmailOtps.FirstOrDefaultAsync(o => o.Email == email && o.Code == code && !o.IsUsed && o.ExpiryDate > DateTime.UtcNow);
-        if (otp == null) return false;
-        otp.IsUsed = true; await _db.SaveChangesAsync(); return true;
     }
 }
 

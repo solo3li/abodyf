@@ -14,8 +14,11 @@ RUN dotnet publish "Uis.Server.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 WORKDIR /app
 
-# Install Bash and sed (to fix line endings)
-RUN apk add --no-cache bash sed sqlite
+# Install Bash, sed, and globalization support
+RUN apk add --no-cache bash sed icu-libs tzdata sqlite-libs
+
+# Set environment variables for globalization
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Copy the published app from the build stage
 COPY --from=build /app/publish .

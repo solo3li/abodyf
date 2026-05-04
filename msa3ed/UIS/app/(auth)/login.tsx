@@ -26,7 +26,7 @@ export default function LoginScreen() {
     const success = await login({ email, password });
     setLoading(false);
     if (success) {
-      router.replace({ pathname: '/(auth)/otp-verify', params: { email } });
+      router.replace('/student');
     } else {
       alert('فشل تسجيل الدخول. يرجى التأكد من البيانات.');
     }

@@ -14,8 +14,8 @@ RUN dotnet publish "Uis.Server.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 WORKDIR /app
 
-# Install Bash and sed (to fix line endings)
-RUN apk add --no-cache bash sed sqlite
+# Install Bash
+RUN apk add --no-cache bash sqlite-libs
 
 # Copy the published app from the build stage
 COPY --from=build /app/publish .
@@ -24,6 +24,7 @@ COPY --from=build /app/publish .
 COPY entrypoint.sh .
 RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
 
+# Expose the application port
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
 

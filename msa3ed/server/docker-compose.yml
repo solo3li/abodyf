@@ -9,8 +9,3 @@ services:
       - "5035:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-    volumes:
-      - app_data:/app
-
-volumes:
-  app_data:

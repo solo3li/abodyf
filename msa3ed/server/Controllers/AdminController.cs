@@ -13,13 +13,15 @@ public class AdminController : Controller
     private readonly ApplicationDbContext _db;
     private readonly INotificationService _notificationService;
     private readonly IFileService _fileService;
+    private readonly IEmailService _emailService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
 
-    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub)
+    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, IEmailService emailService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub)
     {
         _db = db;
         _notificationService = notificationService;
         _fileService = fileService;
+        _emailService = emailService;
         _hub = hub;
     }
 
@@ -1112,6 +1114,21 @@ public class AdminController : Controller
         }
         await _db.SaveChangesAsync();
         TempData["Success"] = "تم تحديث إعدادات البريد بنجاح";
+        return RedirectToAction(nameof(EmailSettings));
+    }
+
+    [HttpPost("Settings/Email/Test")]
+    public async Task<IActionResult> TestEmail(string to)
+    {
+        try
+        {
+            await _emailService.SendEmailAsync(to, "Resend Test Email", "<h1>It Works!</h1><p>This email was sent using Resend API.</p>");
+            TempData["Success"] = "تم إرسال بريد الاختبار بنجاح";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"فشل إرسال بريد الاختبار: {ex.Message}";
+        }
         return RedirectToAction(nameof(EmailSettings));
     }
 }

@@ -84,6 +84,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Configure Services
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<Uis.Server.Services.IEmailService, Uis.Server.Services.EmailService>();
 builder.Services.AddScoped<Uis.Server.Services.IAuthService, Uis.Server.Services.AuthService>();
 builder.Services.AddScoped<Uis.Server.Services.IOtpService, Uis.Server.Services.OtpService>();

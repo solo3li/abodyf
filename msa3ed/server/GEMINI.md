@@ -97,8 +97,8 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - **Public URL (Cloudflare):** `https://transmit-cambridge-plus-colon.trycloudflare.com`
 - **Tunnel Process PID:** 22480
 
-### 📧 SMTP Configuration
-- **Server:** `smtp.gmail.com:587`
-- **User:** `fps60y@gmail.com`
-- **Status:** Dynamic management enabled via Admin Panel.
+### 📧 Email Configuration (Resend)
+- **Service:** Resend API
+- **Sender:** `onboarding@resend.dev` (or verified domain)
+- **Status:** Integrated via `EmailService` using `HttpClient`. Dynamic management enabled via Admin Panel.
 

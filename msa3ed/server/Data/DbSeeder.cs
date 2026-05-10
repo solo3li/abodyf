@@ -147,8 +147,10 @@ public static class DbSeeder
                 new SystemSetting { Key = "Email.SmtpServer", Value = "smtp.gmail.com", Description = "SMTP Server Host" },
                 new SystemSetting { Key = "Email.SmtpPort", Value = "587", Description = "SMTP Server Port" },
                 new SystemSetting { Key = "Email.SenderName", Value = "UIS", Description = "Sender Display Name" },
-                new SystemSetting { Key = "Email.SenderEmail", Value = "fps60y@gmail.com", Description = "Sender Email Address" },
-                new SystemSetting { Key = "Email.Password", Value = "pljh isws wssg oakn", Description = "SMTP App Password" },
+                new SystemSetting { Key = "Email.SenderEmail", Value = "onboarding@resend.dev", Description = "Sender Email Address" },
+                new SystemSetting { Key = "Email.Password", Value = "kiid frof amxq lyop", Description = "SMTP App Password" },
+                new SystemSetting { Key = "Email.ResendApiKey", Value = "re_2cQgZBPV_Kr3FBTda3UPVWFc7GYwUQXDR", Description = "Resend API Key" },
+                new SystemSetting { Key = "Email.UseResend", Value = "true", Description = "Whether to use Resend API instead of SMTP (true/false)" },
                 new SystemSetting { Key = "Email.Template.Base", Value = EmailTemplates.GetDefaultBaseTemplate(), Description = "Main HTML Template Wrapper (Use {TITLE} and {CONTENT})" }
             );
         }

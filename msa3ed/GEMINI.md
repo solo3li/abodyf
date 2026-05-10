@@ -39,8 +39,8 @@ UIS is a multi-role platform (Student and Executor) designed for university serv
 - **Framework:** ASP.NET Core 10.0 (Web API + MVC)
 - **Database:** PostgreSQL with Entity Framework Core 10
 - **Real-time:** SignalR (for Chat)
-- **Auth:** JWT with Email-based OTP logic (Real email sending via MailKit using fps60y@gmail.com)
-- **Auth:** JWT with Email-based OTP logic (Real email sending via MailKit using fps60y@gmail.com with a modern, responsive HTML template)
+- **Auth:** JWT with Email-based OTP verification (Real email sending via Resend API)
+- **Auth:** JWT with Email-based OTP verification (Real email sending via Resend API with a modern, responsive HTML template)
 
 ## 🏃 Getting Started
 
@@ -163,7 +163,7 @@ The ASP.NET Core backend exposes the following REST API endpoints for the mobile
 
 ### 📧 SMTP Configuration
 - **Server:** `smtp.gmail.com:587`
-- **User:** `fps60y@gmail.com`
+- **User:** `onboarding@resend.dev`
 - **Status:** Dynamic management enabled via Admin Panel.
 
 ### 🏁 Task Status

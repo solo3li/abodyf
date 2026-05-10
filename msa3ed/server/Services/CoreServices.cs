@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using System.Net.Http.Json;
 using Uis.Server.Data;
 using Uis.Server.Models;
 using Uis.Server.DTOs;
@@ -24,9 +25,12 @@ public interface IEmailService
 public class EmailService : IEmailService {
     private readonly IConfiguration _config;
     private readonly IServiceProvider _serviceProvider;
-    public EmailService(IConfiguration config, IServiceProvider serviceProvider) { 
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public EmailService(IConfiguration config, IServiceProvider serviceProvider, IHttpClientFactory httpClientFactory) { 
         _config = config; 
         _serviceProvider = serviceProvider;
+        _httpClientFactory = httpClientFactory;
     }
     
     private async Task<string> GetSettingAsync(string key, string defaultValue)
@@ -38,10 +42,36 @@ public class EmailService : IEmailService {
     }
 
     public async Task SendEmailAsync(string to, string subject, string body) {
+        var useResend = (await GetSettingAsync("Email.UseResend", "false")).ToLower() == "true";
+        var senderName = await GetSettingAsync("Email.SenderName", _config["EmailSettings:SenderName"] ?? "UIS");
+        var senderEmail = await GetSettingAsync("Email.SenderEmail", _config["EmailSettings:SenderEmail"] ?? "onboarding@resend.dev");
+
+        if (useResend)
+        {
+            var apiKey = await GetSettingAsync("Email.ResendApiKey", _config["EmailSettings:ResendApiKey"] ?? "");
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+            var payload = new
+            {
+                from = $"{senderName} <{senderEmail}>",
+                to = new[] { to },
+                subject = subject,
+                html = body
+            };
+
+            var response = await client.PostAsJsonAsync("https://api.resend.com/emails", payload);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"FAILED to send email via Resend: {error}");
+                // throw new Exception($"Failed to send email via Resend: {error}");
+            }
+            return;
+        }
+
         var smtpServer = await GetSettingAsync("Email.SmtpServer", _config["EmailSettings:SmtpServer"] ?? "");
         var smtpPort = await GetSettingAsync("Email.SmtpPort", _config["EmailSettings:SmtpPort"] ?? "587");
-        var senderName = await GetSettingAsync("Email.SenderName", _config["EmailSettings:SenderName"] ?? "UIS");
-        var senderEmail = await GetSettingAsync("Email.SenderEmail", _config["EmailSettings:SenderEmail"] ?? "");
         var password = await GetSettingAsync("Email.Password", _config["EmailSettings:Password"] ?? "");
 
         var email = new MimeMessage();

@@ -19,8 +19,17 @@ public class AuthController : ControllerBase
     public AuthController(IAuthService auth, ApplicationDbContext db) { _auth = auth; _db = db; }
 
     [HttpPost("login")] public async Task<IActionResult> Login(LoginDto dto) {
-        var token = await _auth.LoginAsync(dto);
-        if (token == null) return Unauthorized();
+        var result = await _auth.LoginAsync(dto);
+        if (result == null) return Unauthorized(new { message = "بيانات الدخول غير صحيحة" });
+        if (result == "EMAIL_NOT_VERIFIED") return BadRequest(new { message = "EMAIL_NOT_VERIFIED" });
+        if (result == "OTP_SENT") return Ok(new { message = "OTP_SENT" });
+        
+        return BadRequest(new { message = "حدث خطأ غير متوقع" }); // Should not reach here normally
+    }
+
+    [HttpPost("verify-otp")] public async Task<IActionResult> VerifyOtp(VerifyOtpDto dto) {
+        var token = await _auth.VerifyOtpAsync(dto);
+        if (token == null) return Unauthorized(new { message = "رمز التحقق غير صحيح أو منتهي الصلاحية." });
         
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         return Ok(new { 
@@ -33,19 +42,25 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("verify-email")] public async Task<IActionResult> VerifyEmail([FromQuery] string token) {
+        var success = await _auth.VerifyEmailAsync(token);
+        if (!success) return BadRequest("Invalid or expired token.");
+        return Content("<html><head><meta charset='UTF-8'></head><body style='text-align: center; font-family: sans-serif; padding: 50px;'><h3 style='color: green;'>تم تفعيل الحساب بنجاح. يمكنك الآن تسجيل الدخول في التطبيق.</h3></body></html>", "text/html");
+    }
+
     [HttpPost("register")] public async Task<IActionResult> Register(RegisterDto dto) {
         var success = await _auth.RegisterAsync(dto);
-        if (!success) return BadRequest("Registration failed.");
-        return Ok("User registered.");
+        if (!success) return BadRequest(new { message = "البريد الإلكتروني مسجل مسبقاً." });
+        return Ok(new { message = "تم إنشاء الحساب بنجاح." });
     }
 
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] string email)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null) return NotFound("User not found.");
+        if (user == null) return NotFound(new { message = "User not found." });
 
-        return Ok(new { Message = "You can now reset your password." });
+        return Ok(new { message = "You can now reset your password." });
     }
 
     [HttpPost("reset-password")]

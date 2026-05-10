@@ -23,6 +23,7 @@ public interface IEmailService
 public class EmailService : IEmailService {
     private readonly IConfiguration _config;
     private readonly IServiceProvider _serviceProvider;
+
     public EmailService(IConfiguration config, IServiceProvider serviceProvider) { 
         _config = config; 
         _serviceProvider = serviceProvider;
@@ -52,14 +53,21 @@ public class EmailService : IEmailService {
             email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(senderEmail, password);
-            await smtp.SendAsync(email);
-            await smtp.DisconnectAsync(true);
+            smtp.Timeout = 5000; // 5 seconds fast fail
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls, cts.Token);
+            await smtp.AuthenticateAsync(senderEmail, password, cts.Token);
+            await smtp.SendAsync(email, cts.Token);
+            await smtp.DisconnectAsync(true, cts.Token);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Dev/Local Error] Failed to send email to {to}. Subject: {subject}. Error: {ex.Message}");
+            Console.WriteLine($"\n=========================================");
+            Console.WriteLine($"[SMTP ATTEMPT] Failed to send email to {to}");
+            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Here is the email content (OTP/Token):");
+            Console.WriteLine(body);
+            Console.WriteLine($"=========================================\n");
         }
     }
 
@@ -82,15 +90,31 @@ public class EmailService : IEmailService {
     }
 }
 
-public interface IAuthService { Task<string?> LoginAsync(LoginDto dto); Task<bool> RegisterAsync(RegisterDto dto); }
+public interface IAuthService { 
+    Task<string?> LoginAsync(LoginDto dto); 
+    Task<bool> RegisterAsync(RegisterDto dto); 
+    Task<string?> VerifyOtpAsync(VerifyOtpDto dto);
+    Task<bool> VerifyEmailAsync(string token);
+}
 public class AuthService : IAuthService {
-    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt;
-    public AuthService(ApplicationDbContext db, IJwtService jwt) { _db = db; _jwt = jwt; }
+    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt; private readonly IEmailService _email;
+    public AuthService(ApplicationDbContext db, IJwtService jwt, IEmailService email) { _db = db; _jwt = jwt; _email = email; }
+    
     public async Task<string?> LoginAsync(LoginDto dto) {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || user.PasswordHash != dto.Password) return null;
-        return _jwt.GenerateToken(user);
+        
+        if (!user.IsEmailVerified) return "EMAIL_NOT_VERIFIED";
+
+        user.OtpCode = new Random().Next(1000, 9999).ToString();
+        user.OtpExpiry = DateTime.UtcNow.AddMinutes(5);
+        await _db.SaveChangesAsync();
+
+        await _email.SendTemplatedEmailAsync(user.Email, "رمز الدخول", "رمز الدخول الخاص بك", $"رمز التحقق: {user.OtpCode}");
+
+        return "OTP_SENT";
     }
+    
     public async Task<bool> RegisterAsync(RegisterDto dto) {
         if (await _db.Users.AnyAsync(u => u.Email == dto.Email)) return false;
 
@@ -101,18 +125,48 @@ public class AuthService : IAuthService {
             _db.Roles.Add(studentRole);
         }
 
+        var token = Guid.NewGuid().ToString();
+
         var user = new User { 
             Email = dto.Email, 
             FullName = dto.FullName, 
             PasswordHash = dto.Password,
             IsAdmin = false,
             IsExecutor = false,
-            IsStaff = false
+            IsStaff = false,
+            IsEmailVerified = false,
+            EmailVerificationToken = token
         };
 
         user.Roles.Add(studentRole);
 
-        _db.Users.Add(user); await _db.SaveChangesAsync(); return true;
+        _db.Users.Add(user); await _db.SaveChangesAsync(); 
+
+        var link = $"http://104.248.250.176:5035/api/Auth/verify-email?token={token}";
+        await _email.SendTemplatedEmailAsync(user.Email, "تأكيد البريد", "تأكيد الحساب", "يرجى تأكيد الحساب", "تأكيد", link);
+
+        return true;
+    }
+
+    public async Task<string?> VerifyOtpAsync(VerifyOtpDto dto) {
+        var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (user == null || user.OtpCode != dto.OtpCode || user.OtpExpiry < DateTime.UtcNow) return null;
+        
+        user.OtpCode = null;
+        user.OtpExpiry = null;
+        await _db.SaveChangesAsync();
+        
+        return _jwt.GenerateToken(user);
+    }
+
+    public async Task<bool> VerifyEmailAsync(string token) {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+        if (user == null) return false;
+        
+        user.IsEmailVerified = true;
+        user.EmailVerificationToken = null;
+        await _db.SaveChangesAsync();
+        return true;
     }
 }
 

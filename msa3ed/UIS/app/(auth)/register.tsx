@@ -22,20 +22,24 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleRegister = async () => {
     if (!fullName || !email || !password) {
-      alert('يرجى ملء جميع الحقول');
+      setErrorMessage('يرجى ملء جميع الحقول');
       return;
     }
     setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
     const result = await dispatch(register({ fullName, email, password }));
     setLoading(false);
     if (register.fulfilled.match(result)) {
-      alert('تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.');
-      router.replace('/(auth)/login');
+      setSuccessMessage('تم إنشاء الحساب بنجاح! يرجى تفقد بريدك الإلكتروني لتفعيل حسابك قبل تسجيل الدخول.');
+      // Optional: automatically route back after a few seconds or let the user read the message and click "Login"
     } else {
-      alert('فشل إنشاء الحساب: ' + (result.payload || 'خطأ غير معروف'));
+      setErrorMessage(result.payload as string || 'خطأ غير معروف أثناء إنشاء الحساب.');
     }
   };
 
@@ -63,38 +67,56 @@ export default function RegisterScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.form}>
-          <Input 
-            icon="person-outline"
-            placeholder="الاسم الكامل"
-            value={fullName}
-            onChangeText={setFullName}
-          />
+          {errorMessage && (
+            <View style={styles.errorBox}>
+              <Ionicons name="alert-circle" size={20} color={Colors.error} />
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
+          )}
 
-          <Input 
-            icon="mail-outline"
-            placeholder="البريد الإلكتروني"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
+          {successMessage && (
+            <View style={[styles.errorBox, { backgroundColor: Colors.success + '15' }]}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={[styles.errorText, { color: Colors.success }]}>{successMessage}</Text>
+            </View>
+          )}
 
-          <Input 
-            icon="lock-closed-outline"
-            placeholder="كلمة المرور"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-            rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
-            onRightIconPress={() => setShowPassword(!showPassword)}
-          />
+          {!successMessage && (
+            <>
+              <Input 
+                icon="person-outline"
+                placeholder="الاسم الكامل"
+                value={fullName}
+                onChangeText={setFullName}
+              />
 
-          <Button 
-            title="تسجيل"
-            onPress={handleRegister}
-            loading={loading}
-            disabled={!fullName || !email || !password}
-            style={{ marginTop: 12 }}
-          />
+              <Input 
+                icon="mail-outline"
+                placeholder="البريد الإلكتروني"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
+
+              <Input 
+                icon="lock-closed-outline"
+                placeholder="كلمة المرور"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                onRightIconPress={() => setShowPassword(!showPassword)}
+              />
+
+              <Button 
+                title="تسجيل"
+                onPress={handleRegister}
+                loading={loading}
+                disabled={!fullName || !email || !password}
+                style={{ marginTop: 12 }}
+              />
+            </>
+          )}
 
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>لديك حساب بالفعل؟ </Text>
@@ -120,6 +142,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 36, fontWeight: '900', color: Colors.text, marginBottom: 8 },
   subtitle: { fontSize: 18, color: Colors.textSecondary, fontWeight: '500' },
   form: { gap: 0 },
+  errorBox: { flexDirection: 'row', backgroundColor: Colors.error + '15', padding: 12, borderRadius: 12, marginBottom: 16, alignItems: 'center' },
+  errorText: { color: Colors.error, fontSize: 14, fontWeight: 'bold', marginLeft: 8, flex: 1, textAlign: 'right', lineHeight: 22 },
   registerContainer: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
   registerText: { color: Colors.textSecondary, fontSize: 16 },
   registerLink: { color: Colors.primary, fontSize: 16, fontWeight: 'bold' },

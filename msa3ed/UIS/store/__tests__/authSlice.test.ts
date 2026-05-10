@@ -19,7 +19,7 @@ describe('authSlice', () => {
       loading: false,
       error: null,
     };
-    const actual = authReducer(state, logout());
+    const actual = authReducer(state as any, logout());
     expect(actual.user).toBeNull();
     expect(actual.token).toBeNull();
   });

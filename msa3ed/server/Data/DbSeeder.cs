@@ -148,7 +148,7 @@ public static class DbSeeder
                 new SystemSetting { Key = "Email.SmtpPort", Value = "587", Description = "SMTP Server Port" },
                 new SystemSetting { Key = "Email.SenderName", Value = "UIS", Description = "Sender Display Name" },
                 new SystemSetting { Key = "Email.SenderEmail", Value = "fps60y@gmail.com", Description = "Sender Email Address" },
-                new SystemSetting { Key = "Email.Password", Value = "pljh isws wssg oakn", Description = "SMTP App Password" },
+                new SystemSetting { Key = "Email.Password", Value = "kiid frof amxq lyop", Description = "SMTP App Password" },
                 new SystemSetting { Key = "Email.Template.Base", Value = EmailTemplates.GetDefaultBaseTemplate(), Description = "Main HTML Template Wrapper (Use {TITLE} and {CONTENT})" }
             );
         }

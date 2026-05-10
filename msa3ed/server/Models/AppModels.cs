@@ -25,6 +25,11 @@ public class User
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public bool IsEmailVerified { get; set; } = false;
+    public string? EmailVerificationToken { get; set; }
+    public string? OtpCode { get; set; }
+    public DateTime? OtpExpiry { get; set; }
+
     // Stats
     public decimal Rating { get; set; } = 5.0m;
     public int CompletedOrdersCount { get; set; } = 0;

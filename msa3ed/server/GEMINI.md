@@ -8,7 +8,7 @@ The UIS Backend is a hybrid application providing a **RESTful Web API** for the 
 - **Framework:** ASP.NET Core 10.0
 - **Database:** PostgreSQL (via Entity Framework Core 10)
 - **Real-time:** SignalR (for Chat and Notifications)
-- **Auth:** JWT with direct Login (OTP verification removed).
+- **Auth:** JWT with Two-Step Login (OTP via Email) and Email Link Verification on Registration.
 - **Real email sending:** via MailKit using fps60y@gmail.com for Welcome and Service emails.
 - **Infrastructure:** Docker & Docker Compose
 
@@ -35,11 +35,11 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - Docker Desktop (for PostgreSQL and pgAdmin)
 
 ### Setup Environment
-1.  **Run Application locally:**
-    ```powershell
-    dotnet run
+1.  **Run Application locally with Docker Compose:**
+    ```bash
+    docker-compose up -d --build
     ```
-    *The server starts at `http://localhost:5035` by default. SQLite database will be created automatically.*
+    *The server starts at `http://localhost:5035` by default along with the PostgreSQL database in the `uis_db` container.*
 
 4.  **API Documentation (Swagger):**
     Access Swagger UI at `http://localhost:5035/swagger` to explore and test API endpoints.
@@ -83,19 +83,11 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 
 ### 🌐 Network & Access
 - **Backend Port:** 5035
-- **Public URL (Cloudflare):** `https://transmit-cambridge-plus-colon.trycloudflare.com`
-- **Tunnel Process PID:** 22480
+- **Public URL:** `http://104.248.250.176:5035`
 
 ### 📧 SMTP Configuration
 - **Server:** `smtp.gmail.com:587`
 - **User:** `fps60y@gmail.com`
-- **Status:** Dynamic management enabled via Admin Panel.
-
-https://transmit-cambridge-plus-colon.trycloudflare.com`
-- **Tunnel Process PID:** 22480
-
-### 📧 SMTP Configuration
-- **Server:** `smtp.gmail.com:587`
-- **User:** `fps60y@gmail.com`
+- **Password:** `kiid frof amxq lyop`
 - **Status:** Dynamic management enabled via Admin Panel.
 

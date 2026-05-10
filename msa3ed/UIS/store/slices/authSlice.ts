@@ -42,6 +42,18 @@ export const login = createAsyncThunk('auth/login', async (credentials: any, { r
   }
 });
 
+export const verifyOtp = createAsyncThunk('auth/verifyOtp', async (credentials: { email: string; otpCode: string }, { rejectWithValue }) => {
+  try {
+    const data = await apiFetch('/Auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 export const register = createAsyncThunk('auth/register', async (credentials: any, { rejectWithValue }) => {
   try {
     const data = await apiFetch('/Auth/register', {
@@ -108,7 +120,13 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => { state.loading = true; state.error = null; });
-    builder.addCase(login.fulfilled, (state, action) => {
+    builder.addCase(login.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(login.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+    
+    builder.addCase(verifyOtp.pending, (state) => { state.loading = true; state.error = null; });
+    builder.addCase(verifyOtp.fulfilled, (state, action) => {
       state.loading = false;
       state.token = action.payload.token;
       setAuthToken(action.payload.token);
@@ -116,7 +134,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
       }
     });
-    builder.addCase(login.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+    builder.addCase(verifyOtp.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
     
     builder.addCase(fetchMe.fulfilled, (state, action) => {
       state.user = { ...action.payload, name: action.payload.fullName };

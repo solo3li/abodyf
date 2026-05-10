@@ -37,9 +37,9 @@ UIS is a multi-role platform (Student and Executor) designed for university serv
 
 ### Backend
 - **Framework:** ASP.NET Core 10.0 (Web API + MVC)
-- **Database:** PostgreSQL with Entity Framework Core 10
+- **Database:** PostgreSQL (via Entity Framework Core 10 in a separate Docker container)
 - **Real-time:** SignalR (for Chat)
-- **Auth:** JWT Authentication
+- **Auth:** JWT Authentication (with Email Verification & OTP Login)
 
 ## 🏃 Getting Started
 
@@ -104,8 +104,10 @@ The Auth workflow is fully functional.
 The ASP.NET Core backend exposes the following REST API endpoints for the mobile application. All authenticated routes require a valid JWT token in the `Authorization: Bearer <token>` header.
 
 ### 🔐 Authentication (`/api/Auth`)
-- `POST /login` - Authenticate a user and return a token and user details immediately.
-- `POST /register` - Register a new user (defaults to 'Student' role).
+- `POST /register` - Register a new user (defaults to 'Student' role) and sends an email verification link.
+- `GET /verify-email?token={token}` - Verifies a user's email using the token sent to their inbox.
+- `POST /login` - Authenticates a user's email/password, checks email verification, and generates a 4-digit OTP sent to their email.
+- `POST /verify-otp` - Validates the 4-digit OTP and returns the JWT token and user details.
 
 ### 👤 Users (`/api/Users`)
 - `GET /Me` **[Auth]** - Fetch the current authenticated user's profile and roles.
@@ -158,7 +160,7 @@ The ASP.NET Core backend exposes the following REST API endpoints for the mobile
 ### 🌐 Network & Access
 - **Backend Port:** 5035
 - **Local URL:** `http://localhost:5035` (or `http://10.0.2.2:5035` for Android Emulator)
-- **Remote Server:** `http://47.84.69.17:5035/`
+- **Remote Server:** `http://104.248.250.176:5035/`
 
 ### 📧 SMTP Configuration
 - **Server:** `smtp.gmail.com:587`

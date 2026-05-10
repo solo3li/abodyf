@@ -5,7 +5,9 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store';
+import { login, verifyOtp } from '../../store/slices/authSlice';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
@@ -13,22 +15,46 @@ const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isOtpStep, setIsOtpStep] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
     if (!email || !password) return;
     setLoading(true);
-    const success = await login({ email, password });
+    setErrorMessage(null);
+    const result = await dispatch(login({ email, password }));
     setLoading(false);
-    if (success) {
+    
+    if (login.fulfilled.match(result)) {
+      setIsOtpStep(true);
+    } else {
+      const errorMsg = result.payload as string;
+      if (errorMsg === 'EMAIL_NOT_VERIFIED') {
+        setErrorMessage('الرجاء تفعيل حسابك عبر الرابط المرسل لبريدك الإلكتروني أولاً.');
+      } else {
+        setErrorMessage(errorMsg || 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');
+      }
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpCode || otpCode.length < 4) return;
+    setLoading(true);
+    setErrorMessage(null);
+    const result = await dispatch(verifyOtp({ email, otpCode }));
+    setLoading(false);
+    
+    if (verifyOtp.fulfilled.match(result)) {
       router.replace('/student');
     } else {
-      alert('فشل تسجيل الدخول. يرجى التأكد من البيانات.');
+      setErrorMessage(result.payload as string || 'رمز التحقق غير صحيح. حاول مرة أخرى.');
     }
   };
 
@@ -53,52 +79,92 @@ export default function LoginScreen() {
         </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.form}>
-          <Input 
-            icon="mail-outline"
-            placeholder="البريد الإلكتروني"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
+          {errorMessage && (
+            <View style={styles.errorBox}>
+              <Ionicons name="alert-circle" size={20} color={Colors.error} />
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            </View>
+          )}
 
-          <Input 
-            icon="lock-closed-outline"
-            placeholder="كلمة المرور"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-            rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
-            onRightIconPress={() => setShowPassword(!showPassword)}
-          />
+          {!isOtpStep ? (
+            <>
+              <Input 
+                icon="mail-outline"
+                placeholder="البريد الإلكتروني"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
 
-          <Pressable onPress={() => router.push('/(auth)/forgot-password')} style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPassword}>نسيت كلمة المرور؟</Text>
-          </Pressable>
+              <Input 
+                icon="lock-closed-outline"
+                placeholder="كلمة المرور"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                onRightIconPress={() => setShowPassword(!showPassword)}
+              />
 
-          <Button 
-            title="تسجيل الدخول"
-            onPress={handleLogin}
-            loading={loading}
-            disabled={!email || !password}
-          />
+              <Pressable onPress={() => router.push('/(auth)/forgot-password')} style={styles.forgotPasswordContainer}>
+                <Text style={styles.forgotPassword}>نسيت كلمة المرور؟</Text>
+              </Pressable>
 
-          <View style={styles.dividerContainer}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>أو سجل عبر</Text>
-            <View style={styles.divider} />
-          </View>
+              <Button 
+                title="تسجيل الدخول"
+                onPress={handleLogin}
+                loading={loading}
+                disabled={!email || !password}
+              />
 
-          <Pressable style={styles.googleButton}>
-            <Ionicons name="logo-google" size={22} color={Colors.error} style={{ marginRight: 12 }} />
-            <Text style={styles.googleButtonText}>حساب Google</Text>
-          </Pressable>
+              <View style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                <Text style={styles.dividerText}>أو سجل عبر</Text>
+                <View style={styles.divider} />
+              </View>
 
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>ليس لديك حساب؟ </Text>
-            <Pressable onPress={() => router.push('/(auth)/register')}>
-              <Text style={styles.registerLink}>أنشئ حساباً جديداً</Text>
-            </Pressable>
-          </View>
+              <Pressable style={styles.googleButton}>
+                <Ionicons name="logo-google" size={22} color={Colors.error} style={{ marginRight: 12 }} />
+                <Text style={styles.googleButtonText}>حساب Google</Text>
+              </Pressable>
+
+              <View style={styles.registerContainer}>
+                <Text style={styles.registerText}>ليس لديك حساب؟ </Text>
+                <Pressable onPress={() => router.push('/(auth)/register')}>
+                  <Text style={styles.registerLink}>أنشئ حساباً جديداً</Text>
+                </Pressable>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={{ textAlign: 'center', marginBottom: 20, color: Colors.textSecondary, fontSize: 16 }}>
+                تم إرسال رمز التحقق إلى بريدك الإلكتروني
+              </Text>
+              
+              <Input 
+                icon="keypad-outline"
+                placeholder="رمز التحقق (OTP)"
+                keyboardType="number-pad"
+                maxLength={4}
+                value={otpCode}
+                onChangeText={setOtpCode}
+                style={{ textAlign: 'center', fontSize: 24, letterSpacing: 8 }}
+              />
+
+              <Button 
+                title="تأكيد وتسجيل الدخول"
+                onPress={handleVerifyOtp}
+                loading={loading}
+                disabled={!otpCode || otpCode.length < 4}
+              />
+              
+              <View style={styles.registerContainer}>
+                <Pressable onPress={() => { setIsOtpStep(false); setErrorMessage(null); }}>
+                  <Text style={styles.registerLink}>العودة للخلف</Text>
+                </Pressable>
+              </View>
+            </>
+          )}
         </Animated.View>
       </View>
     </KeyboardAvoidingView>
@@ -114,6 +180,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 40, fontWeight: '900', color: Colors.text, marginBottom: 8 },
   subtitle: { fontSize: 18, color: Colors.textSecondary, fontWeight: '500' },
   form: { gap: 0 },
+  errorBox: { flexDirection: 'row', backgroundColor: Colors.error + '15', padding: 12, borderRadius: 12, marginBottom: 16, alignItems: 'center' },
+  errorText: { color: Colors.error, fontSize: 14, fontWeight: 'bold', marginLeft: 8, flex: 1, textAlign: 'right' },
   forgotPasswordContainer: { alignSelf: 'flex-start', marginBottom: 24, marginTop: -8 },
   forgotPassword: { color: Colors.primary, fontSize: 15, fontWeight: '700' },
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },

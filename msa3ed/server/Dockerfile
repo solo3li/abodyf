@@ -15,7 +15,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 WORKDIR /app
 
 # Install Bash, sed, and globalization support
-RUN apk add --no-cache bash sed icu-libs tzdata sqlite-libs
+RUN apk add --no-cache bash sed icu-libs tzdata
 
 # Set environment variables for globalization
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false

@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 // Dynamically determine the local API URL based on the platform and environment.
-const PRODUCTION_URL = 'https://server-production-8fb9.up.railway.app';
+const PRODUCTION_URL = 'http://104.248.250.176:5035';
 const DEVELOPMENT_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5035' : 'http://localhost:5035';
 
 export const API_BASE_URL = PRODUCTION_URL; 

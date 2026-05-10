@@ -1,0 +1,28 @@
+# .gitignore for UIS project (SDD)
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+packages/
+appsettings.Development.json
+
+# Node.js
+node_modules/
+dist/
+build/
+*.log
+.env*
+.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/

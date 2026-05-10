@@ -610,6 +610,12 @@ public class AdminController : Controller
         var service = await _db.Services.FindAsync(id);
         if (service != null)
         {
+            var activeOffers = await _db.CustomOffers.AnyAsync(o => o.ServiceId == id && o.Status == "Pending");
+            if (activeOffers)
+            {
+                TempData["Warning"] = "تنبيه: توجد عروض مخصصة نشطة مرتبطة بهذه الخدمة. سيتم حذف الخدمة ولكن ستظل العروض صالحة للمستخدمين الذين استلموها.";
+            }
+
             _db.Services.Remove(service);
             await _db.SaveChangesAsync();
         }

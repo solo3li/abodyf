@@ -35,6 +35,47 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async ({ chatId,
   }
 });
 
+export const sendCustomOffer = createAsyncThunk('chat/sendCustomOffer', async ({ chatId, offerData }: { chatId: string, offerData: any }, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/${chatId}/Offer`, {
+      method: 'POST',
+      body: JSON.stringify(offerData),
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const acceptOffer = createAsyncThunk('chat/acceptOffer', async (offerId: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Orders/FromOffer/${offerId}`, {
+      method: 'POST'
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const declineOffer = createAsyncThunk('chat/declineOffer', async (offerId: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Offer/${offerId}/Decline`, {
+      method: 'POST'
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const withdrawOffer = createAsyncThunk('chat/withdrawOffer', async (offerId: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Offer/${offerId}/Withdraw`, {
+      method: 'POST'
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState: {
@@ -46,6 +87,15 @@ const chatSlice = createSlice({
     addLocalMessage: (state, action) => {
       if (state.currentChat && state.currentChat.messages) {
         state.currentChat.messages.push(action.payload);
+      }
+    },
+    updateMessageOfferStatus: (state, action) => {
+      const { messageId, status } = action.payload;
+      if (state.currentChat && state.currentChat.messages) {
+        const msg = state.currentChat.messages.find((m: any) => m.id === messageId);
+        if (msg && msg.customOffer) {
+          msg.customOffer.status = status;
+        }
       }
     }
   },

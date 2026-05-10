@@ -144,7 +144,13 @@ public class CategoriesController : ControllerBase {
 [Authorize]
 public class OrdersController : ControllerBase {
     private readonly ApplicationDbContext _db; 
-    public OrdersController(ApplicationDbContext db) { _db = db; }
+    private readonly IOrderService _orderService;
+    private readonly ICustomOfferService _offerService;
+    public OrdersController(ApplicationDbContext db, IOrderService orderService, ICustomOfferService offerService) { 
+        _db = db; 
+        _orderService = orderService;
+        _offerService = offerService;
+    }
 
     [HttpGet] public async Task<IActionResult> GetMyOrders() {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -211,6 +217,23 @@ public class OrdersController : ControllerBase {
         await _db.SaveChangesAsync();
         return Ok(order);
     }
+
+    [HttpPost("FromOffer/{offerId}")]
+    public async Task<IActionResult> CreateFromOffer(Guid offerId) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var offer = await _offerService.GetOfferByIdAsync(offerId);
+        if (offer == null) return NotFound("Offer not found.");
+        if (offer.StudentId != myId) return Unauthorized("This offer is not for you.");
+        if (offer.Status != "Pending") return BadRequest("Offer is no longer pending.");
+
+        var order = await _orderService.CreateOrderFromOfferAsync(offer);
+        await _offerService.AcceptOfferAsync(offerId);
+
+        return Ok(order);
+    }
 }
 
 [ApiController]
@@ -267,10 +290,12 @@ public class PaymentsController : ControllerBase {
 public class ChatController : ControllerBase {
     private readonly ApplicationDbContext _db; 
     private readonly IFileService _fileService;
+    private readonly ICustomOfferService _customOfferService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
-    public ChatController(ApplicationDbContext db, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub) { 
+    public ChatController(ApplicationDbContext db, IFileService fileService, ICustomOfferService customOfferService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub) { 
         _db = db; 
         _fileService = fileService;
+        _customOfferService = customOfferService;
         _hub = hub;
     }
     
@@ -282,7 +307,7 @@ public class ChatController : ControllerBase {
         var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId && (o.StudentId == myId || o.ExecutorId == myId));
         if (order == null) return NotFound("Order not found or access denied.");
 
-        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).FirstOrDefaultAsync(c => c.OrderId == orderId);
+        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).Include(c => c.Messages).ThenInclude(m => m.CustomOffer).FirstOrDefaultAsync(c => c.OrderId == orderId);
         
         if (chat == null) {
             chat = new Chat { OrderId = orderId };
@@ -293,7 +318,10 @@ public class ChatController : ControllerBase {
         return Ok(new {
             chat.Id,
             Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType
+                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType,
+                CustomOffer = m.CustomOffer != null ? new {
+                    m.CustomOffer.Id, m.CustomOffer.Description, m.CustomOffer.Price, m.CustomOffer.DeliveryDays, m.CustomOffer.Status
+                } : null
             })
         });
     }
@@ -303,7 +331,7 @@ public class ChatController : ControllerBase {
         if(myIdStr == null) return Unauthorized();
         var myId = Guid.Parse(myIdStr);
 
-        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender)
+        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).Include(c => c.Messages).ThenInclude(m => m.CustomOffer)
             .FirstOrDefaultAsync(c => c.OrderId == null && 
             ((c.StudentId == myId && c.ExecutorId == userId) || (c.StudentId == userId && c.ExecutorId == myId)));
         
@@ -316,7 +344,10 @@ public class ChatController : ControllerBase {
         return Ok(new {
             chat.Id,
             Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType
+                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType,
+                CustomOffer = m.CustomOffer != null ? new {
+                    m.CustomOffer.Id, m.CustomOffer.Description, m.CustomOffer.Price, m.CustomOffer.DeliveryDays, m.CustomOffer.Status
+                } : null
             })
         });
     }
@@ -350,6 +381,84 @@ public class ChatController : ControllerBase {
         });
 
         return Ok(msg);
+    }
+
+    [HttpPost("{chatId}/Offer")]
+    public async Task<IActionResult> CreateOffer(Guid chatId, [FromBody] CreateOfferDto dto) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var chat = await _db.Chats.FindAsync(chatId);
+        if (chat == null) return NotFound("Chat not found.");
+
+        // Identify the student recipient
+        Guid? studentId = null;
+        if (chat.OrderId != null) {
+            var order = await _db.Orders.FindAsync(chat.OrderId);
+            studentId = order?.StudentId;
+        } else {
+            studentId = chat.StudentId == myId ? chat.ExecutorId : chat.StudentId;
+        }
+
+        if (studentId == null) return BadRequest("Could not identify the student recipient.");
+
+        var offer = await _customOfferService.CreateOfferAsync(chatId, myId, studentId.Value, dto.ServiceId, dto.Description, dto.Price, dto.DeliveryDays);
+
+        // Create a message to display in chat
+        var msg = new Message {
+            ChatId = chatId,
+            SenderId = myId,
+            Content = "أرسل لك عرضاً خاصاً",
+            CustomOfferId = offer.Id,
+            SentAt = DateTime.UtcNow
+        };
+
+        _db.Messages.Add(msg);
+        await _db.SaveChangesAsync();
+
+        var sender = await _db.Users.FindAsync(myId);
+
+        await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", new {
+            Id = msg.Id,
+            Content = msg.Content,
+            SentAt = msg.SentAt,
+            SenderId = msg.SenderId,
+            SenderName = sender?.FullName,
+            CustomOffer = new {
+                offer.Id, offer.Description, offer.Price, offer.DeliveryDays, offer.Status
+            }
+        });
+
+        return Ok(offer);
+    }
+
+    [HttpPost("Offer/{offerId}/Decline")]
+    public async Task<IActionResult> DeclineOffer(Guid offerId) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var offer = await _customOfferService.GetOfferByIdAsync(offerId);
+        if (offer == null) return NotFound("Offer not found.");
+        if (offer.StudentId != myId) return Unauthorized("This offer is not for you.");
+
+        await _customOfferService.DeclineOfferAsync(offerId);
+        return Ok();
+    }
+
+    [HttpPost("Offer/{offerId}/Withdraw")]
+    public async Task<IActionResult> WithdrawOffer(Guid offerId) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var offer = await _customOfferService.GetOfferByIdAsync(offerId);
+        if (offer == null) return NotFound("Offer not found.");
+        if (offer.ExecutorId != myId) return Unauthorized("You did not create this offer.");
+
+        await _customOfferService.WithdrawOfferAsync(offerId);
+        return Ok();
     }
 }
 

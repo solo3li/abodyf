@@ -27,6 +27,14 @@ export default function ServiceDetailsScreen() {
     }
   }, [id, dispatch]);
 
+  const handleContact = () => {
+    if (service.executorId) {
+      router.push(`/shared/chat/${service.executorId}?isPrivate=true&name=${service.providerName || 'Executor'}`);
+    } else {
+      alert('هذه الخدمة مقدمة من المنصة مباشرة، يرجى التواصل مع الدعم الفني لأي استفسار.');
+    }
+  };
+
   if (loading || !service) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -74,7 +82,7 @@ export default function ServiceDetailsScreen() {
                 <Text style={styles.providerName}>{service.providerName || 'منصة UIS'}</Text>
                 <Text style={styles.providerLevel}>بائع مميز موثوق</Text>
               </View>
-              <Pressable style={styles.chatBtn}>
+              <Pressable style={styles.chatBtn} onPress={handleContact}>
                 <Ionicons name="chatbubble-ellipses" size={22} color={Colors.primary} />
               </Pressable>
             </View>

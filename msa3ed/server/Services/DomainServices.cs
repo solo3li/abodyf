@@ -30,11 +30,21 @@ public class CatalogService : ICatalogService {
     public async Task<IEnumerable<Category>> GetCategoriesAsync() => await _db.Categories.ToListAsync();
 }
 
-public interface IOrderService { Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto); Task<IEnumerable<Order>> GetOrdersAsync(); }
+public interface IOrderService { Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto); Task<Order> CreateOrderFromOfferAsync(CustomOffer offer); Task<IEnumerable<Order>> GetOrdersAsync(); }
 public class OrderService : IOrderService {
     private readonly ApplicationDbContext _db; public OrderService(ApplicationDbContext db) { _db = db; }
     public async Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto) {
         var order = new Order { StudentId = studentId, ServiceId = dto.ServiceId, Price = dto.Price };
+        _db.Orders.Add(order); await _db.SaveChangesAsync(); return order;
+    }
+    public async Task<Order> CreateOrderFromOfferAsync(CustomOffer offer) {
+        var order = new Order { 
+            StudentId = offer.StudentId, 
+            ExecutorId = offer.ExecutorId, 
+            ServiceId = offer.ServiceId, 
+            Price = offer.Price,
+            Status = "Pending" // Custom offers bypass initial awaiting payment for now per bypass logic
+        };
         _db.Orders.Add(order); await _db.SaveChangesAsync(); return order;
     }
     public async Task<IEnumerable<Order>> GetOrdersAsync() => await _db.Orders.Include(o=>o.Student).Include(o=>o.Service).ToListAsync();
@@ -146,4 +156,68 @@ public class NotificationService : INotificationService {
             await _db.SaveChangesAsync();
         }
     }
-}
+    }
+
+    public interface ICustomOfferService 
+    { 
+    Task<CustomOffer> CreateOfferAsync(Guid chatId, Guid executorId, Guid studentId, Guid? serviceId, string description, decimal price, int deliveryDays);
+    Task<bool> AcceptOfferAsync(Guid offerId);
+    Task<bool> DeclineOfferAsync(Guid offerId);
+    Task<bool> WithdrawOfferAsync(Guid offerId);
+    Task<CustomOffer?> GetOfferByIdAsync(Guid offerId);
+    }
+
+    public class CustomOfferService : ICustomOfferService {
+    private readonly ApplicationDbContext _db;
+    public CustomOfferService(ApplicationDbContext db) { _db = db; }
+
+    public async Task<CustomOffer> CreateOfferAsync(Guid chatId, Guid executorId, Guid studentId, Guid? serviceId, string description, decimal price, int deliveryDays) {
+        var offer = new CustomOffer {
+            ChatId = chatId,
+            ExecutorId = executorId,
+            StudentId = studentId,
+            ServiceId = serviceId,
+            Description = description,
+            Price = price,
+            DeliveryDays = deliveryDays,
+            Status = "Pending"
+        };
+        _db.CustomOffers.Add(offer);
+        await _db.SaveChangesAsync();
+        return offer;
+    }
+
+    public async Task<bool> AcceptOfferAsync(Guid offerId) {
+        var offer = await _db.CustomOffers.FindAsync(offerId);
+        if (offer == null || offer.Status != "Pending") return false;
+        offer.Status = "Accepted";
+        offer.AcceptedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeclineOfferAsync(Guid offerId) {
+        var offer = await _db.CustomOffers.FindAsync(offerId);
+        if (offer == null || offer.Status != "Pending") return false;
+        offer.Status = "Declined";
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> WithdrawOfferAsync(Guid offerId) {
+        var offer = await _db.CustomOffers.FindAsync(offerId);
+        if (offer == null || offer.Status != "Pending") return false;
+        offer.Status = "Withdrawn";
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<CustomOffer?> GetOfferByIdAsync(Guid offerId) {
+        var offer = await _db.CustomOffers.FindAsync(offerId);
+        if (offer != null && offer.Status == "Pending" && offer.CreatedAt.AddDays(7) < DateTime.UtcNow) {
+            offer.Status = "Expired";
+            await _db.SaveChangesAsync();
+        }
+        return offer;
+    }
+    }

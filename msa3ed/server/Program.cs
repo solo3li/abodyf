@@ -99,6 +99,7 @@ builder.Services.AddScoped<Uis.Server.Services.IChatService, Uis.Server.Services
 builder.Services.AddScoped<Uis.Server.Services.IFileService, Uis.Server.Services.FileService>();
 builder.Services.AddScoped<Uis.Server.Services.ITicketService, Uis.Server.Services.TicketService>();
 builder.Services.AddScoped<Uis.Server.Services.INotificationService, Uis.Server.Services.NotificationService>();
+builder.Services.AddScoped<Uis.Server.Services.ICustomOfferService, Uis.Server.Services.CustomOfferService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();

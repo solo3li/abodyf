@@ -22,6 +22,13 @@ public class CreateOrderDto {
     public decimal Price { get; set; } 
 }
 
+public class CreateOfferDto {
+    public Guid? ServiceId { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int DeliveryDays { get; set; }
+}
+
 public class KycSubmitDto {
     public string NationalId { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;

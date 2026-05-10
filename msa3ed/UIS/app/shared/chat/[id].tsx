@@ -6,15 +6,17 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { useEffect, useState, useRef } from 'react';
-import { fetchOrderChat, sendMessage, addLocalMessage } from '../../../store/slices/chatSlice';
+import { fetchOrderChat, fetchPrivateChat, sendMessage, addLocalMessage, sendCustomOffer, acceptOffer, declineOffer, withdrawOffer, updateMessageOfferStatus } from '../../../store/slices/chatSlice';
 import * as signalR from '@microsoft/signalr';
 import { API_BASE_URL } from '../../../services/api';
 
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'react-native';
+import OfferCard from '../../../components/OfferCard';
+import CreateOfferModal from './CreateOfferModal';
 
 export default function ChatDetailsScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, isPrivate, name } = useLocalSearchParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { currentChat, loading } = useSelector((state: RootState) => state.chat);
@@ -22,14 +24,19 @@ export default function ChatDetailsScreen() {
   
   const [inputText, setInputText] = useState('');
   const [sending, setSending] = useState(false);
+  const [offerModalVisible, setOfferModalVisible] = useState(false);
   const connectionRef = useRef<signalR.HubConnection | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchOrderChat(id as string));
+      if (isPrivate === 'true') {
+        dispatch(fetchPrivateChat(id as string));
+      } else {
+        dispatch(fetchOrderChat(id as string));
+      }
     }
-  }, [id, dispatch]);
+  }, [id, isPrivate, dispatch]);
 
   useEffect(() => {
     if (!currentChat?.id || !token) return;
@@ -90,6 +97,44 @@ export default function ChatDetailsScreen() {
     }
   };
 
+  const handleCreateOffer = async (offerData: any) => {
+    try {
+      await dispatch(sendCustomOffer({ chatId: currentChat.id, offerData })).unwrap();
+    } catch (err: any) {
+      alert('فشل في إرسال العرض: ' + err.message);
+      throw err;
+    }
+  };
+
+  const handleAcceptOffer = async (messageId: string, offerId: string) => {
+    try {
+      await dispatch(acceptOffer(offerId)).unwrap();
+      dispatch(updateMessageOfferStatus({ messageId, status: 'Accepted' }));
+      alert('تم قبول العرض بنجاح! سيتم توجيهك لإكمال الدفع.');
+      router.push(`/student/checkout?offerId=${offerId}`);
+    } catch (err: any) {
+      alert('فشل في قبول العرض: ' + err.message);
+    }
+  };
+
+  const handleDeclineOffer = async (messageId: string, offerId: string) => {
+    try {
+      await dispatch(declineOffer(offerId)).unwrap();
+      dispatch(updateMessageOfferStatus({ messageId, status: 'Declined' }));
+    } catch (err: any) {
+      alert('فشل في رفض العرض: ' + err.message);
+    }
+  };
+
+  const handleWithdrawOffer = async (messageId: string, offerId: string) => {
+    try {
+      await dispatch(withdrawOffer(offerId)).unwrap();
+      dispatch(updateMessageOfferStatus({ messageId, status: 'Withdrawn' }));
+    } catch (err: any) {
+      alert('فشل في سحب العرض: ' + err.message);
+    }
+  };
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -114,6 +159,16 @@ export default function ChatDetailsScreen() {
         {!isSender && <Text style={styles.senderName}>{item.senderName || 'الطرف الآخر'}</Text>}
         {item.content ? <Text style={[styles.messageText, isSender ? styles.senderText : styles.receiverText]}>{item.content}</Text> : null}
         
+        {item.customOffer && (
+          <OfferCard 
+            offer={item.customOffer} 
+            isStudent={user?.id !== item.senderId}
+            onAccept={(offerId) => handleAcceptOffer(item.id, offerId)}
+            onDecline={(offerId) => handleDeclineOffer(item.id, offerId)}
+            onWithdraw={(offerId) => handleWithdrawOffer(item.id, offerId)}
+          />
+        )}
+
         {item.attachmentUrl && item.attachmentType === 'image' && (
             <Image source={{ uri: item.attachmentUrl.startsWith('http') ? item.attachmentUrl : API_BASE_URL + item.attachmentUrl }} style={styles.messageImage} resizeMode="cover" />
         )}
@@ -147,7 +202,7 @@ export default function ChatDetailsScreen() {
           <Ionicons name="arrow-forward" size={24} color={Colors.text} />
         </Pressable>
         <View style={{ alignItems: 'center' }}>
-          <Text style={styles.headerTitle}>المحادثة #{id?.toString().substring(0,8)}</Text>
+          <Text style={styles.headerTitle}>{name || (isPrivate === 'true' ? 'محادثة خاصة' : `المحادثة #${id?.toString().substring(0,8)}`)}</Text>
           <Text style={styles.headerStatus}>متصل الآن</Text>
         </View>
         <View style={styles.backBtn} />
@@ -169,6 +224,11 @@ export default function ChatDetailsScreen() {
       />
 
       <View style={styles.inputContainer}>
+        {user?.isExecutor && (
+          <Pressable style={styles.attachBtn} onPress={() => setOfferModalVisible(true)}>
+            <Ionicons name="gift" size={24} color={Colors.primary} />
+          </Pressable>
+        )}
         <Pressable style={styles.attachBtn} onPress={pickImage} disabled={sending}>
           <Ionicons name="attach" size={24} color={Colors.textSecondary} />
         </Pressable>
@@ -185,6 +245,12 @@ export default function ChatDetailsScreen() {
           {sending ? <ActivityIndicator size="small" color={Colors.white} /> : <Ionicons name="send" size={20} color={Colors.white} style={{ marginLeft: 4 }} />}
         </Pressable>
       </View>
+
+      <CreateOfferModal 
+        visible={offerModalVisible} 
+        onClose={() => setOfferModalVisible(false)} 
+        onSubmit={handleCreateOffer}
+      />
     </KeyboardAvoidingView>
   );
 }

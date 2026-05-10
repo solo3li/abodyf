@@ -114,8 +114,8 @@ public class Order
     public User Student { get; set; } = null!;
     public Guid? ExecutorId { get; set; }
     public User? Executor { get; set; }
-    public Guid ServiceId { get; set; }
-    public Service Service { get; set; } = null!;
+    public Guid? ServiceId { get; set; }
+    public Service? Service { get; set; }
     public decimal Price { get; set; }
     public string Status { get; set; } = "AwaitingPayment";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -167,6 +167,28 @@ public class Message
     public string? AttachmentUrl { get; set; }
     public string? AttachmentType { get; set; }
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+    public Guid? CustomOfferId { get; set; }
+    public CustomOffer? CustomOffer { get; set; }
+}
+
+public class CustomOffer
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ChatId { get; set; }
+    public Chat Chat { get; set; } = null!;
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public Guid StudentId { get; set; }
+    public User Student { get; set; } = null!;
+    public Guid? ServiceId { get; set; }
+    public Service? Service { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int DeliveryDays { get; set; }
+    public string Status { get; set; } = "Pending"; // Pending, Accepted, Declined, Withdrawn, Expired
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? AcceptedAt { get; set; }
 }
 
 public class Ticket

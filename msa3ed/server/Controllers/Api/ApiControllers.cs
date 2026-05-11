@@ -19,24 +19,24 @@ public class AuthController : ControllerBase
     public AuthController(IAuthService auth, IOtpService otp, ApplicationDbContext db) { _auth = auth; _otp = otp; _db = db; }
 
     [HttpPost("login")] public async Task<IActionResult> Login(LoginDto dto) {
-        var token = await _auth.LoginAsync(dto);
-        if (token == null) return Unauthorized();
-        await _otp.GenerateOtpAsync(dto.Email);
-        return Ok(new { Token = token, Message = "OTP sent." });
+        var authResponse = await _auth.LoginAsync(dto);
+        if (authResponse == null) return Unauthorized();
+        return Ok(authResponse);
     }
 
     [HttpPost("register")] public async Task<IActionResult> Register(RegisterDto dto) {
-        var success = await _auth.RegisterAsync(dto);
-        if (!success) return BadRequest("Registration failed.");
-        return Ok("User registered.");
+        var authResponse = await _auth.RegisterAsync(dto);
+        if (authResponse == null) return BadRequest("Registration failed.");
+        return Ok(authResponse);
     }
 
     [HttpPost("verify-otp")] public async Task<IActionResult> VerifyOtp(OtpVerifyDto dto) {
-        var success = await _otp.VerifyOtpAsync(dto.Email, dto.Code);
-        if (!success) return BadRequest("Invalid or expired OTP.");
+        var success = await _otp.VerifyOtpWithBypassAsync(dto.Email, dto.Code);
+        if (!success) return BadRequest("User not found or verification not possible.");
         
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         return Ok(new {
+            Message = "Verification Not Required",
             Id = user?.Id,
             Name = user?.FullName,
             Email = user?.Email,

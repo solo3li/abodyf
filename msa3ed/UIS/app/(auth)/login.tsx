@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform, Dimensions, Alert } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState, useEffect } from 'react';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,11 +14,19 @@ const { width } = Dimensions.get('window');
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
+  const { info } = useLocalSearchParams();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (info) {
+      // In a real app, use a proper Toast or Modal, but Alert is fine for now
+      Alert.alert('تنبيه', info as string);
+    }
+  }, [info]);
 
   const handleLogin = async () => {
     if (!email || !password) return;
@@ -26,9 +34,9 @@ export default function LoginScreen() {
     const success = await login({ email, password });
     setLoading(false);
     if (success) {
-      router.replace({ pathname: '/(auth)/otp-verify', params: { email } });
+      router.replace('/student');
     } else {
-      alert('فشل تسجيل الدخول. يرجى التأكد من البيانات.');
+      Alert.alert('خطأ', 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');
     }
   };
 

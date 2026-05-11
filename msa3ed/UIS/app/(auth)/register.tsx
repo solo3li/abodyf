@@ -32,8 +32,7 @@ export default function RegisterScreen() {
     const result = await dispatch(register({ fullName, email, password }));
     setLoading(false);
     if (register.fulfilled.match(result)) {
-      alert('تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.');
-      router.replace('/(auth)/login');
+      router.replace('/student');
     } else {
       alert('فشل إنشاء الحساب: ' + (result.payload || 'خطأ غير معروف'));
     }

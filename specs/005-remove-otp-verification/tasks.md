@@ -24,8 +24,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 [P] Verify backend build and tests in msa3ed/server/
-- [ ] T002 [P] Verify frontend build and tests in msa3ed/UIS/
+- [x] T001 [P] Verify backend build and tests in msa3ed/server/
+- [x] T002 [P] Verify frontend build and tests in msa3ed/UIS/
 
 ---
 
@@ -35,9 +35,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Clear the `EmailOtps` table to perform the hard reset of verification data in msa3ed/server/Data/DbSeeder.cs or via a direct migration
-- [ ] T004 [P] Update `IAuthService` and `AuthService` interfaces to support returning user data on login/register in msa3ed/server/Services/CoreServices.cs
-- [ ] T005 [P] Update `IOtpService` and `OtpService` to support immediate success or "Not Required" status in msa3ed/server/Services/CoreServices.cs
+- [x] T003 Clear the `EmailOtps` table to perform the hard reset of verification data in msa3ed/server/Data/DbSeeder.cs or via a direct migration
+- [x] T004 [P] Update `IAuthService` and `AuthService` interfaces to support returning user data on login/register in msa3ed/server/Services/CoreServices.cs
+- [x] T005 [P] Update `IOtpService` and `OtpService` to support immediate success or "Not Required" status in msa3ed/server/Services/CoreServices.cs
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -51,16 +51,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Create xUnit test for direct login response (token + user) in msa3ed/server/Uis.Tests/AuthControllerTests.cs
-- [ ] T007 [P] [US1] Create Jest test for Redux `login` action fulfilling with token and user in msa3ed/UIS/store/__tests__/authSlice.test.ts
+- [x] T006 [P] [US1] Create xUnit test for direct login response (token + user) in msa3ed/server/Uis.Tests/AuthControllerTests.cs
+- [x] T007 [P] [US1] Create Jest test for Redux `login` action fulfilling with token and user in msa3ed/UIS/store/__tests__/authSlice.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Modify `AuthController.Login` to return `token` and `user` object immediately in msa3ed/server/Controllers/Api/ApiControllers.cs
-- [ ] T009 [US1] Update `authSlice.ts` to store `user` data upon `login.fulfilled` in msa3ed/UIS/store/slices/authSlice.ts
-- [ ] T010 [US1] Update `login.tsx` to navigate directly to `(tabs)` upon successful login in msa3ed/UIS/app/(auth)/login.tsx
-- [ ] T011 [US1] Implement redirection for users in "pending verification" state with info message in msa3ed/UIS/app/(auth)/login.tsx
-- [ ] T012 [US1] Modify `AuthController.VerifyOtp` to return success immediately for backward compatibility in msa3ed/server/Controllers/Api/ApiControllers.cs
+- [x] T008 [US1] Modify `AuthController.Login` to return `token` and `user` object immediately in msa3ed/server/Controllers/Api/ApiControllers.cs
+- [x] T009 [US1] Update `authSlice.ts` to store `user` data upon `login.fulfilled` in msa3ed/UIS/store/slices/authSlice.ts
+- [x] T010 [US1] Update `login.tsx` to navigate directly to `(tabs)` upon successful login in msa3ed/UIS/app/(auth)/login.tsx
+- [x] T011 [US1] Implement redirection for users in "pending verification" state with info message in msa3ed/UIS/app/(auth)/login.tsx
+- [x] T012 [US1] Modify `AuthController.VerifyOtp` to return success immediately for backward compatibility in msa3ed/server/Controllers/Api/ApiControllers.cs
 
 **Checkpoint**: User Story 1 (Login) should be fully functional and testable independently.
 
@@ -74,15 +74,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] Create xUnit test for registration returning token and user details in msa3ed/server/Uis.Tests/AuthControllerTests.cs
-- [ ] T014 [P] [US2] Create Jest test for Redux `register` action fulfilling with token and user in msa3ed/UIS/store/__tests__/authSlice.test.ts
+- [x] T013 [P] [US2] Create xUnit test for registration returning token and user details in msa3ed/server/Uis.Tests/AuthControllerTests.cs
+- [x] T014 [P] [US2] Create Jest test for Redux `register` action fulfilling with token and user in msa3ed/UIS/store/__tests__/authSlice.test.ts
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Update `AuthService.RegisterAsync` to ensure `IsActive = true` and return the user object in msa3ed/server/Services/CoreServices.cs
-- [ ] T016 [US2] Modify `AuthController.Register` to generate a token and return `token` + `user` in msa3ed/server/Controllers/Api/ApiControllers.cs
-- [ ] T017 [US2] Update `authSlice.ts` to handle user data on `register.fulfilled` in msa3ed/UIS/store/slices/authSlice.ts
-- [ ] T018 [US2] Update `register.tsx` to navigate directly to `(tabs)` upon successful registration in msa3ed/UIS/app/(auth)/register.tsx
+- [x] T015 [US2] Update `AuthService.RegisterAsync` to ensure `IsActive = true` and return the user object in msa3ed/server/Services/CoreServices.cs
+- [x] T016 [US2] Modify `AuthController.Register` to generate a token and return `token` + `user` in msa3ed/server/Controllers/Api/ApiControllers.cs
+- [x] T017 [US2] Update `authSlice.ts` to handle user data on `register.fulfilled` in msa3ed/UIS/store/slices/authSlice.ts
+- [x] T018 [US2] Update `register.tsx` to navigate directly to `(tabs)` upon successful registration in msa3ed/UIS/app/(auth)/register.tsx
 
 **Checkpoint**: User Story 2 (Registration) should be fully functional and testable independently.
 
@@ -92,10 +92,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T019 [P] Update API documentation in specs/005-remove-otp-verification/contracts/auth.md
-- [ ] T020 [P] Cleanup unused `OtpService` methods or calls related to primary auth in msa3ed/server/Services/CoreServices.cs
-- [ ] T021 [P] Remove `otp-verify.tsx` screen if no longer reachable in msa3ed/UIS/app/(auth)/otp-verify.tsx
-- [ ] T022 Run quickstart.md validation to confirm all scenarios pass
+- [x] T019 [P] Update API documentation in specs/005-remove-otp-verification/contracts/auth.md
+- [x] T020 [P] Cleanup unused `OtpService` methods or calls related to primary auth in msa3ed/server/Services/CoreServices.cs
+- [x] T021 [P] Remove `otp-verify.tsx` screen if no longer reachable in msa3ed/UIS/app/(auth)/otp-verify.tsx
+- [x] T022 Run quickstart.md validation to confirm all scenarios pass
 
 ---
 

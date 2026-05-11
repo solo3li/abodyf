@@ -1,0 +1,11 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+appsettings.Development.json
+*.db
+*.db-journal
+/wwwroot/uploads/*
+!/wwwroot/uploads/.gitkeep

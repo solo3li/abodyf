@@ -147,6 +147,43 @@ const authSlice = createSlice({
     builder.addCase(fetchMe.fulfilled, (state, action) => {
       state.user = { ...action.payload, name: action.payload.fullName };
     });
+
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      state.user = { ...state.user, ...action.payload, name: action.payload.fullName };
+    });
+
+    builder.addCase(updateProfilePicture.fulfilled, (state, action) => {
+      if (state.user) state.user.profilePicture = action.payload.imageUrl;
+    });
+
+    builder.addCase(deleteProfilePicture.fulfilled, (state) => {
+      if (state.user) state.user.profilePicture = undefined;
+    });
+  },
+});
+
+export const { setToken, logout, updateUserSync } = authSlice.actions;
+export default authSlice.reducer;alse; state.error = action.payload as string; });
+
+    builder.addCase(register.pending, (state) => { state.loading = true; state.error = null; });
+    builder.addCase(register.fulfilled, (state, action) => {
+      state.loading = false;
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      setAuthToken(action.payload.token);
+    });
+    builder.addCase(register.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+    
+    builder.addCase(verifyOtp.pending, (state) => { state.loading = true; state.error = null; });
+    builder.addCase(verifyOtp.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    });
+    builder.addCase(verifyOtp.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+    builder.addCase(fetchMe.fulfilled, (state, action) => {
+      state.user = { ...action.payload, name: action.payload.fullName };
+    });
   },
 });
 

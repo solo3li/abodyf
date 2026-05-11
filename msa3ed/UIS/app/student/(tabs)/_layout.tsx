@@ -43,6 +43,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="favourites"
+        options={{
+          title: 'المفضلة',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "heart" : "heart-outline"} size={size} color={color} />
+          ),
+          href: isExecutor ? null : undefined,
+        }}
+      />
+      <Tabs.Screen
         name="categories"
         options={{
           title: 'الأقسام',

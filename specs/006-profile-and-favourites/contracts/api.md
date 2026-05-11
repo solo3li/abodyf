@@ -12,6 +12,23 @@
 
 ## 2. Profile Endpoints
 
+### GET /api/Users/Me
+- **Description**: Retrieves current user's full profile details.
+- **Response (200)**:
+```json
+{
+  "id": "GUID",
+  "fullName": "Name",
+  "email": "user@example.com",
+  "university": "Uni",
+  "major": "Major",
+  "bio": "Bio content",
+  "profilePicture": "/uploads/profiles/file.jpg",
+  "isExecutor": false,
+  "roles": ["Student"]
+}
+```
+
 ### PUT /api/Users/Profile
 - **Description**: Updates textual profile information.
 - **Request Body**:

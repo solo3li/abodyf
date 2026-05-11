@@ -45,14 +45,14 @@ export default function ProfileScreen() {
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <Image 
-              source={{ uri: getApiUrl(user?.profilePicture || 'https://i.pravatar.cc/150?u=' + (user?.id || '123')) }} 
+              source={{ uri: getApiUrl(user?.profilePicture) || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.name || user?.fullName || 'User') + '&background=random&size=200') }} 
               style={styles.avatar} 
             />
-            <Pressable style={styles.editAvatarBtn}>
+            <Pressable style={styles.editAvatarBtn} onPress={() => router.push('/student/profile/edit-profile' as any)}>
               <Ionicons name="camera" size={16} color={Colors.white} />
             </Pressable>
           </View>
-          <Text style={styles.name}>{user?.name || user?.email?.split('@')[0] || 'مستخدم'}</Text>
+          <Text style={styles.name}>{user?.name || user?.fullName || user?.email?.split('@')[0] || 'مستخدم'}</Text>
           <Text style={styles.university}>{user?.university || 'جامعة غير محددة'}</Text>
         </View>
       </LinearGradient>

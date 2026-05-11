@@ -29,6 +29,13 @@ public class KycSubmitDto {
     public IFormFile? NationalIdBack { get; set; }
 }
 
+public class UpdateProfileDto {
+    public string FullName { get; set; } = string.Empty;
+    public string? University { get; set; }
+    public string? Major { get; set; }
+    public string? Bio { get; set; }
+}
+
 public class AuthResponseDto {
     public string Token { get; set; } = string.Empty;
     public UserDto User { get; set; } = new();

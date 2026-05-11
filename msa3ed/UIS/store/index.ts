@@ -5,6 +5,7 @@ import ordersReducer from './slices/ordersSlice';
 import chatReducer from './slices/chatSlice';
 import ticketsReducer from './slices/ticketsSlice';
 import kycReducer from './slices/kycSlice';
+import favoritesReducer from './slices/favoritesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     chat: chatReducer,
     tickets: ticketsReducer,
     kyc: kycReducer,
+    favorites: favoritesReducer,
   },
 });
 

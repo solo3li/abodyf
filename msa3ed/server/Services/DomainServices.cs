@@ -69,7 +69,10 @@ public interface IFileService { Task<string> UploadFileAsync(Stream fileStream, 
 public class FileService : IFileService {
     public async Task<string> UploadFileAsync(Stream fileStream, string fileName) {
         var path = Path.Combine("wwwroot", "uploads", fileName);
-        Directory.CreateDirectory(Path.Combine("wwwroot", "uploads"));
+        var directory = Path.GetDirectoryName(path);
+        if (directory != null) {
+            Directory.CreateDirectory(directory);
+        }
         using var stream = new FileStream(path, FileMode.Create);
         await fileStream.CopyToAsync(stream);
         return $"/uploads/{fileName}";
@@ -144,6 +147,23 @@ public class NotificationService : INotificationService {
         if (n != null) {
             _db.Notifications.Remove(n);
             await _db.SaveChangesAsync();
+        }
+    }
+}
+public interface IFavoritesService { Task<bool> ToggleFavoriteAsync(Guid userId, Guid serviceId); }
+public class FavoritesService : IFavoritesService {
+    private readonly ApplicationDbContext _db;
+    public FavoritesService(ApplicationDbContext db) { _db = db; }
+    public async Task<bool> ToggleFavoriteAsync(Guid userId, Guid serviceId) {
+        var favorite = await _db.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.ServiceId == serviceId);
+        if (favorite != null) {
+            _db.Favorites.Remove(favorite);
+            await _db.SaveChangesAsync();
+            return false;
+        } else {
+            _db.Favorites.Add(new Favorite { UserId = userId, ServiceId = serviceId });
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -82,12 +82,17 @@ public class ResetPasswordRequest
 [Route("api/[controller]")]
 [Authorize]
 public class UsersController : ControllerBase {
-    private readonly ApplicationDbContext _db; public UsersController(ApplicationDbContext db) { _db = db; }
+    private readonly IUserService _userService;
+    private readonly IFileService _fileService;
+
+    public UsersController(IUserService userService, IFileService fileService) {
+        _userService = userService;
+        _fileService = fileService;
+    }
     
     [HttpGet("Me")] public async Task<IActionResult> GetMe() {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if(userIdStr == null) return Unauthorized();
-        var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userIdStr));
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _userService.GetUserByIdAsync(userId);
         if(user == null) return NotFound();
         return Ok(new {
             user.Id,
@@ -103,6 +108,34 @@ public class UsersController : ControllerBase {
             user.Bio,
             Roles = user.Roles.Select(r => r.Name)
         });
+    }
+
+    [HttpPut("Profile")] public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto) {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try {
+            var success = await _userService.UpdateProfileAsync(userId, dto);
+            if (!success) return NotFound();
+            var user = await _userService.GetUserByIdAsync(userId);
+            return Ok(user);
+        } catch (ArgumentException ex) {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("ProfilePicture")] public async Task<IActionResult> UploadProfilePicture(IFormFile file) {
+        if (file == null || file.Length == 0) return BadRequest("No file uploaded");
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var fileName = $"profile_{userId}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        using var stream = file.OpenReadStream();
+        var imageUrl = await _fileService.UploadFileAsync(stream, $"profiles/{fileName}");
+        await _userService.UpdateProfilePictureAsync(userId, imageUrl);
+        return Ok(new { imageUrl });
+    }
+
+    [HttpDelete("ProfilePicture")] public async Task<IActionResult> DeleteProfilePicture() {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _userService.UpdateProfilePictureAsync(userId, null!);
+        return NoContent();
     }
 }
 

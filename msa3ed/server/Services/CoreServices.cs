@@ -193,9 +193,38 @@ public class JwtService : IJwtService {
     }
 }
 
-public interface IUserService { Task<User?> GetUserByIdAsync(Guid id); Task<IEnumerable<User>> GetAllUsersAsync(); }
+public interface IUserService { 
+    Task<User?> GetUserByIdAsync(Guid id); 
+    Task<IEnumerable<User>> GetAllUsersAsync(); 
+    Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto);
+    Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl);
+}
 public class UserService : IUserService {
     private readonly ApplicationDbContext _db; public UserService(ApplicationDbContext db) { _db = db; }
     public async Task<User?> GetUserByIdAsync(Guid id) => await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
     public async Task<IEnumerable<User>> GetAllUsersAsync() => await _db.Users.Include(u => u.Roles).ToListAsync();
+
+    public async Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto) {
+        if (string.IsNullOrWhiteSpace(dto.FullName)) throw new ArgumentException("Full Name is required");
+        if (string.IsNullOrWhiteSpace(dto.University)) throw new ArgumentException("University is required");
+
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        user.FullName = dto.FullName.Trim();
+        user.University = dto.University.Trim();
+        user.Major = dto.Major?.Trim();
+        user.Bio = dto.Bio?.Length > 500 ? dto.Bio.Substring(0, 500) : dto.Bio?.Trim();
+
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl) {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return false;
+        user.ProfilePicture = imageUrl;
+        await _db.SaveChangesAsync();
+        return true;
+    }
 }

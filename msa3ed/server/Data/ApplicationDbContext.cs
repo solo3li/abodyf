@@ -24,6 +24,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Ticket> Tickets { get; set; } = null!;
     public DbSet<TicketMessage> TicketMessages { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<Favorite> Favorites { get; set; } = null!;
     public DbSet<FileAttachment> Files { get; set; } = null!;
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<RolePermission> RolePermissions { get; set; } = null!;
@@ -38,6 +39,11 @@ public class ApplicationDbContext : DbContext
             .HasMany(u => u.Roles)
             .WithMany(r => r.Users)
             .UsingEntity(j => j.ToTable("UserRoles"));
+
+        // Configure Favorite (Unique constraint on UserId and ServiceId)
+        modelBuilder.Entity<Favorite>()
+            .HasIndex(f => new { f.UserId, f.ServiceId })
+            .IsUnique();
 
         // Configure SystemSetting
         modelBuilder.Entity<SystemSetting>().HasKey(s => s.Key);

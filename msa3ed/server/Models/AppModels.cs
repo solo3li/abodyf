@@ -213,6 +213,16 @@ public class FileAttachment
     public Guid EntityId { get; set; }
 }
 
+public class Favorite
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+    public Guid ServiceId { get; set; }
+    public Service Service { get; set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
 public class SystemSetting
 {
     public string Key { get; set; } = string.Empty; // e.g., "SmtpHost", "EmailTemplate"

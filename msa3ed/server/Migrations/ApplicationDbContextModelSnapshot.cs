@@ -126,6 +126,31 @@ namespace Uis.Server.Migrations
                     b.ToTable("Escrows");
                 });
 
+            modelBuilder.Entity("Uis.Server.Models.Favorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserId", "ServiceId")
+                        .IsUnique();
+
+                    b.ToTable("Favorite");
+                });
+
             modelBuilder.Entity("Uis.Server.Models.FileAttachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -618,6 +643,25 @@ namespace Uis.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.Favorite", b =>
+                {
+                    b.HasOne("Uis.Server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.KycRequest", b =>

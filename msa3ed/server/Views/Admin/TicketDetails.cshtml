@@ -165,7 +165,6 @@
 
         // SignalR Setup - USING EXPLICIT HUB PATH
         const hubUrl = window.location.origin + "/hubs/chat";
-        console.log("Connecting to hub:", hubUrl);
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(hubUrl)
@@ -178,7 +177,6 @@
         });
 
         connection.start().then(function () {
-            console.log("SignalR Connected!");
             connection.invoke("JoinChat", "ticket-@Model.Id").catch(function (err) {
                 return console.error(err.toString());
             });

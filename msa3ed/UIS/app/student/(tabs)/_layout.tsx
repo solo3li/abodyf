@@ -43,6 +43,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="favourites"
+        options={{
+          title: 'المفضلة',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "heart" : "heart-outline"} size={size} color={color} />
+          ),
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="categories"
         options={{
           title: 'الأقسام',
@@ -80,6 +90,15 @@ export default function TabLayout() {
           title: 'طلباتي',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "document-text" : "document-text-outline"} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="inbox"
+        options={{
+          title: 'الوارد',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "mail" : "mail-outline"} size={size} color={color} />
           ),
         }}
       />

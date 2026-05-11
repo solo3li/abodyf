@@ -61,7 +61,9 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - **API Responses:** Use DTOs to avoid leaking internal models.
 - **Authentication:** Protect API endpoints with `[Authorize]`. Use `ClaimTypes.NameIdentifier` to retrieve the current user's ID.
 - **Localization:** The Admin Panel and seed data are primarily in Arabic.
-- **Real-time:** Use `IChatService` for persistence and `ChatHub` for delivery.
+- **Real-time:** SignalR (for Order Chat, Private Inbox, and Support Tickets)
+
+...
 
 ## 📋 Core Entities
 - **User / Role:** Many-to-Many RBAC. Users have multiple roles (e.g., Student + Executor).
@@ -69,17 +71,18 @@ The project follows a standard ASP.NET Core MVC/Web API pattern:
 - **KycRequest:** Identity verification. Approving a request automatically grants the "Executor" role and sets `IsExecutor = true`.
 - **Service / Category:** The marketplace catalog.
 - **Order / Escrow:** Transactional lifecycle and fund protection.
-- **Chat / Message:** Direct and order-linked communication.
+- **Chat / Message:** Order-linked and Private pre-order communication.
+- **CustomOffer:** Actionable offers sent by Executors within Private Chats.
 - **Ticket:** Support and dispute resolution.
 
 ## 📈 Current State
 - The ASP.NET Core backend is fully implemented and operational.
 - The **MVC Admin Panel** includes comprehensive views for User/Role Management, Orders, Services, Categories, KYC, Payments, and Tickets.
-- The **RESTful Web API** provides endpoints for Authentication, Orders, Services, Chats, and KYC submission.
-- Real-time chatting and notifications are functional via SignalR (`ChatHub`).
+- The **RESTful Web API** provides endpoints for Authentication, OTP verification, Orders, Services, Chats (Orders & Private Inbox), Custom Offers, and KYC submission.
+- Real-time chatting and notifications are functional via SignalR (`ChatHub` and `PrivateChatHub`).
+- The system supports Rich Media attachments (images, documents) and Voice Recordings with 20MB limit validation.
 - The database is successfully seeded with test entities, sample orders, payments, and KYC records via `DbSeeder`.
 
-## 📊 System State Snapshot
 
 ### 🌐 Network & Access
 - **Backend Port:** 5035

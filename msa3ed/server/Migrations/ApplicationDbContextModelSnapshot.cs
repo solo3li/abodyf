@@ -67,6 +67,9 @@ namespace Uis.Server.Migrations
                     b.Property<Guid?>("StudentId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExecutorId");
@@ -76,6 +79,73 @@ namespace Uis.Server.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("Chats");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.CustomOffer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DeliveryDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ExecutorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExecutorId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("CustomOffers");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.EmailOtp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailOtps");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.Escrow", b =>
@@ -99,6 +169,31 @@ namespace Uis.Server.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Escrows");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.Favorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserId", "ServiceId")
+                        .IsUnique();
+
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.FileAttachment", b =>
@@ -193,6 +288,9 @@ namespace Uis.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CustomOfferId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
@@ -202,6 +300,8 @@ namespace Uis.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChatId");
+
+                    b.HasIndex("CustomOfferId");
 
                     b.HasIndex("SenderId");
 
@@ -596,6 +696,25 @@ namespace Uis.Server.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("Uis.Server.Models.CustomOffer", b =>
+                {
+                    b.HasOne("Uis.Server.Models.User", "Executor")
+                        .WithMany()
+                        .HasForeignKey("ExecutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Executor");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Uis.Server.Models.Escrow", b =>
                 {
                     b.HasOne("Uis.Server.Models.Order", "Order")
@@ -605,6 +724,25 @@ namespace Uis.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.Favorite", b =>
+                {
+                    b.HasOne("Uis.Server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.KycRequest", b =>
@@ -626,6 +764,10 @@ namespace Uis.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Uis.Server.Models.CustomOffer", "CustomOffer")
+                        .WithMany()
+                        .HasForeignKey("CustomOfferId");
+
                     b.HasOne("Uis.Server.Models.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
@@ -633,6 +775,8 @@ namespace Uis.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Chat");
+
+                    b.Navigation("CustomOffer");
 
                     b.Navigation("Sender");
                 });

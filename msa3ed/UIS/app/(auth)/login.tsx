@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, KeyboardAvoidingView, Platform, Dimensions, Alert } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState, useEffect } from 'react';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +15,8 @@ const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
+  const { login } = useAuth();
+  const { info } = useLocalSearchParams();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,36 +26,23 @@ export default function LoginScreen() {
   const [otpCode, setOtpCode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (info) {
+      // In a real app, use a proper Toast or Modal, but Alert is fine for now
+      Alert.alert('تنبيه', info as string);
+    }
+  }, [info]);
+
   const handleLogin = async () => {
     if (!email || !password) return;
     setLoading(true);
     setErrorMessage(null);
     const result = await dispatch(login({ email, password }));
     setLoading(false);
-    
-    if (login.fulfilled.match(result)) {
-      setIsOtpStep(true);
-    } else {
-      const errorMsg = result.payload as string;
-      if (errorMsg === 'EMAIL_NOT_VERIFIED') {
-        setErrorMessage('الرجاء تفعيل حسابك عبر الرابط المرسل لبريدك الإلكتروني أولاً.');
-      } else {
-        setErrorMessage(errorMsg || 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');
-      }
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (!otpCode || otpCode.length < 4) return;
-    setLoading(true);
-    setErrorMessage(null);
-    const result = await dispatch(verifyOtp({ email, otpCode }));
-    setLoading(false);
-    
-    if (verifyOtp.fulfilled.match(result)) {
+    if (success) {
       router.replace('/student');
     } else {
-      setErrorMessage(result.payload as string || 'رمز التحقق غير صحيح. حاول مرة أخرى.');
+      Alert.alert('خطأ', 'فشل تسجيل الدخول. يرجى التأكد من البيانات.');
     }
   };
 

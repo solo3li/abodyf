@@ -19,21 +19,24 @@ public class AuthController : ControllerBase
     public AuthController(IAuthService auth, ApplicationDbContext db) { _auth = auth; _db = db; }
 
     [HttpPost("login")] public async Task<IActionResult> Login(LoginDto dto) {
-        var result = await _auth.LoginAsync(dto);
-        if (result == null) return Unauthorized(new { message = "بيانات الدخول غير صحيحة" });
-        if (result == "EMAIL_NOT_VERIFIED") return BadRequest(new { message = "EMAIL_NOT_VERIFIED" });
-        if (result == "OTP_SENT") return Ok(new { message = "OTP_SENT" });
-        
-        return BadRequest(new { message = "حدث خطأ غير متوقع" }); // Should not reach here normally
+        var authResponse = await _auth.LoginAsync(dto);
+        if (authResponse == null) return Unauthorized();
+        return Ok(authResponse);
     }
 
-    [HttpPost("verify-otp")] public async Task<IActionResult> VerifyOtp(VerifyOtpDto dto) {
-        var token = await _auth.VerifyOtpAsync(dto);
-        if (token == null) return Unauthorized(new { message = "رمز التحقق غير صحيح أو منتهي الصلاحية." });
+    [HttpPost("register")] public async Task<IActionResult> Register(RegisterDto dto) {
+        var authResponse = await _auth.RegisterAsync(dto);
+        if (authResponse == null) return BadRequest("Registration failed.");
+        return Ok(authResponse);
+    }
+
+    [HttpPost("verify-otp")] public async Task<IActionResult> VerifyOtp(OtpVerifyDto dto) {
+        var success = await _otp.VerifyOtpWithBypassAsync(dto.Email, dto.Code);
+        if (!success) return BadRequest("User not found or verification not possible.");
         
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
-        return Ok(new { 
-            Token = token, 
+        return Ok(new {
+            Message = "Verification Not Required",
             Id = user?.Id,
             Name = user?.FullName,
             Email = user?.Email,
@@ -86,12 +89,17 @@ public class ResetPasswordRequest
 [Route("api/[controller]")]
 [Authorize]
 public class UsersController : ControllerBase {
-    private readonly ApplicationDbContext _db; public UsersController(ApplicationDbContext db) { _db = db; }
+    private readonly IUserService _userService;
+    private readonly IFileService _fileService;
+
+    public UsersController(IUserService userService, IFileService fileService) {
+        _userService = userService;
+        _fileService = fileService;
+    }
     
     [HttpGet("Me")] public async Task<IActionResult> GetMe() {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if(userIdStr == null) return Unauthorized();
-        var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userIdStr));
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _userService.GetUserByIdAsync(userId);
         if(user == null) return NotFound();
         return Ok(new {
             user.Id,
@@ -108,6 +116,34 @@ public class UsersController : ControllerBase {
             Roles = user.Roles.Select(r => r.Name)
         });
     }
+
+    [HttpPut("Profile")] public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto) {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try {
+            var success = await _userService.UpdateProfileAsync(userId, dto);
+            if (!success) return NotFound();
+            var user = await _userService.GetUserByIdAsync(userId);
+            return Ok(user);
+        } catch (ArgumentException ex) {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("ProfilePicture")] public async Task<IActionResult> UploadProfilePicture(IFormFile file) {
+        if (file == null || file.Length == 0) return BadRequest("No file uploaded");
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var fileName = $"profile_{userId}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        using var stream = file.OpenReadStream();
+        var imageUrl = await _fileService.UploadFileAsync(stream, $"profiles/{fileName}");
+        await _userService.UpdateProfilePictureAsync(userId, imageUrl);
+        return Ok(new { imageUrl });
+    }
+
+    [HttpDelete("ProfilePicture")] public async Task<IActionResult> DeleteProfilePicture() {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _userService.UpdateProfilePictureAsync(userId, null!);
+        return NoContent();
+    }
 }
 
 [ApiController]
@@ -120,7 +156,8 @@ public class ServicesController : ControllerBase {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
             s.Rating, s.ReviewsCount, s.DeliveryTime,
             ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture
+            ProviderAvatarUrl = s.Executor?.ProfilePicture,
+            ProviderId = s.ExecutorId
         }));
     }
     
@@ -131,7 +168,8 @@ public class ServicesController : ControllerBase {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
             s.Rating, s.ReviewsCount, s.DeliveryTime,
             ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture
+            ProviderAvatarUrl = s.Executor?.ProfilePicture,
+            ProviderId = s.ExecutorId
         });
     }
 }
@@ -222,8 +260,11 @@ public class OrdersController : ControllerBase {
 [Authorize]
 public class PaymentsController : ControllerBase {
     private readonly ApplicationDbContext _db;
-    private readonly IEscrowService _escrow;
-    public PaymentsController(ApplicationDbContext db, IEscrowService escrow) { _db = db; _escrow = escrow; }
+    private readonly IPaymentService _paymentService;
+    public PaymentsController(ApplicationDbContext db, IPaymentService paymentService) { 
+        _db = db; 
+        _paymentService = paymentService;
+    }
     
     [HttpPost("{orderId}")] public async Task<IActionResult> Process(Guid orderId, [FromBody] decimal amount) {
         _db.Payments.Add(new Payment { OrderId = orderId, Amount = amount, Status = "Completed", TransactionId = Guid.NewGuid().ToString() });
@@ -269,17 +310,38 @@ public class PaymentsController : ControllerBase {
 [Route("api/[controller]")]
 [Authorize]
 public class ChatController : ControllerBase {
-    private readonly ApplicationDbContext _db; 
+    private readonly ApplicationDbContext _db;
     private readonly IFileService _fileService;
+    private readonly Uis.Server.Services.IChatService _chatService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
-    public ChatController(ApplicationDbContext db, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub) { 
-        _db = db; 
+    private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.PrivateChatHub> _privateHub;
+    public ChatController(ApplicationDbContext db, IFileService fileService, Uis.Server.Services.IChatService chatService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.PrivateChatHub> privateHub) {
+        _db = db;
         _fileService = fileService;
+        _chatService = chatService;
         _hub = hub;
+        _privateHub = privateHub;
     }
-    
-    [HttpGet("Order/{orderId}")] public async Task<IActionResult> GetOrderChat(Guid orderId) {
+
+    [HttpGet("Inbox")] public async Task<IActionResult> GetInbox() {
         var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var chats = await _chatService.GetInboxAsync(myId);
+
+        return Ok(chats.Select(c => new {
+            c.Id,
+            PartnerId = c.StudentId == myId ? c.ExecutorId : c.StudentId,
+            PartnerName = c.StudentId == myId ? c.Executor?.FullName : c.Student?.FullName,
+            PartnerImage = c.StudentId == myId ? c.Executor?.ProfilePicture : c.Student?.ProfilePicture,
+            LastMessage = c.Messages.FirstOrDefault()?.Content,
+            LastMessageAt = c.Messages.FirstOrDefault()?.SentAt,
+            UnreadCount = 0 // Not implemented yet
+        }));
+    }
+
+    [HttpGet("Order/{orderId}")] public async Task<IActionResult> GetOrderChat(Guid orderId) {        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(myIdStr == null) return Unauthorized();
         var myId = Guid.Parse(myIdStr);
 
@@ -302,48 +364,52 @@ public class ChatController : ControllerBase {
         });
     }
 
+    [HttpPost("Private")] public async Task<IActionResult> InitPrivateChat([FromBody] Guid userId) {
+        return await GetPrivateChat(userId);
+    }
+
     [HttpGet("Private/{userId}")] public async Task<IActionResult> GetPrivateChat(Guid userId) {
         var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(myIdStr == null) return Unauthorized();
         var myId = Guid.Parse(myIdStr);
 
-        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender)
-            .FirstOrDefaultAsync(c => c.OrderId == null && 
-            ((c.StudentId == myId && c.ExecutorId == userId) || (c.StudentId == userId && c.ExecutorId == myId)));
-        
-        if (chat == null) {
-            chat = new Chat { StudentId = myId, ExecutorId = userId };
-            _db.Chats.Add(chat);
-            await _db.SaveChangesAsync();
-        }
+        var chat = await _chatService.InitializePrivateChatAsync(myId, userId);
 
         return Ok(new {
             chat.Id,
             Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType
+                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender?.FullName, m.AttachmentUrl, m.AttachmentType, m.CustomOffer
             })
         });
     }
 
-    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, IFormFile? attachment, [FromForm] string? attachmentType) {
+    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, IFormFile? attachment, [FromForm] string? attachmentType, [FromForm] string? attachmentUrl = null) {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(userIdStr == null) return Unauthorized();
         var uid = Guid.Parse(userIdStr);
         var sender = await _db.Users.FindAsync(uid);
+        var chat = await _db.Chats.FindAsync(chatId);
+        if (chat == null) return NotFound("Chat not found.");
         
         var msg = new Message { ChatId = chatId, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
 
         if (attachment != null && attachment.Length > 0)
         {
+            if (attachment.Length > 20 * 1024 * 1024) return BadRequest("File exceeds 20MB limit.");
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
             msg.AttachmentUrl = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
+            msg.AttachmentType = attachmentType ?? "file";
+        }
+        else if (!string.IsNullOrEmpty(attachmentUrl))
+        {
+            msg.AttachmentUrl = attachmentUrl;
             msg.AttachmentType = attachmentType ?? "file";
         }
 
         _db.Messages.Add(msg);
         await _db.SaveChangesAsync();
 
-        await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", new {
+        var payload = new {
             Id = msg.Id,
             Content = msg.Content,
             SentAt = msg.SentAt,
@@ -351,10 +417,82 @@ public class ChatController : ControllerBase {
             SenderName = sender?.FullName,
             AttachmentUrl = msg.AttachmentUrl,
             AttachmentType = msg.AttachmentType
-        });
+        };
+
+        if (chat.Type == ChatType.PrivateChat) {
+            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", payload);
+        } else {
+            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", payload);
+        }
 
         return Ok(msg);
     }
+
+    [HttpPost("Attachments")]
+    public async Task<IActionResult> UploadAttachment(IFormFile file) {
+        if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+        if (file.Length > 20 * 1024 * 1024) return BadRequest("File exceeds 20MB limit.");
+
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        var url = await _fileService.UploadFileAsync(file.OpenReadStream(), fileName);
+        
+        string type = "file";
+        if (file.ContentType.StartsWith("image/")) type = "image";
+        else if (file.ContentType.StartsWith("audio/")) type = "audio";
+        else if (file.ContentType.StartsWith("video/")) type = "video";
+
+        return Ok(new { url, type });
+    }
+
+    [HttpPost("Offers")]
+    public async Task<IActionResult> SendCustomOffer([FromBody] CustomOfferRequest dto) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var executorId = Guid.Parse(myIdStr);
+
+        try {
+            var offer = new CustomOffer {
+                Title = dto.Title,
+                Description = dto.Description,
+                Price = dto.Price,
+                DeliveryDays = dto.DeliveryDays
+            };
+            offer = await _chatService.SendCustomOfferAsync(dto.ChatId, executorId, offer);
+
+            var payload = new {
+                CustomOffer = offer,
+                ChatId = dto.ChatId,
+                SenderId = executorId
+            };
+            await _privateHub.Clients.Group(dto.ChatId.ToString()).SendAsync("ReceiveCustomOffer", payload);
+            
+            return Ok(offer);
+        } catch (Exception ex) {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("Offers/{id}/Accept")]
+    public async Task<IActionResult> AcceptCustomOffer(Guid id) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var studentId = Guid.Parse(myIdStr);
+
+        try {
+            var order = await _chatService.AcceptCustomOfferAsync(id, studentId);
+            return Ok(new { orderId = order.Id });
+        } catch (Exception ex) {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+}
+
+public class CustomOfferRequest {
+    public Guid ChatId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int DeliveryDays { get; set; }
 }
 
 [ApiController]

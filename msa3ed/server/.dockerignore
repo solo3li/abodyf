@@ -1,0 +1,14 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/wwwroot/uploads/*
+!**/wwwroot/uploads/.gitkeep
+Dockerfile*
+docker-compose*
+.dockerignore
+.gitignore
+appsettings.Development.json
+*.db
+*.db-journal

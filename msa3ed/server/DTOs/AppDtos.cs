@@ -28,3 +28,23 @@ public class KycSubmitDto {
     public IFormFile? NationalIdFront { get; set; }
     public IFormFile? NationalIdBack { get; set; }
 }
+
+public class UpdateProfileDto {
+    public string FullName { get; set; } = string.Empty;
+    public string? University { get; set; }
+    public string? Major { get; set; }
+    public string? Bio { get; set; }
+}
+
+public class AuthResponseDto {
+    public string Token { get; set; } = string.Empty;
+    public UserDto User { get; set; } = new();
+}
+
+public class UserDto {
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public bool IsExecutor { get; set; }
+    public IEnumerable<string> Roles { get; set; } = new List<string>();
+}

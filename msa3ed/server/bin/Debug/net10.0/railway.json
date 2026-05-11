@@ -5,7 +5,7 @@
   },
   "deploy": {
     "restartPolicyType": "ON_FAILURE",
-    "healthcheckPath": "/health",
+    "healthcheckPath": "/swagger",
     "healthcheckTimeout": 120
   }
 }

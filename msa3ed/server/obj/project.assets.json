@@ -2505,7 +2505,7 @@
         "lib/net10.0/Npgsql.dll",
         "lib/net8.0/Npgsql.dll",
         "lib/net9.0/Npgsql.dll",
-        "npgsql.10.0.0.nupkg.sha512",
+        "npgsql.10.0.2.nupkg.sha512",
         "npgsql.nuspec",
         "postgresql.png"
       ]
@@ -2519,7 +2519,7 @@
         ".signature.p7s",
         "README.md",
         "lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll",
-        "npgsql.entityframeworkcore.postgresql.10.0.0.nupkg.sha512",
+        "npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512",
         "npgsql.entityframeworkcore.postgresql.nuspec",
         "postgresql.png"
       ]
@@ -2823,11 +2823,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/src/Uis.Server.csproj",
+      "projectUniqueName": "/src/msa3ed/server/Uis.Server.csproj",
       "projectName": "Uis.Server",
-      "projectPath": "/src/Uis.Server.csproj",
+      "projectPath": "/src/msa3ed/server/Uis.Server.csproj",
       "packagesPath": "/root/.nuget/packages/",
-      "outputPath": "/src/obj/",
+      "outputPath": "/src/msa3ed/server/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/root/.nuget/NuGet/NuGet.Config"

@@ -353,6 +353,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 140,
   },
+  favoriteBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   imageOverlay: {
     position: 'absolute',
     top: 0,

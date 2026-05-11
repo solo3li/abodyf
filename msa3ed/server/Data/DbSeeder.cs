@@ -18,10 +18,9 @@ public static class DbSeeder
 
         await context.Database.MigrateAsync();
 
-        // 1. Clear existing data for a fresh start (Optional but requested)
-        // context.Services.RemoveRange(context.Services);
-        // context.Categories.RemoveRange(context.Categories);
-        // await context.SaveChangesAsync();
+        // 1. Clear existing verification data for a hard reset
+        context.EmailOtps.RemoveRange(context.EmailOtps);
+        await context.SaveChangesAsync();
 
         // 2. Seed Roles
         var adminRole = await GetOrCreateRole(context, "Admin", "Full access to all system features", true);

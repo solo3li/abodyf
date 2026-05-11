@@ -90,35 +90,29 @@ public class EmailService : IEmailService {
     }
 }
 
-public interface IAuthService { 
-    Task<string?> LoginAsync(LoginDto dto); 
-    Task<bool> RegisterAsync(RegisterDto dto); 
-    Task<string?> VerifyOtpAsync(VerifyOtpDto dto);
-    Task<bool> VerifyEmailAsync(string token);
-}
+public interface IAuthService { Task<AuthResponseDto?> LoginAsync(LoginDto dto); Task<AuthResponseDto?> RegisterAsync(RegisterDto dto); }
 public class AuthService : IAuthService {
-    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt; private readonly IEmailService _email;
-    public AuthService(ApplicationDbContext db, IJwtService jwt, IEmailService email) { _db = db; _jwt = jwt; _email = email; }
-    
-    public async Task<string?> LoginAsync(LoginDto dto) {
+    private readonly ApplicationDbContext _db; private readonly IJwtService _jwt; private readonly IOtpService _otp;
+    public AuthService(ApplicationDbContext db, IJwtService jwt, IOtpService otp) { _db = db; _jwt = jwt; _otp = otp; }
+    public async Task<AuthResponseDto?> LoginAsync(LoginDto dto) {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || user.PasswordHash != dto.Password) return null;
         
-        if (!user.IsEmailVerified) return "EMAIL_NOT_VERIFIED";
-
-        user.OtpCode = new Random().Next(1000, 9999).ToString();
-        user.OtpExpiry = DateTime.UtcNow.AddMinutes(5);
-        await _db.SaveChangesAsync();
-
-        await _email.SendTemplatedEmailAsync(user.Email, "رمز الدخول", "رمز الدخول الخاص بك", $"رمز التحقق: {user.OtpCode}");
-
-        return "OTP_SENT";
+        var token = _jwt.GenerateToken(user);
+        return new AuthResponseDto {
+            Token = token,
+            User = new UserDto {
+                Id = user.Id,
+                Name = user.FullName,
+                Email = user.Email,
+                IsExecutor = user.IsExecutor,
+                Roles = user.Roles.Select(r => r.Name)
+            }
+        };
     }
-    
-    public async Task<bool> RegisterAsync(RegisterDto dto) {
-        if (await _db.Users.AnyAsync(u => u.Email == dto.Email)) return false;
+    public async Task<AuthResponseDto?> RegisterAsync(RegisterDto dto) {
+        if (await _db.Users.AnyAsync(u => u.Email == dto.Email)) return null;
 
-        // Every registered user is a Student by default
         var studentRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
         if (studentRole == null) {
             studentRole = new Role { Name = "Student", IsSystemRole = true };
@@ -134,18 +128,41 @@ public class AuthService : IAuthService {
             IsAdmin = false,
             IsExecutor = false,
             IsStaff = false,
-            IsEmailVerified = false,
-            EmailVerificationToken = token
+            IsActive = true // Auto-activate
         };
 
         user.Roles.Add(studentRole);
+        _db.Users.Add(user); 
+        await _db.SaveChangesAsync(); 
 
-        _db.Users.Add(user); await _db.SaveChangesAsync(); 
+        var token = _jwt.GenerateToken(user);
+        return new AuthResponseDto {
+            Token = token,
+            User = new UserDto {
+                Id = user.Id,
+                Name = user.FullName,
+                Email = user.Email,
+                IsExecutor = user.IsExecutor,
+                Roles = user.Roles.Select(r => r.Name)
+            }
+        };
+    }
+}
 
-        var link = $"http://104.248.250.176:5035/api/Auth/verify-email?token={token}";
-        await _email.SendTemplatedEmailAsync(user.Email, "تأكيد البريد", "تأكيد الحساب", "يرجى تأكيد الحساب", "تأكيد", link);
-
-        return true;
+public interface IOtpService { Task<string> GenerateOtpAsync(string email); Task<bool> VerifyOtpAsync(string email, string code); Task<bool> VerifyOtpWithBypassAsync(string email, string code); }
+public class OtpService : IOtpService {
+    private readonly ApplicationDbContext _db; 
+    private readonly IEmailService _emailService;
+    public OtpService(ApplicationDbContext db, IEmailService emailService) { _db = db; _emailService = emailService; }
+    public async Task<string> GenerateOtpAsync(string email) {
+        var code = new Random().Next(1000, 9999).ToString();
+        var otp = new EmailOtp { Email = email, Code = code, ExpiryDate = DateTime.UtcNow.AddMinutes(10) };
+        _db.EmailOtps.Add(otp); 
+        await _db.SaveChangesAsync(); 
+        
+        await _emailService.SendOtpEmailAsync(email, code);
+        
+        return otp.Code;
     }
 
     public async Task<string?> VerifyOtpAsync(VerifyOtpDto dto) {
@@ -167,6 +184,10 @@ public class AuthService : IAuthService {
         user.EmailVerificationToken = null;
         await _db.SaveChangesAsync();
         return true;
+    }
+    public async Task<bool> VerifyOtpWithBypassAsync(string email, string code) {
+        // For backward compatibility, we return true if user exists, effectively bypassing OTP
+        return await _db.Users.AnyAsync(u => u.Email == email);
     }
 }
 
@@ -191,9 +212,38 @@ public class JwtService : IJwtService {
     }
 }
 
-public interface IUserService { Task<User?> GetUserByIdAsync(Guid id); Task<IEnumerable<User>> GetAllUsersAsync(); }
+public interface IUserService { 
+    Task<User?> GetUserByIdAsync(Guid id); 
+    Task<IEnumerable<User>> GetAllUsersAsync(); 
+    Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto);
+    Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl);
+}
 public class UserService : IUserService {
     private readonly ApplicationDbContext _db; public UserService(ApplicationDbContext db) { _db = db; }
     public async Task<User?> GetUserByIdAsync(Guid id) => await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
     public async Task<IEnumerable<User>> GetAllUsersAsync() => await _db.Users.Include(u => u.Roles).ToListAsync();
+
+    public async Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto) {
+        if (string.IsNullOrWhiteSpace(dto.FullName)) throw new ArgumentException("Full Name is required");
+        if (string.IsNullOrWhiteSpace(dto.University)) throw new ArgumentException("University is required");
+
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return false;
+
+        user.FullName = dto.FullName.Trim();
+        user.University = dto.University.Trim();
+        user.Major = dto.Major?.Trim();
+        user.Bio = dto.Bio?.Length > 500 ? dto.Bio.Substring(0, 500) : dto.Bio?.Trim();
+
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl) {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) return false;
+        user.ProfilePicture = imageUrl;
+        await _db.SaveChangesAsync();
+        return true;
+    }
 }

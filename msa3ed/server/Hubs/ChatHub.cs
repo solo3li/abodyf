@@ -5,9 +5,9 @@ namespace Uis.Server.Hubs;
 
 public class ChatHub : Hub
 {
-    public async Task SendMessage(string chatId, string message)
+    public async Task SendMessage(string chatId, object messagePayload)
     {
-        await Clients.Group(chatId).SendAsync("ReceiveMessage", Context.ConnectionId, message);
+        await Clients.Group(chatId).SendAsync("ReceiveMessage", messagePayload);
     }
 
     public async Task JoinChat(string chatId)

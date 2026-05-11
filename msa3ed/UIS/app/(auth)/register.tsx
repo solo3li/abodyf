@@ -36,8 +36,7 @@ export default function RegisterScreen() {
     const result = await dispatch(register({ fullName, email, password }));
     setLoading(false);
     if (register.fulfilled.match(result)) {
-      setSuccessMessage('تم إنشاء الحساب بنجاح! يرجى تفقد بريدك الإلكتروني لتفعيل حسابك قبل تسجيل الدخول.');
-      // Optional: automatically route back after a few seconds or let the user read the message and click "Login"
+      router.replace('/student');
     } else {
       setErrorMessage(result.payload as string || 'خطأ غير معروف أثناء إنشاء الحساب.');
     }

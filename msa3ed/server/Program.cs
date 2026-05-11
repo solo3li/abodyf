@@ -90,6 +90,7 @@ builder.Services.AddScoped<Uis.Server.Services.IJwtService, Uis.Server.Services.
 builder.Services.AddScoped<Uis.Server.Services.IUserService, Uis.Server.Services.UserService>();
 builder.Services.AddScoped<Uis.Server.Services.IKycService, Uis.Server.Services.KycService>();
 builder.Services.AddScoped<Uis.Server.Services.ICatalogService, Uis.Server.Services.CatalogService>();
+builder.Services.AddScoped<Uis.Server.Services.IFavoritesService, Uis.Server.Services.FavoritesService>();
 builder.Services.AddScoped<Uis.Server.Services.IOrderService, Uis.Server.Services.OrderService>();
 builder.Services.AddScoped<Uis.Server.Services.IPaymentService, Uis.Server.Services.PaymentService>();
 builder.Services.AddScoped<Uis.Server.Services.IEscrowService, Uis.Server.Services.EscrowService>();
@@ -148,6 +149,7 @@ app.UseAuthorization();
 
 // Map SignalR Hubs
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<PrivateChatHub>("/hubs/private-chat");
 
 // Add a simple health check endpoint
 app.MapGet("/health", () => Results.Ok("Healthy"));

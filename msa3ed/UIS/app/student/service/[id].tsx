@@ -74,7 +74,7 @@ export default function ServiceDetailsScreen() {
                 <Text style={styles.providerName}>{service.providerName || 'منصة UIS'}</Text>
                 <Text style={styles.providerLevel}>بائع مميز موثوق</Text>
               </View>
-              <Pressable style={styles.chatBtn}>
+              <Pressable style={styles.chatBtn} onPress={() => router.push(`/shared/chat/private/${service.providerId || service.executorId}`)}>
                 <Ionicons name="chatbubble-ellipses" size={22} color={Colors.primary} />
               </Pressable>
             </View>

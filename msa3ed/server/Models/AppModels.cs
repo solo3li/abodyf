@@ -141,9 +141,13 @@ public class Escrow
     public string Status { get; set; } = "Held"; // Held, Released, Refunded
 }
 
+public enum ChatType { OrderChat, PrivateChat, TicketChat }
+
 public class Chat
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    public ChatType Type { get; set; } = ChatType.OrderChat;
+    
     public Guid? OrderId { get; set; }
     public Order? Order { get; set; }
     
@@ -165,8 +169,25 @@ public class Message
     public User Sender { get; set; } = null!;
     public string Content { get; set; } = string.Empty;
     public string? AttachmentUrl { get; set; }
-    public string? AttachmentType { get; set; }
+    public string? AttachmentType { get; set; } // e.g., Image, Document, Audio
+    public Guid? CustomOfferId { get; set; }
+    public CustomOffer? CustomOffer { get; set; }
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
+}
+
+public class CustomOffer
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int DeliveryDays { get; set; }
+    public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected, Expired
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public Guid StudentId { get; set; }
+    public User Student { get; set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class Ticket

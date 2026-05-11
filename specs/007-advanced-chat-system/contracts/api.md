@@ -1,54 +1,121 @@
-# API Contract: Advanced Chat System
+# Advanced Chat System - API Contracts
 
-## 1. REST Endpoints
+## Endpoints
 
-### POST /api/Chat/Attachments
-- **Description**: Uploads a file (image, document, or audio) for a chat message. Enforces 20MB limit.
-- **Request**: `multipart/form-data`
-  - `file`: File
-  - `type`: String (`Image`, `Document`, `Audio`)
-- **Response (200)**: `{ "url": "/uploads/chat/xyz.ext", "type": "Audio" }`
-
-### POST /api/Chat/Private
-- **Description**: Initializes or retrieves an existing private chat with a specific user.
-- **Request Body**: `{ "targetUserId": "GUID" }`
-- **Response (200)**: `ChatDto`
-
-## 2. SignalR Hubs
-
-### `PrivateChatHub` (New)
-**Route**: `/hubs/private-chat`
-- **Methods to Invoke (Client -> Server)**:
-  - `JoinChat(string chatId)`
-  - `LeaveChat(string chatId)`
-  - `SendMessage(string chatId, MessagePayload payload)`
-  - `SendCustomOffer(string chatId, CustomOfferPayload payload)`
-- **Events to Listen (Server -> Client)**:
-  - `ReceiveMessage(MessageDto message)`
-  - `ReceiveCustomOffer(CustomOfferDto offer)`
-  - `UserTyping(string userId)`
-  - `UserRecording(string userId)`
-
-### `ChatHub` (Existing - Order Chats)
-**Route**: `/hubs/chat`
-- **Updates**:
-  - Add support for `MessagePayload` with attachments and audio.
-
-### `MessagePayload`
+### 1. Initialize Private Chat
+- **POST** `/api/Chat/Private`
+- **Auth**: Required
+- **Body**: `Guid` (userId of the target user)
+- **Response**: `200 OK`
 ```json
 {
-  "content": "Text message (optional)",
-  "attachmentUrl": "/uploads/chat/...",
-  "attachmentType": "Audio" // Image, Document, Audio
+  "id": "guid",
+  "messages": [
+    {
+      "id": "guid",
+      "content": "string",
+      "sentAt": "datetime",
+      "senderId": "guid",
+      "senderName": "string",
+      "attachmentUrl": "string?",
+      "attachmentType": "string?",
+      "customOffer": null
+    }
+  ]
 }
 ```
 
-### `CustomOfferPayload`
+### 2. Get Private Inbox
+- **GET** `/api/Chat/Inbox`
+- **Auth**: Required
+- **Response**: `200 OK`
+```json
+[
+  {
+    "id": "guid",
+    "partnerId": "guid",
+    "partnerName": "string",
+    "partnerImage": "string",
+    "lastMessage": "string",
+    "lastMessageAt": "datetime",
+    "unreadCount": 0
+  }
+]
+```
+
+### 3. Send Message
+- **POST** `/api/Chat/{chatId}/Message`
+- **Auth**: Required
+- **Content-Type**: `multipart/form-data`
+- **Form Fields**:
+  - `content`: string (optional)
+  - `attachment`: file (optional, max 20MB)
+  - `attachmentType`: string (optional)
+  - `attachmentUrl`: string (optional)
+- **Response**: `200 OK`
 ```json
 {
-  "title": "Custom Logo Design",
-  "description": "3 concepts, unlimited revisions",
-  "price": 150.00,
-  "deliveryDays": 5
+  "id": "guid",
+  "chatId": "guid",
+  "senderId": "guid",
+  "content": "string",
+  "attachmentUrl": "string?",
+  "attachmentType": "string?",
+  "sentAt": "datetime"
 }
 ```
+
+### 4. Upload Attachment
+- **POST** `/api/Chat/Attachments`
+- **Auth**: Required
+- **Content-Type**: `multipart/form-data`
+- **Form Fields**:
+  - `file`: file (required, max 20MB)
+- **Response**: `200 OK`
+```json
+{
+  "url": "string",
+  "type": "string"
+}
+```
+
+### 5. Send Custom Offer
+- **POST** `/api/Chat/Offers`
+- **Auth**: Required (Executor only)
+- **Body**:
+```json
+{
+  "chatId": "guid",
+  "title": "string",
+  "description": "string",
+  "price": 0.0,
+  "deliveryDays": 0
+}
+```
+- **Response**: `200 OK`
+
+### 6. Accept Custom Offer
+- **POST** `/api/Chat/Offers/{id}/Accept`
+- **Auth**: Required (Student only)
+- **Response**: `200 OK`
+```json
+{
+  "orderId": "guid"
+}
+```
+
+## SignalR Hubs
+
+### `/hubs/chat` (Order Chats)
+- **ReceiveMessage**: `(payload: object)`
+
+### `/hubs/private-chat` (Private Inbox)
+- **ReceiveMessage**: `(payload: object)`
+- **ReceiveCustomOffer**: `(payload: object)`
+  ```json
+  {
+    "customOffer": { /* CustomOffer entity */ },
+    "chatId": "guid",
+    "senderId": "guid"
+  }
+  ```

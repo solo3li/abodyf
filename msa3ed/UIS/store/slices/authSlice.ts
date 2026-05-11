@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { apiFetch, setAuthToken } from '../../services/api';
+import { apiFetch, setAuthToken, API_BASE_URL } from '../../services/api';
 
 export interface User {
   id: string;
   name: string;
+  fullName?: string;
   email: string;
   isExecutor: boolean;
   isAdmin: boolean;
@@ -111,7 +112,7 @@ export const updateProfile = createAsyncThunk('auth/updateProfile', async (data:
   }
 });
 
-export const updateProfilePicture = createAsyncThunk('auth/updateProfilePicture', async (fileInfo: any, { rejectWithValue }) => {
+export const updateProfilePicture = createAsyncThunk('auth/updateProfilePicture', async (fileInfo: any, { rejectWithValue, getState }) => {
   try {
     const formData = new FormData();
     formData.append('file', {
@@ -120,8 +121,9 @@ export const updateProfilePicture = createAsyncThunk('auth/updateProfilePicture'
       type: fileInfo.type || 'image/jpeg',
     } as any);
 
-    const { getAuthToken, API_BASE_URL } = await import('../../services/api');
-    const token = await getAuthToken();
+    const state = getState() as any;
+    const token = state.auth.token;
+    
     const res = await fetch(API_BASE_URL + '/Users/ProfilePicture', {
       method: 'POST',
       body: formData,

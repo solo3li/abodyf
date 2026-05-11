@@ -14,8 +14,8 @@ describe('authSlice', () => {
 
   it('should handle logout', () => {
     const state = {
-      user: { id: '1', name: 'Test' },
-      token: 'token123',
+      user: { id: '1', name: 'Test User', email: 'test@test.com', isExecutor: false, isAdmin: false, roles: ['Student'] },
+      token: 'mock-token',
       loading: false,
       error: null,
     };

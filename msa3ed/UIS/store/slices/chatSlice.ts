@@ -17,6 +17,14 @@ export const fetchPrivateChat = createAsyncThunk('chat/fetchPrivateChat', async 
   }
 });
 
+export const fetchInbox = createAsyncThunk('chat/fetchInbox', async (_, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Inbox`);
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 export const sendMessage = createAsyncThunk('chat/sendMessage', async ({ chatId, content, attachment, attachmentType }: { chatId: string, content?: string, attachment?: any, attachmentType?: string }, { rejectWithValue }) => {
   try {
     const formData = new FormData();
@@ -35,10 +43,33 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async ({ chatId,
   }
 });
 
+export const sendCustomOffer = createAsyncThunk('chat/sendCustomOffer', async (offerData: { chatId: string, title: string, description: string, price: number, deliveryDays: number }, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Offers`, {
+      method: 'POST',
+      body: JSON.stringify(offerData),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const acceptCustomOffer = createAsyncThunk('chat/acceptCustomOffer', async (offerId: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Offers/${offerId}/Accept`, {
+      method: 'POST'
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     currentChat: null as any,
+    inbox: [] as any[],
     loading: false,
     error: null as string | null,
   },
@@ -57,6 +88,10 @@ const chatSlice = createSlice({
     builder.addCase(fetchPrivateChat.pending, (state) => { state.loading = true; });
     builder.addCase(fetchPrivateChat.fulfilled, (state, action) => { state.loading = false; state.currentChat = action.payload; });
     builder.addCase(fetchPrivateChat.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+    builder.addCase(fetchInbox.pending, (state) => { state.loading = true; });
+    builder.addCase(fetchInbox.fulfilled, (state, action) => { state.loading = false; state.inbox = action.payload; });
+    builder.addCase(fetchInbox.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
   },
 });
 

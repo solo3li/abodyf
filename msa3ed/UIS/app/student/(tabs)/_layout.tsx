@@ -94,6 +94,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="inbox"
+        options={{
+          title: 'الوارد',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? "mail" : "mail-outline"} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="chat"
         options={{
           title: 'الرسائل',

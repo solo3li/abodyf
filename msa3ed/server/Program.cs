@@ -148,6 +148,7 @@ app.UseAuthorization();
 
 // Map SignalR Hubs
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<PrivateChatHub>("/hubs/private-chat");
 
 // Map MVC Controllers (Admin) and API Controllers
 app.MapControllerRoute(

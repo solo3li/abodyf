@@ -62,6 +62,11 @@ UIS is a multi-role platform (Student and Executor) designed for university serv
 All screens for both Student and Executor roles have been implemented according to the PRD. The unified frontend uses `isExecutor` state for Role-Based conditional rendering.
 The ASP.NET Core backend has been updated to include all necessary REST API endpoints mapping directly to the frontend screens (Auth, Users/Me, Services, Orders, Payments, Chat, Tickets, KYC).
 The system now fully supports `multipart/form-data` uploads for `Services` (images) and `Chat`/`Tickets` (images, files, voice notes).
+The system includes an **Advanced Chat System** with:
+- **Private Inbox:** Direct messaging between users before or without an order.
+- **Custom Offers:** Executors can send tailored service offers within private chats.
+- **Rich Media:** Support for voice notes (recording/playback), images, and document attachments across all chat interfaces (Orders, Private, Support Tickets).
+- **Centralized SignalR:** Optimized real-time connection management for improved reliability.
 The frontend has been completely integrated with the backend using Redux Toolkit. All static dummy data (`dummyData.ts`) has been removed and replaced with dynamic data fetched via `apiFetch` within Redux slices (`authSlice`, `catalogSlice`, `ordersSlice`, `chatSlice`, `ticketsSlice`, `kycSlice`).
 The Auth workflow is fully functional with real email OTP verification, featuring a modern responsive email template and improved mobile UI (auto-passing email to verify screen, OTP timer, etc.).
 

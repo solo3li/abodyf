@@ -24,8 +24,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 [P] Verify backend build and existing tests in msa3ed/server/
-- [ ] T002 [P] Verify frontend build and existing tests in msa3ed/UIS/
+- [x] T001 [P] Verify backend build and existing tests in msa3ed/server/
+- [x] T002 [P] Verify frontend build and existing tests in msa3ed/UIS/
 
 ---
 
@@ -35,14 +35,14 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Update `Chat` and `Message` models in msa3ed/server/Models/AppModels.cs
-- [ ] T004 Create `CustomOffer` model in msa3ed/server/Models/AppModels.cs
-- [ ] T005 [P] Update `ApplicationDbContext` with `CustomOffers` DbSet and relationship configurations in msa3ed/server/Data/ApplicationDbContext.cs
-- [ ] T006 [P] Create and apply EF migration for the new Chat entities and CustomOffer in msa3ed/server/
-- [ ] T007 Create `PrivateChatHub` in msa3ed/server/Hubs/PrivateChatHub.cs
-- [ ] T008 [P] Register `PrivateChatHub` in msa3ed/server/Program.cs routing
-- [ ] T009 Create a generalized `chatSlice.ts` or update existing to support multiple hubs in msa3ed/UIS/store/slices/chatSlice.ts
-- [ ] T010 Update `signalr.ts` to support initializing and managing the `PrivateChatHub` connection in msa3ed/UIS/services/signalr.ts
+- [x] T003 Update `Chat` and `Message` models in msa3ed/server/Models/AppModels.cs
+- [x] T004 Create `CustomOffer` model in msa3ed/server/Models/AppModels.cs
+- [x] T005 [P] Update `ApplicationDbContext` with `CustomOffers` DbSet and relationship configurations in msa3ed/server/Data/ApplicationDbContext.cs
+- [x] T006 [P] Create and apply EF migration for the new Chat entities and CustomOffer in msa3ed/server/
+- [x] T007 Create `PrivateChatHub` in msa3ed/server/Hubs/PrivateChatHub.cs
+- [x] T008 [P] Register `PrivateChatHub` in msa3ed/server/Program.cs routing
+- [x] T009 Create a generalized `chatSlice.ts` or update existing to support multiple hubs in msa3ed/UIS/store/slices/chatSlice.ts
+- [x] T010 Update `signalr.ts` to support initializing and managing the `PrivateChatHub` connection in msa3ed/UIS/services/signalr.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -56,17 +56,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Create xUnit test for private chat initialization and retrieval in msa3ed/server/Uis.Tests/ChatControllerTests.cs
-- [ ] T012 [P] [US1] Create Jest test for Redux `chatSlice` fetching private inbox list in msa3ed/UIS/store/__tests__/chatSlice.test.ts
+- [x] T011 [P] [US1] Create xUnit test for private chat initialization and retrieval in msa3ed/server/Uis.Tests/ChatControllerTests.cs
+- [x] T012 [P] [US1] Create Jest test for Redux `chatSlice` fetching private inbox list in msa3ed/UIS/store/__tests__/chatSlice.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Implement `InitializePrivateChatAsync` and `GetInboxAsync` in msa3ed/server/Services/ChatService.cs
-- [ ] T014 [US1] Implement `POST /api/Chat/Private` and `GET /api/Chat/Inbox` endpoints in msa3ed/server/Controllers/Api/ChatController.cs
-- [ ] T015 [US1] Update `PrivateChatHub` to handle `SendMessage` and broadcast `ReceiveMessage` appropriately in msa3ed/server/Hubs/PrivateChatHub.cs
-- [ ] T016 [US1] Create the dedicated Inbox tab UI in msa3ed/UIS/app/student/(tabs)/inbox.tsx
-- [ ] T017 [US1] Add "Contact Provider" button to Executor profiles leading to the private chat screen in msa3ed/UIS/app/student/executor/[id].tsx
-- [ ] T018 [US1] Implement the private chat messaging UI in msa3ed/UIS/app/shared/chat/private/[id].tsx
+- [x] T013 [US1] Implement `InitializePrivateChatAsync` and `GetInboxAsync` in msa3ed/server/Services/ChatService.cs
+- [x] T014 [US1] Implement `POST /api/Chat/Private` and `GET /api/Chat/Inbox` endpoints in msa3ed/server/Controllers/Api/ChatController.cs
+- [x] T015 [US1] Update `PrivateChatHub` to handle `SendMessage` and broadcast `ReceiveMessage` appropriately in msa3ed/server/Hubs/PrivateChatHub.cs
+- [x] T016 [US1] Create the dedicated Inbox tab UI in msa3ed/UIS/app/student/(tabs)/inbox.tsx
+- [x] T017 [US1] Add "Contact Provider" button to Executor profiles leading to the private chat screen in msa3ed/UIS/app/student/executor/[id].tsx
+- [x] T018 [US1] Implement the private chat messaging UI in msa3ed/UIS/app/shared/chat/private/[id].tsx
 
 **Checkpoint**: User Story 1 (Private Inbox) should be fully functional and testable independently.
 
@@ -80,16 +80,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Create xUnit test for sending and accepting Custom Offers in msa3ed/server/Uis.Tests/ChatControllerTests.cs
+- [x] T019 [P] [US2] Create xUnit test for sending and accepting Custom Offers in msa3ed/server/Uis.Tests/ChatControllerTests.cs
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement `SendCustomOfferAsync` and `AcceptCustomOfferAsync` in msa3ed/server/Services/ChatService.cs
-- [ ] T021 [US2] Implement `POST /api/Chat/Offers` and `POST /api/Chat/Offers/{id}/Accept` in msa3ed/server/Controllers/Api/ChatController.cs
-- [ ] T022 [US2] Update `PrivateChatHub` to handle `SendCustomOffer` and broadcast `ReceiveCustomOffer` in msa3ed/server/Hubs/PrivateChatHub.cs
-- [ ] T023 [US2] Create a "Create Offer" UI modal/sheet for Executors in msa3ed/UIS/app/shared/chat/components/CreateOfferModal.tsx
-- [ ] T024 [US2] Implement the `CustomOfferWidget` to render offers inline within the chat feed in msa3ed/UIS/app/shared/chat/components/CustomOfferWidget.tsx
-- [ ] T025 [US2] Connect the "Accept" button on the widget to the order creation flow in msa3ed/UIS/app/shared/chat/private/[id].tsx
+- [x] T020 [US2] Implement `SendCustomOfferAsync` and `AcceptCustomOfferAsync` in msa3ed/server/Services/ChatService.cs
+- [x] T021 [US2] Implement `POST /api/Chat/Offers` and `POST /api/Chat/Offers/{id}/Accept` in msa3ed/server/Controllers/Api/ChatController.cs
+- [x] T022 [US2] Update `PrivateChatHub` to handle `SendCustomOffer` and broadcast `ReceiveCustomOffer` in msa3ed/server/Hubs/PrivateChatHub.cs
+- [x] T023 [US2] Create a "Create Offer" UI modal/sheet for Executors in msa3ed/UIS/app/shared/chat/components/CreateOfferModal.tsx
+- [x] T024 [US2] Implement the `CustomOfferWidget` to render offers inline within the chat feed in msa3ed/UIS/app/shared/chat/components/CustomOfferWidget.tsx
+- [x] T025 [US2] Connect the "Accept" button on the widget to the order creation flow in msa3ed/UIS/app/shared/chat/private/[id].tsx
 
 **Checkpoint**: User Story 2 (Custom Offers) should be fully functional and testable independently within the private chat context.
 
@@ -103,14 +103,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Create xUnit test for attachment uploads and 20MB limit validation in msa3ed/server/Uis.Tests/ChatControllerTests.cs
+- [x] T026 [P] [US3] Create xUnit test for attachment uploads and 20MB limit validation in msa3ed/server/Uis.Tests/ChatControllerTests.cs
 
 ### Implementation for User Story 3
 
-- [ ] T027 [US3] Implement `POST /api/Chat/Attachments` endpoint with size validation in msa3ed/server/Controllers/Api/ChatController.cs
-- [ ] T028 [US3] Ensure `ChatService.SendMessageAsync` properly handles `AttachmentUrl` and `AttachmentType` payloads in msa3ed/server/Services/ChatService.cs
-- [ ] T029 [US3] Integrate `expo-document-picker` and `expo-image-picker` into the chat input component in msa3ed/UIS/app/shared/chat/components/ChatInput.tsx
-- [ ] T030 [US3] Implement UI components to render image thumbnails and document links inline in the chat feed in msa3ed/UIS/app/shared/chat/components/MessageBubble.tsx
+- [x] T027 [US3] Implement `POST /api/Chat/Attachments` endpoint with size validation in msa3ed/server/Controllers/Api/ChatController.cs
+- [x] T028 [US3] Ensure `ChatService.SendMessageAsync` properly handles `AttachmentUrl` and `AttachmentType` payloads in msa3ed/server/Services/ChatService.cs
+- [x] T029 [US3] Integrate `expo-document-picker` and `expo-image-picker` into the chat input component in msa3ed/UIS/app/shared/chat/components/ChatInput.tsx
+- [x] T030 [US3] Implement UI components to render image thumbnails and document links inline in the chat feed in msa3ed/UIS/app/shared/chat/components/MessageBubble.tsx
 
 **Checkpoint**: User Story 3 (Rich Media) should be fully functional across all chat contexts.
 
@@ -124,11 +124,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Update `ChatService.SendMessageAsync` to handle `Audio` attachment types explicitly if necessary in msa3ed/server/Services/ChatService.cs
-- [ ] T032 [US4] Integrate `expo-av` for audio recording and playback management in msa3ed/UIS/app/shared/chat/components/AudioRecorder.tsx
-- [ ] T033 [US4] Implement real-time dynamic waveform visualization during recording in msa3ed/UIS/app/shared/chat/components/AudioRecorder.tsx
-- [ ] T034 [US4] Implement a playable audio component with a static waveform for sent messages in msa3ed/UIS/app/shared/chat/components/AudioPlayerWidget.tsx
-- [ ] T035 [US4] Integrate the audio recorder and player into the main chat interfaces in msa3ed/UIS/app/shared/chat/private/[id].tsx and active order chats.
+- [x] T031 [US4] Update `ChatService.SendMessageAsync` to handle `Audio` attachment types explicitly if necessary in msa3ed/server/Services/ChatService.cs
+- [x] T032 [US4] Integrate `expo-av` for audio recording and playback management in msa3ed/UIS/app/shared/chat/components/AudioRecorder.tsx
+- [x] T033 [US4] Implement real-time dynamic waveform visualization during recording in msa3ed/UIS/app/shared/chat/components/AudioRecorder.tsx
+- [x] T034 [US4] Implement a playable audio component with a static waveform for sent messages in msa3ed/UIS/app/shared/chat/components/AudioPlayerWidget.tsx
+- [x] T035 [US4] Integrate the audio recorder and player into the main chat interfaces in msa3ed/UIS/app/shared/chat/private/[id].tsx and active order chats.
 
 **Checkpoint**: User Story 4 (Voice Recording) should be fully functional and testable independently.
 
@@ -138,10 +138,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T036 Update `ChatHub` (existing order chats) to support the new `MessagePayload` structure (attachments, audio) in msa3ed/server/Hubs/ChatHub.cs
-- [ ] T037 [P] Update API documentation in specs/007-advanced-chat-system/contracts/api.md
-- [ ] T038 Add the new "Inbox" tab to the bottom navigation bar for all users in msa3ed/UIS/app/student/(tabs)/_layout.tsx
-- [ ] T039 Run quickstart.md validation to confirm all scenarios pass
+- [x] T036 Update `ChatHub` (existing order chats) to support the new `MessagePayload` structure (attachments, audio) in msa3ed/server/Hubs/ChatHub.cs
+- [x] T037 [P] Update API documentation in specs/007-advanced-chat-system/contracts/api.md
+- [x] T038 Add the new "Inbox" tab to the bottom navigation bar for all users in msa3ed/UIS/app/student/(tabs)/_layout.tsx
+- [x] T039 Run quickstart.md validation to confirm all scenarios pass
 
 ---
 

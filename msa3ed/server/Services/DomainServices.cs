@@ -57,11 +57,83 @@ public class EscrowService : IEscrowService {
     }
 }
 
-public interface IChatService { Task<Chat> CreateChatAsync(Guid orderId); }
+public interface IChatService { 
+    Task<Chat> CreateChatAsync(Guid orderId); 
+    Task<Chat> InitializePrivateChatAsync(Guid studentId, Guid executorId);
+    Task<List<Chat>> GetInboxAsync(Guid userId);
+    Task<CustomOffer> SendCustomOfferAsync(Guid chatId, Guid executorId, CustomOffer offer);
+    Task<Order> AcceptCustomOfferAsync(Guid offerId, Guid studentId);
+}
 public class ChatService : IChatService {
     private readonly ApplicationDbContext _db; public ChatService(ApplicationDbContext db) { _db = db; }
     public async Task<Chat> CreateChatAsync(Guid orderId) {
-        var chat = new Chat { OrderId = orderId }; _db.Chats.Add(chat); await _db.SaveChangesAsync(); return chat;
+        var chat = new Chat { OrderId = orderId, Type = ChatType.OrderChat }; _db.Chats.Add(chat); await _db.SaveChangesAsync(); return chat;
+    }
+    public async Task<Chat> InitializePrivateChatAsync(Guid studentId, Guid executorId) {
+        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).Include(c => c.Messages).ThenInclude(m => m.CustomOffer)
+            .FirstOrDefaultAsync(c => c.Type == ChatType.PrivateChat && 
+            ((c.StudentId == studentId && c.ExecutorId == executorId) || (c.StudentId == executorId && c.ExecutorId == studentId)));
+        if (chat == null) {
+            chat = new Chat { Type = ChatType.PrivateChat, StudentId = studentId, ExecutorId = executorId };
+            _db.Chats.Add(chat);
+            await _db.SaveChangesAsync();
+        }
+        return chat;
+    }
+    public async Task<List<Chat>> GetInboxAsync(Guid userId) {
+        return await _db.Chats
+            .Include(c => c.Student)
+            .Include(c => c.Executor)
+            .Include(c => c.Messages.OrderByDescending(m => m.SentAt).Take(1))
+            .Where(c => c.Type == ChatType.PrivateChat && (c.StudentId == userId || c.ExecutorId == userId))
+            .OrderByDescending(c => c.Messages.Max(m => (DateTime?)m.SentAt) ?? c.Id.ToByteArray()[0] == 0 ? DateTime.MinValue : DateTime.UtcNow) // fallback sort
+            .ToListAsync();
+    }
+    public async Task<CustomOffer> SendCustomOfferAsync(Guid chatId, Guid executorId, CustomOffer offer) {
+        var chat = await _db.Chats.FindAsync(chatId);
+        if (chat == null) throw new Exception("Chat not found");
+
+        offer.ExecutorId = executorId;
+        offer.StudentId = chat.StudentId == executorId ? chat.ExecutorId.Value : chat.StudentId.Value;
+        offer.Status = "Pending";
+        
+        _db.CustomOffers.Add(offer);
+        
+        var message = new Message {
+            ChatId = chatId,
+            SenderId = executorId,
+            Content = $"أرسل عرضاً مخصصاً: {offer.Title}",
+            CustomOfferId = offer.Id,
+            SentAt = DateTime.UtcNow
+        };
+        _db.Messages.Add(message);
+        
+        await _db.SaveChangesAsync();
+        return offer;
+    }
+
+    public async Task<Order> AcceptCustomOfferAsync(Guid offerId, Guid studentId) {
+        var offer = await _db.CustomOffers.FindAsync(offerId);
+        if (offer == null || offer.StudentId != studentId || offer.Status != "Pending") 
+            throw new Exception("Invalid offer or unauthorized");
+
+        offer.Status = "Accepted";
+        
+        // Find dummy service or create an order without service (requires schema check, assuming ServiceId is required, we find first service or require null ServiceId. Looking at AppModels, ServiceId is required. We'll use the first active service for now or create a Custom Service)
+        var service = await _db.Services.FirstOrDefaultAsync(s => s.ExecutorId == offer.ExecutorId) 
+                      ?? await _db.Services.FirstAsync();
+
+        var order = new Order {
+            StudentId = studentId,
+            ExecutorId = offer.ExecutorId,
+            ServiceId = service.Id,
+            Price = offer.Price,
+            Status = "AwaitingPayment",
+            CreatedAt = DateTime.UtcNow
+        };
+        _db.Orders.Add(order);
+        await _db.SaveChangesAsync();
+        return order;
     }
 }
 

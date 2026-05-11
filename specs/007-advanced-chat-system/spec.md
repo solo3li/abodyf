@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "add ability chate with sevice excuter in private chate far that chate order like fivar like inbox + add ability excuter send custom oferres like fiver + improve chate in app platform in orders chats and private chats and tikets suport and admin pannel add ability send imges and files and imges + and voce recordding + display voce in audio visualizer with somth andmations and make it dynamicly during recording and chat + add abilit listen record berfor send it and i want it profinal make it changes i all system"
 
+## Clarifications
+
+### Session 2026-05-11
+- Q: Where should the new Private Chats (Inbox) be located in the UI? → A: Create a brand new dedicated "Inbox" tab just for private chats.
+- Q: Should Custom Offers be available in all chats, or just the Private Inbox? → A: Exclusive to Private Inbox (Pre-order negotiation only).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Private Pre-Order Messaging (Inbox) (Priority: P1)
@@ -74,18 +80,18 @@ As any user, I want to record and send voice messages, so that I can quickly exp
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST support Private Chats (Inbox) that are independent of specific Orders.
+- **FR-001**: The system MUST support Private Chats that are independent of specific Orders, accessible via a dedicated "Inbox" tab in the main navigation.
 - **FR-002**: Executors MUST be able to generate and send Custom Offer payloads (Title, Description, Price, Delivery Time) within Private Chats.
 - **FR-003**: The chat system MUST support multipart file uploads for images (JPG, PNG) and standard documents (PDF, DOCX).
 - **FR-004**: The chat interface MUST include a voice recording feature that captures device audio.
 - **FR-005**: Voice recording MUST display a real-time dynamic waveform animation during capture.
 - **FR-006**: Users MUST be able to preview (listen to) their voice recording before sending.
 - **FR-007**: Voice messages in the chat feed MUST display a playable audio component with a waveform visualization.
-- **FR-008**: These advanced chat features (attachments, voice, real-time sync) MUST be uniformly implemented across Private Chats, Order Chats, and Support Tickets (Admin panel included).
+- **FR-008**: These advanced chat features (attachments, voice, real-time sync) MUST be uniformly implemented across contexts, but the Private Inbox MUST utilize a dedicated real-time hub (e.g., `PrivateChatHub`) separated from the active Order/Ticket chats.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Chat**: Needs an indicator to distinguish between `OrderChat`, `PrivateChat`, and `TicketChat`.
+- **Chat**: Needs an indicator (e.g., `ChatType` enum) to distinguish between `OrderChat`, `PrivateChat`, and `TicketChat`. (Note: Existing DB records will be migrated to `OrderChat`).
 - **Message**: Needs robust typing to handle `Text`, `Image`, `Document`, `Audio`, and `CustomOffer` payloads.
 - **CustomOffer**: Links to a `Message` and eventually an `Order`. Fields: Price, DeliveryDays, Description, Status (Pending, Accepted, Rejected).
 
@@ -102,6 +108,8 @@ As any user, I want to record and send voice messages, so that I can quickly exp
 
 ## Assumptions
 
-- **Storage**: The existing infrastructure can handle the increased volume and bandwidth required for voice and large file attachments.
+- **Storage**: The system will utilize the existing local file storage (`wwwroot/uploads`) for all chat attachments and voice records, enforcing a hard 20MB limit.
 - **Audio Format**: Voice recordings will be saved in a standard, cross-platform format (e.g., MP4/AAC or WebM).
+- **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.
+bM).
 - **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.

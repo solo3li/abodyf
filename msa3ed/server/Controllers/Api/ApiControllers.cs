@@ -149,7 +149,8 @@ public class ServicesController : ControllerBase {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
             s.Rating, s.ReviewsCount, s.DeliveryTime,
             ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture
+            ProviderAvatarUrl = s.Executor?.ProfilePicture,
+            ProviderId = s.ExecutorId
         }));
     }
     
@@ -160,7 +161,8 @@ public class ServicesController : ControllerBase {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
             s.Rating, s.ReviewsCount, s.DeliveryTime,
             ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture
+            ProviderAvatarUrl = s.Executor?.ProfilePicture,
+            ProviderId = s.ExecutorId
         });
     }
 }
@@ -251,8 +253,11 @@ public class OrdersController : ControllerBase {
 [Authorize]
 public class PaymentsController : ControllerBase {
     private readonly ApplicationDbContext _db;
-    private readonly IEscrowService _escrow;
-    public PaymentsController(ApplicationDbContext db, IEscrowService escrow) { _db = db; _escrow = escrow; }
+    private readonly IPaymentService _paymentService;
+    public PaymentsController(ApplicationDbContext db, IPaymentService paymentService) { 
+        _db = db; 
+        _paymentService = paymentService;
+    }
     
     [HttpPost("{orderId}")] public async Task<IActionResult> Process(Guid orderId, [FromBody] decimal amount) {
         _db.Payments.Add(new Payment { OrderId = orderId, Amount = amount, Status = "Completed", TransactionId = Guid.NewGuid().ToString() });

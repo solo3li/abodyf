@@ -27,7 +27,7 @@ export default function PrivateChatScreen() {
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== 'undefined') {
       dispatch(fetchPrivateChat(id as string));
     }
   }, [id, dispatch]);
@@ -42,7 +42,6 @@ export default function PrivateChatScreen() {
       try {
         await connection.start();
         if (isMounted) {
-          console.log('Connected to Private Chat Hub');
           await connection.invoke('JoinChat', currentChat.id.toString());
           connectionRef.current = connection;
         } else {
@@ -76,7 +75,7 @@ export default function PrivateChatScreen() {
     return () => {
       isMounted = false;
       if (connection.state === signalR.HubConnectionState.Connected || connection.state === signalR.HubConnectionState.Connecting) {
-        connection.stop().catch(e => console.log('Stop error ignored:', e));
+        connection.stop().catch(e => {});
       }
     };
   }, [currentChat?.id, token, dispatch]);

@@ -74,7 +74,17 @@ export default function ServiceDetailsScreen() {
                 <Text style={styles.providerName}>{service.providerName || 'منصة UIS'}</Text>
                 <Text style={styles.providerLevel}>بائع مميز موثوق</Text>
               </View>
-              <Pressable style={styles.chatBtn} onPress={() => router.push(`/shared/chat/private/${service.providerId || service.executorId}`)}>
+              <Pressable 
+                style={styles.chatBtn} 
+                onPress={() => {
+                  const pid = service.providerId || service.executorId;
+                  if (pid) {
+                    router.push(`/shared/chat/private/${pid}`);
+                  } else {
+                    alert('تعذر العثور على معرف مقدم الخدمة');
+                  }
+                }}
+              >
                 <Ionicons name="chatbubble-ellipses" size={22} color={Colors.primary} />
               </Pressable>
             </View>

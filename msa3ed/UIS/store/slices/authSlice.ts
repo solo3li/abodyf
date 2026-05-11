@@ -124,7 +124,7 @@ export const updateProfilePicture = createAsyncThunk('auth/updateProfilePicture'
     const state = getState() as any;
     const token = state.auth.token;
     
-    const res = await fetch(API_BASE_URL + '/Users/ProfilePicture', {
+    const res = await fetch(API_BASE_URL + '/api/Users/ProfilePicture', {
       method: 'POST',
       body: formData,
       headers: {

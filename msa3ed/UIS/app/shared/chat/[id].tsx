@@ -40,8 +40,7 @@ export default function ChatDetailsScreen() {
       try {
         await connection.start();
         if (isMounted) {
-          console.log('Connected to Chat Hub');
-          await connection.invoke('JoinChat', currentChat.id);
+          await connection.invoke('JoinChat', id.toString());
           connectionRef.current = connection;
         } else {
           await connection.stop();
@@ -61,7 +60,7 @@ export default function ChatDetailsScreen() {
     return () => {
       isMounted = false;
       if (connection.state === signalR.HubConnectionState.Connected || connection.state === signalR.HubConnectionState.Connecting) {
-        connection.stop().catch(e => console.log('Stop error ignored:', e));
+        connection.stop().catch(e => {});
       }
     };
   }, [currentChat?.id, token, dispatch]);

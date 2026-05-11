@@ -30,22 +30,58 @@ public class CatalogService : ICatalogService {
     public async Task<IEnumerable<Category>> GetCategoriesAsync() => await _db.Categories.ToListAsync();
 }
 
-public interface IOrderService { Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto); Task<IEnumerable<Order>> GetOrdersAsync(); }
+public interface IOrderService { 
+    Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto); 
+    Task<IEnumerable<Order>> GetOrdersAsync(); 
+}
 public class OrderService : IOrderService {
-    private readonly ApplicationDbContext _db; public OrderService(ApplicationDbContext db) { _db = db; }
+    private readonly ApplicationDbContext _db; 
+    public OrderService(ApplicationDbContext db) { _db = db; }
     public async Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto) {
-        var order = new Order { StudentId = studentId, ServiceId = dto.ServiceId, Price = dto.Price };
-        _db.Orders.Add(order); await _db.SaveChangesAsync(); return order;
+        var student = await _db.Users.FindAsync(studentId);
+        if (student == null) throw new ArgumentException("User not found in database.");
+
+        var order = new Order { 
+            StudentId = studentId, 
+            ServiceId = dto.ServiceId, 
+            Price = dto.Price,
+            Status = "Pending",
+            CreatedAt = DateTime.UtcNow
+        };
+        _db.Orders.Add(order); 
+        await _db.SaveChangesAsync(); 
+        return order;
     }
     public async Task<IEnumerable<Order>> GetOrdersAsync() => await _db.Orders.Include(o=>o.Student).Include(o=>o.Service).ToListAsync();
 }
 
-public interface IPaymentService { Task<bool> ProcessPaymentAsync(Guid orderId, decimal amount); }
+public interface IPaymentService { 
+    Task<bool> ProcessPaymentAsync(Guid orderId, decimal amount); 
+}
 public class PaymentService : IPaymentService {
-    private readonly ApplicationDbContext _db; public PaymentService(ApplicationDbContext db) { _db = db; }
+    private readonly ApplicationDbContext _db; 
+    private readonly IEscrowService _escrow;
+    public PaymentService(ApplicationDbContext db, IEscrowService escrow) { 
+        _db = db; 
+        _escrow = escrow;
+    }
     public async Task<bool> ProcessPaymentAsync(Guid orderId, decimal amount) {
-        _db.Payments.Add(new Payment { OrderId = orderId, Amount = amount, Status = "Completed", TransactionId = Guid.NewGuid().ToString() });
-        await _db.SaveChangesAsync(); return true;
+        _db.Payments.Add(new Payment { 
+            OrderId = orderId, 
+            Amount = amount, 
+            Status = "Completed", 
+            TransactionId = Guid.NewGuid().ToString(),
+            CreatedAt = DateTime.UtcNow
+        });
+        
+        var order = await _db.Orders.FindAsync(orderId);
+        if(order != null) { 
+            order.Status = "Pending"; 
+            await _escrow.HoldFundsAsync(orderId, amount);
+        }
+        
+        await _db.SaveChangesAsync(); 
+        return true;
     }
 }
 

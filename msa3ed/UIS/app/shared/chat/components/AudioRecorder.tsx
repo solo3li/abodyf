@@ -27,6 +27,12 @@ export default function AudioRecorder({ onRecordingComplete, onCancel }: AudioRe
 
   const startRecording = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('تسجيل الصوت غير مدعوم في هذا المتصفح أو البيئة.');
+        onCancel();
+        return;
+      }
+
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
@@ -46,8 +52,9 @@ export default function AudioRecorder({ onRecordingComplete, onCancel }: AudioRe
 
       setRecording(recording);
       setIsRecording(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to start recording', err);
+      alert('تعذر بدء التسجيل: ' + (err.message || 'خطأ غير معروف'));
       onCancel();
     }
   };

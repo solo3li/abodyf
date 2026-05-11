@@ -16,7 +16,7 @@ const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API
 export default function InboxScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { inbox, loading } = useSelector((state: RootState) => state.chat);
+  const { inbox, loading, error } = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
     dispatch(fetchInbox());
@@ -58,7 +58,13 @@ export default function InboxScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>البريد الوارد (الخاص)</Text>
       </View>
-      {loading && (!inbox || inbox.length === 0) ? (
+      {error ? (
+        <EmptyState 
+          icon="alert-circle-outline" 
+          title="خطأ في تحميل الرسائل" 
+          description={error} 
+        />
+      ) : loading && (!inbox || inbox.length === 0) ? (
         <LoadingState message="جاري تحميل الرسائل الخاصة..." />
       ) : (
         <FlatList

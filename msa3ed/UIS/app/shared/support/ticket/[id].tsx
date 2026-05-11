@@ -40,8 +40,7 @@ export default function TicketDetailsScreen() {
       try {
         await connection.start();
         if (isMounted) {
-          console.log('Connected to Ticket Hub');
-          await connection.invoke('JoinChat', "ticket-" + id);
+          await connection.invoke('JoinChat', id.toString());
           connectionRef.current = connection;
         } else {
           await connection.stop();
@@ -51,7 +50,7 @@ export default function TicketDetailsScreen() {
       }
     };
 
-    connection.on('ReceiveTicketMessage', (message) => {
+    connection.on('ReceiveMessage', (message) => {
       dispatch(addLocalTicketMessage(message));
       setTimeout(() => flatListRef.current?.scrollToEnd(), 100);
     });
@@ -61,7 +60,7 @@ export default function TicketDetailsScreen() {
     return () => {
       isMounted = false;
       if (connection.state === signalR.HubConnectionState.Connected || connection.state === signalR.HubConnectionState.Connecting) {
-        connection.stop().catch(e => console.log('Stop error ignored:', e));
+        connection.stop().catch(e => {});
       }
     };
   }, [id, token, dispatch]);

@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { fetchFavorites, setSearchKeyword, toggleFavorite } from '../../../store/slices/favoritesSlice';
 import { API_BASE_URL } from '../../../services/api';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
@@ -60,7 +59,13 @@ export default function FavouritesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>المفضلة</Text>
+        <View style={styles.headerTop}>
+          <Pressable onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-forward" size={24} color={Colors.text} />
+          </Pressable>
+          <Text style={styles.headerTitle}>المفضلة</Text>
+          <View style={{ width: 40 }} />
+        </View>
         <View style={styles.searchBox}>
           <Ionicons name="search" size={20} color={Colors.textSecondary} />
           <TextInput
@@ -99,7 +104,9 @@ export default function FavouritesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   header: { padding: 24, paddingTop: 60, backgroundColor: Colors.white },
-  headerTitle: { fontSize: 28, fontWeight: 'bold', color: Colors.text, marginBottom: 16, textAlign: 'right' },
+  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  backBtn: { width: 40, height: 40, justifyContent: 'center' },
+  headerTitle: { fontSize: 28, fontWeight: 'bold', color: Colors.text, textAlign: 'right' },
   searchBox: { 
     flexDirection: 'row', 
     alignItems: 'center', 

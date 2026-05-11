@@ -49,7 +49,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "heart" : "heart-outline"} size={size} color={color} />
           ),
-          href: isExecutor ? null : undefined,
+          href: null,
         }}
       />
       <Tabs.Screen

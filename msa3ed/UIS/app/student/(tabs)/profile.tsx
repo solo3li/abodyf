@@ -8,7 +8,10 @@ import { API_BASE_URL } from '../../../services/api';
 
 const { width } = Dimensions.get('window');
 
-const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API_BASE_URL + path) : 'https://placehold.co/150';
+const getApiUrl = (path: string) => {
+  if (!path) return null;
+  return path.startsWith('http') ? path : API_BASE_URL + path;
+};
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -20,8 +23,9 @@ export default function ProfileScreen() {
   };
 
   const menuItems = [
+    { icon: 'person', title: 'تعديل الملف الشخصي', route: '/student/profile/edit-profile' },
     { icon: 'wallet', title: 'المحفظة', value: '0 ج.م', route: '' },
-    { icon: 'heart', title: 'المفضلة', route: '' },
+    { icon: 'heart', title: 'المفضلة', route: '/student/(tabs)/favourites' },
     { icon: 'settings', title: 'الإعدادات', route: '/shared/settings' },
     { icon: 'help-buoy', title: 'الدعم والنزاعات', route: '/shared/support/tickets' },
     ...(user?.isExecutor 

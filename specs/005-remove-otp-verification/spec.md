@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: "remove otp verfication"
 
+## Clarifications
+
+### Session 2026-05-11
+- Q: How should the system handle the existing `verify-otp` API endpoint? → A: Keep endpoint but return a "Not Required" status or redirect to Home.
+- Q: How should the system handle legacy users who were mid-verification? → A: Hard Reset: Clear all existing OTP data and force a fresh login for all users.
+- Q: How should the system handle account activation for new registrations? → A: Auto-activate: Set `IsActive = true` immediately upon account creation.
+- Q: What should happen when users with a 'pending verification' local state open the app? → A: Redirect to Login with an info message (e.g., "Verification no longer required, please login").
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Direct Login (Priority: P1)
@@ -19,6 +27,7 @@ As a Student or Executor, I want to log in to the application using my email and
 
 1. **Given** a registered user exists with a known email and password, **When** they enter their credentials and click "Login", **Then** they should be immediately authenticated and redirected to the application home screen.
 2. **Given** an unauthenticated user, **When** they attempt to login with incorrect credentials, **Then** they should see an error message and remain on the login screen.
+3. **Given** a user with a cached "pending verification" state, **When** they open the app, **Then** they should be redirected to the Login screen with a message stating that verification is no longer required.
 
 ---
 
@@ -38,8 +47,8 @@ As a new user, I want my account to be active and accessible immediately after I
 
 ### Edge Cases
 
-- **What happens when a user attempts to access the old verify-otp route?**: The system should redirect them to the login or home screen depending on their authentication status.
-- **How does the system handle legacy users who were mid-verification?**: These users should be able to log in directly using their password; any pending OTPs should be ignored.
+- **What happens when a user attempts to access the old verify-otp route?**: The API endpoint will remain active for backward compatibility but will return a "Not Required" status or success response immediately, allowing clients to proceed to the home screen.
+- **How does the system handle legacy users who were mid-verification?**: The system will perform a hard reset by clearing all active verification codes; affected users will be required to log in again from the beginning of the flow.
 
 ## Requirements *(mandatory)*
 
@@ -49,7 +58,8 @@ As a new user, I want my account to be active and accessible immediately after I
 - **FR-002**: The authentication service MUST return a valid security token and user details immediately upon successful credential validation.
 - **FR-003**: The system MUST NOT trigger or send any secondary verification codes (such as OTP) during the login or registration process.
 - **FR-004**: The application interface MUST remove or bypass any secondary verification entry screens in the authentication flow.
-- **FR-005**: New user accounts MUST be created with an "Active" status immediately upon successful registration.
+- **FR-005**: New user accounts MUST be automatically activated (`IsActive = true`) immediately upon successful registration, bypassing any verification states.
+- **FR-006**: Role transitions (e.g., upgrading to Executor) MUST be granted immediately upon approval of prerequisite conditions (such as KYC approval) without secondary verification steps.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -69,3 +79,5 @@ As a new user, I want my account to be active and accessible immediately after I
 - **Existing Password Infrastructure**: It is assumed that the system already has a functional password-based authentication mechanism as a fallback or parallel to the OTP logic (confirmed by `PasswordHash` in `Users` table).
 - **Security Policy**: It is assumed that removing MFA (OTP) is an intentional business decision and that the security risks are accepted for the sake of user convenience.
 - **Backend Availability**: The `verify-otp` endpoint will remain available but unused by the frontend, or will be deprecated in a future cleanup.
+rify-otp` endpoint will remain available but unused by the frontend, or will be deprecated in a future cleanup.
+-otp` endpoint will remain available but unused by the frontend, or will be deprecated in a future cleanup.

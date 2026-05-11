@@ -99,6 +99,53 @@ export const fetchMe = createAsyncThunk('auth/fetchMe', async (_, { rejectWithVa
   }
 });
 
+export const updateProfile = createAsyncThunk('auth/updateProfile', async (data: any, { rejectWithValue }) => {
+  try {
+    const response = await apiFetch('/Users/Profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return response;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const updateProfilePicture = createAsyncThunk('auth/updateProfilePicture', async (fileInfo: any, { rejectWithValue }) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: fileInfo.uri,
+      name: fileInfo.name || 'profile.jpg',
+      type: fileInfo.type || 'image/jpeg',
+    } as any);
+
+    const { getAuthToken, API_BASE_URL } = await import('../../services/api');
+    const token = await getAuthToken();
+    const res = await fetch(API_BASE_URL + '/Users/ProfilePicture', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    
+    if (!res.ok) throw new Error('Upload failed');
+    return await res.json();
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const deleteProfilePicture = createAsyncThunk('auth/deleteProfilePicture', async (_, { rejectWithValue }) => {
+  try {
+    await apiFetch('/Users/ProfilePicture', { method: 'DELETE' });
+    return null;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -158,31 +205,6 @@ const authSlice = createSlice({
 
     builder.addCase(deleteProfilePicture.fulfilled, (state) => {
       if (state.user) state.user.profilePicture = undefined;
-    });
-  },
-});
-
-export const { setToken, logout, updateUserSync } = authSlice.actions;
-export default authSlice.reducer;alse; state.error = action.payload as string; });
-
-    builder.addCase(register.pending, (state) => { state.loading = true; state.error = null; });
-    builder.addCase(register.fulfilled, (state, action) => {
-      state.loading = false;
-      state.token = action.payload.token;
-      state.user = action.payload.user;
-      setAuthToken(action.payload.token);
-    });
-    builder.addCase(register.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
-    
-    builder.addCase(verifyOtp.pending, (state) => { state.loading = true; state.error = null; });
-    builder.addCase(verifyOtp.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload;
-    });
-    builder.addCase(verifyOtp.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
-
-    builder.addCase(fetchMe.fulfilled, (state, action) => {
-      state.user = { ...action.payload, name: action.payload.fullName };
     });
   },
 });

@@ -445,18 +445,3 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
 });
-w',
-    alignItems: 'center',
-  },
-  ratingText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginLeft: 4,
-  },
-  price: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: Colors.primary,
-  },
-});

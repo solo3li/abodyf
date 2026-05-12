@@ -243,7 +243,7 @@ public class OrdersController : ControllerBase {
         
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
-        return Ok(order);
+        return Ok(new { order.Id, order.Status, order.Price, order.CreatedAt });
     }
 }
 
@@ -476,13 +476,15 @@ public class ChatController : ControllerBase {
             offer = await _chatService.SendCustomOfferAsync(dto.ChatId, executorId, offer);
 
             var payload = new {
-                CustomOffer = offer,
+                CustomOffer = new {
+                    offer.Id, offer.Title, offer.Description, offer.Price, offer.DeliveryDays, offer.Status, offer.CreatedAt
+                },
                 ChatId = dto.ChatId,
                 SenderId = executorId
             };
             await _privateHub.Clients.Group(dto.ChatId.ToString()).SendAsync("ReceiveCustomOffer", payload);
             
-            return Ok(offer);
+            return Ok(payload.CustomOffer);
         } catch (Exception ex) {
             return BadRequest(new { message = ex.Message });
         }

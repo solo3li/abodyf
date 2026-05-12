@@ -41,12 +41,55 @@ public class ExecutorServicesController : ControllerBase
         }));
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var executorId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var services = await _serviceService.GetExecutorServicesAsync(executorId);
+        var s = services.FirstOrDefault(x => x.Id == id);
+        
+        if (s == null) return NotFound();
+
+        return Ok(new ServiceDto
+        {
+            Id = s.Id,
+            Title = s.Title,
+            Description = s.Description,
+            BasePrice = s.BasePrice,
+            CategoryId = s.CategoryId,
+            CategoryName = s.Category?.Name ?? "General",
+            ImageUrl = s.ImageUrl,
+            DeliveryDays = s.EstimatedDeliveryDays,
+            Revisions = s.IncludedRevisions,
+            Status = s.Status,
+            Tags = s.ServiceOfferingTags.Select(t => t.Tag.Name).ToList(),
+            RejectionReason = s.RejectionReason
+        });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateService([FromBody] CreateServiceDto dto)
     {
         var executorId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var service = await _serviceService.CreateServiceAsync(executorId, dto);
-        return CreatedAtAction(nameof(GetMyServices), new { id = service.Id }, service);
+        var s = await _serviceService.CreateServiceAsync(executorId, dto);
+        
+        var serviceDto = new ServiceDto
+        {
+            Id = s.Id,
+            Title = s.Title,
+            Description = s.Description,
+            BasePrice = s.BasePrice,
+            CategoryId = s.CategoryId,
+            CategoryName = s.Category?.Name ?? "General",
+            ImageUrl = s.ImageUrl,
+            DeliveryDays = s.EstimatedDeliveryDays,
+            Revisions = s.IncludedRevisions,
+            Status = s.Status,
+            Tags = s.ServiceOfferingTags.Select(t => t.Tag.Name).ToList(),
+            RejectionReason = s.RejectionReason
+        };
+
+        return CreatedAtAction(nameof(GetById), new { id = s.Id }, serviceDto);
     }
 
     [HttpPut("{id}")]

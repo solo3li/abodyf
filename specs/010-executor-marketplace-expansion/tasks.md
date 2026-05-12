@@ -17,8 +17,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 [P] Install `expo-blur` and `react-native-linear-gradient` in `msa3ed/UIS/package.json`
-- [ ] T002 [P] Create `msa3ed/server/Services/GalleryService.cs` and `msa3ed/server/Services/ApprovalService.cs` skeletons
+- [x] T001 [P] Install `expo-blur` and `react-native-linear-gradient` in `msa3ed/UIS/package.json`
+- [x] T002 [P] Create `msa3ed/server/Services/GalleryService.cs` and `msa3ed/server/Services/ApprovalService.cs` skeletons
 
 ---
 
@@ -28,10 +28,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create EF Core migration for `GalleryItem` and `ServiceApprovalLog` tables in `msa3ed/server/Data/`
-- [ ] T004 [P] Update `ApplicationDbContext.cs` with new `DbSet` properties for Gallery and Approval logs
-- [ ] T005 [P] Implement base `IGalleryService` and `IApprovalService` interfaces in `msa3ed/server/Services/`
-- [ ] T006 Register new services in `msa3ed/server/Program.cs`
+- [x] T003 Create EF Core migration for `GalleryItem` and `ServiceApprovalLog` tables in `msa3ed/server/Data/`
+- [x] T004 [P] Update `ApplicationDbContext.cs` with new `DbSet` properties for Gallery and Approval logs
+- [x] T005 [P] Implement base `IGalleryService` and `IApprovalService` interfaces in `msa3ed/server/Services/`
+- [x] T006 Register new services in `msa3ed/server/Program.cs`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -47,13 +47,13 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T007 [P] [US1] Frontend unit test for role-based sidebar rendering in `msa3ed/UIS/components/__tests__/SidebarContent.test.tsx`
+- [x] T007 [P] [US1] Frontend unit test for role-based sidebar rendering in `msa3ed/UIS/components/__tests__/SidebarContent.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Update `msa3ed/UIS/components/SidebarContent.tsx` with role-based visibility logic for executor tabs
-- [ ] T009 [US1] Implement glassmorphism styling in `msa3ed/UIS/components/SidebarContent.tsx` using `BlurView`
-- [ ] T010 [P] [US1] Add "Professional Badge" section to sidebar in `msa3ed/UIS/components/SidebarContent.tsx`
+- [x] T008 [US1] Update `msa3ed/UIS/components/SidebarContent.tsx` with role-based visibility logic for executor tabs
+- [x] T009 [US1] Implement glassmorphism styling in `msa3ed/UIS/components/SidebarContent.tsx` using `BlurView`
+- [x] T010 [P] [US1] Add "Professional Badge" section to sidebar in `msa3ed/UIS/components/SidebarContent.tsx`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -67,13 +67,13 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T011 [P] [US2] Backend unit test for service approval state transitions in `msa3ed/Uis.Tests/Services/ApprovalServiceTests.cs`
+- [x] T011 [P] [US2] Backend unit test for service approval state transitions in `msa3ed/Uis.Tests/Services/ApprovalServiceTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Implement `ApproveServiceAsync` and `RejectServiceAsync` in `msa3ed/server/Services/ApprovalService.cs`
-- [ ] T013 [US2] Create `Admin/Services/Approvals` endpoint in `msa3ed/server/Controllers/AdminController.cs`
-- [ ] T014 [US2] Implement "Pending Services" list view in `msa3ed/server/Views/Admin/PendingServices.cshtml`
+- [x] T012 [US2] Implement `ApproveServiceAsync` and `RejectServiceAsync` in `msa3ed/server/Services/ApprovalService.cs`
+- [x] T013 [US2] Create `Admin/Services/Approvals` endpoint in `msa3ed/server/Controllers/AdminController.cs`
+- [x] T014 [US2] Implement "Pending Services" list view in `msa3ed/server/Views/Admin/PendingServices.cshtml`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -87,15 +87,15 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T015 [P] [US3] Backend contract test for `GET /api/Executors` with searchTerm in `msa3ed/Uis.Tests/Controllers/ExecutorsControllerTests.cs`
-- [ ] T016 [P] [US3] Frontend unit test for Search tab toggle in `msa3ed/UIS/app/__tests__/search.test.tsx`
+- [x] T015 [P] [US3] Backend contract test for `GET /api/Executors` with searchTerm in `msa3ed/Uis.Tests/Controllers/ExecutorsControllerTests.cs`
+- [x] T016 [P] [US3] Frontend unit test for Search tab toggle in `msa3ed/UIS/app/__tests__/search.test.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T017 [P] [US3] Implement `GET /api/Executors` discovery endpoint in `msa3ed/server/Controllers/Api/ExecutorsController.cs`
-- [ ] T018 [US3] Update `CatalogService.cs` to default `GetServicesAsync` results to recency-driven order
-- [ ] T019 [US3] Create `msa3ed/UIS/app/student/search.tsx` with tabbed navigator (Services vs Pros)
-- [ ] T020 [US3] Implement search filter bar in `msa3ed/UIS/app/student/search.tsx`
+- [x] T017 [P] [US3] Implement `GET /api/Executors` discovery endpoint in `msa3ed/server/Controllers/Api/ExecutorsController.cs`
+- [x] T018 [US3] Update `CatalogService.cs` to default `GetServicesAsync` results to recency-driven order
+- [x] T019 [US3] Create `msa3ed/UIS/app/student/search.tsx` with tabbed navigator (Services vs Pros)
+- [x] T020 [US3] Implement search filter bar in `msa3ed/UIS/app/student/search.tsx`
 
 **Checkpoint**: All core discovery features should now be independently functional
 
@@ -109,15 +109,15 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T021 [P] [US4] Backend unit test for Gallery CRUD operations in `msa3ed/Uis.Tests/Services/GalleryServiceTests.cs`
-- [ ] T022 [P] [US4] Frontend component test for `WorkGallery` rendering in `msa3ed/UIS/components/__tests__/WorkGallery.test.tsx`
+- [x] T021 [P] [US4] Backend unit test for Gallery CRUD operations in `msa3ed/Uis.Tests/Services/GalleryServiceTests.cs`
+- [x] T022 [P] [US4] Frontend component test for `WorkGallery` rendering in `msa3ed/UIS/components/__tests__/WorkGallery.test.tsx`
 
 ### Implementation for User Story 4
 
-- [ ] T023 [US4] Implement `AddGalleryItemAsync` and `GetGalleryAsync` in `msa3ed/server/Services/GalleryService.cs`
-- [ ] T024 [P] [US4] Create `msa3ed/UIS/components/WorkGallery.tsx` grid component
-- [ ] T025 [US4] Integrate `WorkGallery` into executor profile screen `msa3ed/UIS/app/student/profile/[id].tsx`
-- [ ] T026 [P] [US4] Add "Chat Now" button to executor profiles in `msa3ed/UIS/app/student/profile/[id].tsx`
+- [x] T023 [US4] Implement `AddGalleryItemAsync` and `GetGalleryAsync` in `msa3ed/server/Services/GalleryService.cs`
+- [x] T024 [P] [US4] Create `msa3ed/UIS/components/WorkGallery.tsx` grid component
+- [x] T025 [US4] Integrate `WorkGallery` into executor profile screen `msa3ed/UIS/app/student/profile/[id].tsx`
+- [x] T026 [P] [US4] Add "Chat Now" button to executor profiles in `msa3ed/UIS/app/student/profile/[id].tsx`
 
 ---
 
@@ -125,9 +125,9 @@
 
 **Purpose**: Final verification and system-wide improvements
 
-- [ ] T027 [P] Add sample gallery data to `msa3ed/server/Data/DbSeeder.cs`
-- [ ] T028 Run full `quickstart.md` validation scenarios
-- [ ] T029 Perform final type-check (`tsc`) and linting cleanup
+- [x] T027 [P] Add sample gallery data to `msa3ed/server/Data/DbSeeder.cs`
+- [x] T028 Run full `quickstart.md` validation scenarios
+- [x] T029 Perform final type-check (`tsc`) and linting cleanup
 
 ---
 

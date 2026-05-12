@@ -68,7 +68,11 @@ export default function HomeScreen() {
         </LinearGradient>
       </View>
 
-      <SearchBar onSearch={handleSearch} value={searchTerm} />
+      <Pressable onPress={() => router.push('/student/search' as any)}>
+        <View pointerEvents="none">
+          <SearchBar onSearch={() => {}} value="" />
+        </View>
+      </Pressable>
 
       <View style={styles.content}>
         {/* Categories */}
@@ -77,6 +81,28 @@ export default function HomeScreen() {
           selectedCategoryId={selectedCategoryId} 
           onSelectCategory={handleSelectCategory} 
         />
+
+        {/* Top Executors */}
+        <View style={[styles.section, { marginTop: 24 }]}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>منفذين متميزين</Text>
+            <Pressable onPress={() => router.push({ pathname: '/student/search' as any, params: { tab: 'executors' } })}>
+              <Text style={styles.seeAll}>الكل</Text>
+            </Pressable>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
+            {/* We'll use a mocked list or fetch later, for now sample items */}
+            {[1, 2].map((_, i) => (
+              <Pressable key={i} style={styles.executorCard} onPress={() => router.push('/student/search?tab=executors' as any)}>
+                <View style={styles.executorAvatarContainer}>
+                   <Ionicons name="person-circle-outline" size={50} color={Colors.border} />
+                </View>
+                <Text style={styles.executorName}>اكتشف الخبراء</Text>
+                <Text style={styles.executorStats}>تواصل الآن</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Popular Services */}
         <View style={[styles.section, { paddingBottom: 100, marginTop: 24 }]}>
@@ -191,6 +217,52 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 16,
     textAlign: 'right',
+  },
+  sectionHeader: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  seeAll: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: 'bold',
+  },
+  horizontalList: {
+    paddingLeft: 24,
+    gap: 16,
+    flexDirection: 'row-reverse',
+  },
+  executorCard: {
+    width: 120,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  executorAvatarContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  executorName: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.text,
+    textAlign: 'center',
+  },
+  executorStats: {
+    fontSize: 10,
+    color: Colors.primary,
+    marginTop: 4,
+    fontWeight: '600',
   },
   servicesGrid: {
     flexDirection: 'row-reverse',

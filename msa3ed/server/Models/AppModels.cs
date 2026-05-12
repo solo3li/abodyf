@@ -28,6 +28,35 @@ public class User
     // Stats
     public decimal Rating { get; set; } = 5.0m;
     public int CompletedOrdersCount { get; set; } = 0;
+
+    // Marketplace Expansion
+    public ICollection<GalleryItem> GalleryItems { get; set; } = new List<GalleryItem>();
+    public int TotalWorkHours { get; set; } = 0;
+    public DateTime? LastActiveAt { get; set; }
+}
+
+public class GalleryItem
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string MediaUrl { get; set; } = string.Empty;
+    public string MediaType { get; set; } = "Image"; // Image, Video
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class ServiceApprovalLog
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ServiceId { get; set; }
+    public Service Service { get; set; } = null!;
+    public Guid AdminId { get; set; }
+    public User Admin { get; set; } = null!;
+    public string Action { get; set; } = string.Empty; // Approved, Rejected
+    public string? Reason { get; set; }
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }
 
 public class Role

@@ -46,7 +46,7 @@ public class CatalogService : ICatalogService
             query = query.Where(s => s.Title.ToLower().Contains(searchTerm) || s.Description.ToLower().Contains(searchTerm));
         }
 
-        return await query.ToListAsync();
+        return await query.OrderByDescending(s => s.CreatedAt).ToListAsync();
     }
 
     public async Task<IEnumerable<Category>> GetCategoriesAsync() => await _db.Categories.ToListAsync();

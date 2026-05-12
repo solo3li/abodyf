@@ -92,6 +92,8 @@ builder.Services.AddScoped<Uis.Server.Services.IUserService, Uis.Server.Services
 builder.Services.AddScoped<Uis.Server.Services.IKycService, Uis.Server.Services.KycService>();
 builder.Services.AddScoped<Uis.Server.Services.ICatalogService, Uis.Server.Services.CatalogService>();
 builder.Services.AddScoped<Uis.Server.Services.IFavoritesService, Uis.Server.Services.FavoritesService>();
+builder.Services.AddScoped<Uis.Server.Services.IGalleryService, Uis.Server.Services.GalleryService>();
+builder.Services.AddScoped<Uis.Server.Services.IApprovalService, Uis.Server.Services.ApprovalService>();
 builder.Services.AddScoped<Uis.Server.Services.IOrderService, Uis.Server.Services.OrderService>();
 builder.Services.AddScoped<Uis.Server.Services.IPaymentService, Uis.Server.Services.PaymentService>();
 builder.Services.AddScoped<Uis.Server.Services.IEscrowService, Uis.Server.Services.EscrowService>();

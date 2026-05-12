@@ -33,6 +33,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<SystemSetting> SystemSettings { get; set; } = null!;
     public DbSet<ServiceTag> ServiceTags { get; set; } = null!;
     public DbSet<ServiceOfferingTag> ServiceOfferingTags { get; set; } = null!;
+    public DbSet<GalleryItem> GalleryItems { get; set; } = null!;
+    public DbSet<ServiceApprovalLog> ServiceApprovalLogs { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

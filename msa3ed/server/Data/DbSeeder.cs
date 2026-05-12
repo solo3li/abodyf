@@ -91,8 +91,24 @@ public static class DbSeeder
         // 1. Seed Users (Students and Executors)
         var s1 = await GetOrCreateUser(context, "student1@uis.com", "أحمد محمد", "password123", new List<Role> { studentRole }, uni: "جامعة حلوان");
         var s2 = await GetOrCreateUser(context, "student2@uis.com", "سارة علي", "password123", new List<Role> { studentRole }, uni: "جامعة عين شمس");
-        var e1 = await GetOrCreateUser(context, "exec1@uis.com", "عمر خالد", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة القاهرة", bio: "خبير في تطوير تطبيقات الموبايل والويب.");
-        var e2 = await GetOrCreateUser(context, "exec2@uis.com", "ليلى حسن", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة الإسكندرية", bio: "مصممة جرافيك متخصصة في الهويات البصرية.");
+        var e1 = await GetOrCreateUser(context, "exec1@uis.com", "عمر خالد", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة القاهرة", bio: "خبير في تطوير تطبيقات الموبايل والويب.", major: "هندسة برمجيات");
+        var e2 = await GetOrCreateUser(context, "exec2@uis.com", "ليلى حسن", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة الإسكندرية", bio: "مصممة جرافيك متخصصة في الهويات البصرية.", major: "فنون جميلة");
+
+        e1.LastActiveAt = DateTime.UtcNow.AddMinutes(-5);
+        e1.CompletedOrdersCount = 45;
+        e2.LastActiveAt = DateTime.UtcNow.AddMinutes(-20);
+        e2.CompletedOrdersCount = 128;
+
+        // 1.5 Seed Gallery Items
+        if (!await context.GalleryItems.AnyAsync())
+        {
+            context.GalleryItems.AddRange(
+                new GalleryItem { ExecutorId = e1.Id, Title = "تطبيق متجر إلكتروني", MediaUrl = "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800" },
+                new GalleryItem { ExecutorId = e1.Id, Title = "لوحة تحكم ذكية", MediaUrl = "https://images.unsplash.com/photo-1551288049-bbdac8626ad1?q=80&w=800" },
+                new GalleryItem { ExecutorId = e2.Id, Title = "هوية بصرية لشركة تقنية", MediaUrl = "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=800" },
+                new GalleryItem { ExecutorId = e2.Id, Title = "تصميم واجهة مستخدم إبداعية", MediaUrl = "https://images.unsplash.com/photo-1541462608141-ad4d05ed08c0?q=80&w=800" }
+            );
+        }
 
         // 2. Seed Services
         if (!await context.Services.AnyAsync())

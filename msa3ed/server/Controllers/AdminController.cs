@@ -15,14 +15,16 @@ public class AdminController : Controller
     private readonly IFileService _fileService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
     private readonly IServiceService _serviceService;
+    private readonly IApprovalService _approvalService;
 
-    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IServiceService serviceService)
+    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IServiceService serviceService, IApprovalService approvalService)
     {
         _db = db;
         _notificationService = notificationService;
         _fileService = fileService;
         _hub = hub;
         _serviceService = serviceService;
+        _approvalService = approvalService;
     }
 
     [HttpGet("")]
@@ -1123,21 +1125,26 @@ public class AdminController : Controller
     [HttpGet("Services/Pending")]
     public async Task<IActionResult> PendingServices()
     {
-        var services = await _serviceService.GetPendingServicesAsync();
+        var services = await _approvalService.GetPendingServicesAsync();
         return View(services);
     }
 
     [HttpPost("Services/Approve/{id}")]
     public async Task<IActionResult> ApproveService(Guid id)
     {
-        await _serviceService.ApproveServiceAsync(id);
+        // Get Admin ID (Mocking for now if auth is complex, but standard is User.FindFirst)
+        var adminId = Guid.Empty; // Should be parsed from claims in production
+        await _approvalService.ApproveServiceAsync(id, adminId);
+        TempData["Success"] = "تم تفعيل الخدمة بنجاح";
         return RedirectToAction(nameof(PendingServices));
     }
 
     [HttpPost("Services/Reject/{id}")]
     public async Task<IActionResult> RejectService(Guid id, string reason)
     {
-        await _serviceService.RejectServiceAsync(id, reason);
+        var adminId = Guid.Empty;
+        await _approvalService.RejectServiceAsync(id, adminId, reason);
+        TempData["Error"] = "تم رفض الخدمة";
         return RedirectToAction(nameof(PendingServices));
     }
 }

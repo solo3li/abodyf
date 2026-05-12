@@ -13,14 +13,12 @@ export default function EditServiceScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { executorServices, loading, success } = useSelector((state: RootState) => state.services);
+  const { currentService, loading, success } = useSelector((state: RootState) => state.services);
   const { categories } = useSelector((state: RootState) => state.catalog);
-  
-  const service = executorServices.find((s: any) => s.id === id);
 
   useEffect(() => {
     dispatch(fetchCategories());
-    if (!service) dispatch(fetchExecutorServices());
+    dispatch(fetchServiceById(id as string));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -35,16 +33,16 @@ export default function EditServiceScreen() {
   };
 
   const handleToggleStatus = async () => {
-    if (service.status === 'Active') {
+    if (currentService.status === 'Active') {
       await dispatch(pauseService(id as string));
-    } else if (service.status === 'Paused') {
+    } else if (currentService.status === 'Paused') {
       await dispatch(resumeService(id as string));
     }
-    dispatch(fetchExecutorServices());
+    dispatch(fetchServiceById(id as string));
   };
 
-  if (!service && loading) return <View style={styles.center}><ActivityIndicator size="large" color={Colors.primary} /></View>;
-  if (!service) return <View style={styles.center}><Text>الخدمة غير موجودة</Text></View>;
+  if (!currentService && loading) return <View style={styles.center}><ActivityIndicator size="large" color={Colors.primary} /></View>;
+  if (!currentService) return <View style={styles.center}><Text>الخدمة غير موجودة</Text></View>;
 
   return (
     <View style={styles.container}>
@@ -54,10 +52,10 @@ export default function EditServiceScreen() {
         </Pressable>
         <Text style={styles.headerTitle}>تعديل الخدمة</Text>
         <Pressable onPress={handleToggleStatus} style={styles.statusBtn}>
-          <Ionicons name={service.status === 'Active' ? "pause-circle" : "play-circle"} size={28} color={service.status === 'Active' ? Colors.warning : Colors.success} />
+          <Ionicons name={currentService.status === 'Active' ? "pause-circle" : "play-circle"} size={28} color={currentService.status === 'Active' ? Colors.warning : Colors.success} />
         </Pressable>
       </View>
-      <ServiceForm initialData={service} onSubmit={handleSubmit} loading={loading} categories={categories} />
+      <ServiceForm initialData={currentService} onSubmit={handleSubmit} loading={loading} categories={categories} />
     </View>
   );
 }

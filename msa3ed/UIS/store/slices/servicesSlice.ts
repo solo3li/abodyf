@@ -9,6 +9,14 @@ export const fetchExecutorServices = createAsyncThunk('services/fetchExecutorSer
   }
 });
 
+export const fetchServiceById = createAsyncThunk('services/fetchServiceById', async (id: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/ExecutorServices/${id}`);
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 export const createService = createAsyncThunk('services/createService', async ({ data, image }: { data: any, image?: any }, { rejectWithValue }) => {
   try {
     const service = await apiFetch('/ExecutorServices', {
@@ -96,6 +104,7 @@ const servicesSlice = createSlice({
   name: 'services',
   initialState: {
     executorServices: [],
+    currentService: null as any,
     loading: false,
     error: null as string | null,
     success: false,
@@ -104,12 +113,17 @@ const servicesSlice = createSlice({
     resetStatus: (state) => {
       state.success = false;
       state.error = null;
+      state.currentService = null;
     }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchExecutorServices.pending, (state) => { state.loading = true; });
     builder.addCase(fetchExecutorServices.fulfilled, (state, action) => { state.loading = false; state.executorServices = action.payload; });
     builder.addCase(fetchExecutorServices.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+    builder.addCase(fetchServiceById.pending, (state) => { state.loading = true; });
+    builder.addCase(fetchServiceById.fulfilled, (state, action) => { state.loading = false; state.currentService = action.payload; });
+    builder.addCase(fetchServiceById.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
 
     builder.addCase(createService.pending, (state) => { state.loading = true; state.success = false; });
     builder.addCase(createService.fulfilled, (state) => { state.loading = false; state.success = true; });

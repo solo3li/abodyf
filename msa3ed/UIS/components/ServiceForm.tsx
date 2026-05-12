@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Image, Pressable } from 'react-native';
 import { Colors } from '../constants/Colors';
 import Input from './Input';
 import Button from './Button';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
+import { API_BASE_URL } from '../services/api';
 
 interface ServiceFormProps {
   initialData?: any;
@@ -13,17 +14,25 @@ interface ServiceFormProps {
   categories: any[];
 }
 
+const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API_BASE_URL + path) : 'https://placehold.co/300x168';
+
 export default function ServiceForm({ initialData, onSubmit, loading, categories }: ServiceFormProps) {
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [price, setPrice] = useState(initialData?.basePrice?.toString() || '');
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
-  const [deliveryDays, setDeliveryDays] = useState(initialData?.deliveryDays?.toString() || '');
-  const [revisions, setRevisions] = useState(initialData?.revisions?.toString() || '0');
+  const [deliveryDays, setDeliveryDays] = useState(initialData?.estimatedDeliveryDays?.toString() || initialData?.deliveryDays?.toString() || '');
+  const [revisions, setRevisions] = useState(initialData?.includedRevisions?.toString() || initialData?.revisions?.toString() || '0');
   const [tags, setTags] = useState(initialData?.tags?.join(', ') || '');
   const [image, setImage] = useState<any>(null);
 
   const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('خطأ', 'نحتاج إلى إذن الوصول إلى الصور');
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
@@ -36,7 +45,7 @@ export default function ServiceForm({ initialData, onSubmit, loading, categories
     }
   };
 
-  const handleHandleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!title || !description || !price || !categoryId || !deliveryDays) {
       Alert.alert('خطأ', 'يرجى ملء جميع الحقول الإلزامية');
       return;
@@ -60,14 +69,32 @@ export default function ServiceForm({ initialData, onSubmit, loading, categories
       <Text style={styles.label}>عنوان الخدمة *</Text>
       <Input value={title} onChangeText={setTitle} placeholder="مثال: تصميم شعار احترافي" />
 
+      <Text style={styles.label}>التصنيف *</Text>
+      <View style={styles.categoryGrid}>
+        {categories.map((cat) => (
+          <Pressable 
+            key={cat.id} 
+            style={[styles.categoryChip, categoryId === cat.id && styles.categoryChipActive]} 
+            onPress={() => setCategoryId(cat.id)}
+          >
+            <Text style={[styles.categoryText, categoryId === cat.id && styles.categoryTextActive]}>{cat.name}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       <Text style={styles.label}>الوصف *</Text>
       <Input value={description} onChangeText={setDescription} placeholder="اشرح تفاصيل خدمتك..." multiline />
 
-      <Text style={styles.label}>السعر الأساسي (ج.م) *</Text>
-      <Input value={price} onChangeText={setPrice} placeholder="0.00" keyboardType="numeric" />
-
-      <Text style={styles.label}>مدة التسليم (أيام) *</Text>
-      <Input value={deliveryDays} onChangeText={setDeliveryDays} placeholder="عدد الأيام" keyboardType="numeric" />
+      <View style={styles.row}>
+        <View style={styles.flex1}>
+          <Text style={styles.label}>السعر (ج.م) *</Text>
+          <Input value={price} onChangeText={setPrice} placeholder="0.00" keyboardType="numeric" />
+        </View>
+        <View style={styles.flex1}>
+          <Text style={styles.label}>التسليم (أيام) *</Text>
+          <Input value={deliveryDays} onChangeText={setDeliveryDays} placeholder="0" keyboardType="numeric" />
+        </View>
+      </View>
 
       <Text style={styles.label}>عدد المراجعات</Text>
       <Input value={revisions} onChangeText={setRevisions} placeholder="0" keyboardType="numeric" />
@@ -76,20 +103,22 @@ export default function ServiceForm({ initialData, onSubmit, loading, categories
       <Input value={tags} onChangeText={setTags} placeholder="React, Node.js, برمجة" />
 
       <Text style={styles.label}>صورة الخدمة</Text>
-      <Button 
-        onPress={pickImage} 
-        variant="outline" 
-        style={styles.imageBtn}
-      >
-        <View style={styles.imageBtnContent}>
-          <Ionicons name="image-outline" size={24} color={Colors.primary} />
-          <Text style={styles.imageBtnText}>{image ? 'تم اختيار صورة' : 'اختر صورة غلاف'}</Text>
-        </View>
-      </Button>
+      <Pressable onPress={pickImage} style={styles.imageContainer}>
+        {image ? (
+          <Image source={{ uri: image.uri }} style={styles.previewImage} />
+        ) : initialData?.imageUrl ? (
+          <Image source={{ uri: getApiUrl(initialData.imageUrl) }} style={styles.previewImage} />
+        ) : (
+          <View style={styles.imagePlaceholder}>
+            <Ionicons name="image-outline" size={40} color={Colors.primary} />
+            <Text style={styles.imagePlaceholderText}>اضغط لاختيار صورة</Text>
+          </View>
+        )}
+      </Pressable>
 
       <Button 
         title={initialData ? "تحديث الخدمة" : "إنشاء الخدمة"} 
-        onPress={handleHandleSubmit} 
+        onPress={handleSubmit} 
         loading={loading}
         style={styles.submitBtn}
       />
@@ -101,8 +130,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.white },
   content: { padding: 24, paddingBottom: 100 },
   label: { fontSize: 16, fontWeight: 'bold', color: Colors.text, marginBottom: 8, marginTop: 16 },
-  imageBtn: { borderStyle: 'dashed', height: 120, justifyContent: 'center' },
-  imageBtnContent: { alignItems: 'center', gap: 8 },
-  imageBtnText: { color: Colors.primary, fontWeight: 'bold' },
+  row: { flexDirection: 'row', gap: 16 },
+  flex1: { flex: 1 },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 8 },
+  categoryChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.border },
+  categoryChipActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
+  categoryText: { color: Colors.textSecondary, fontSize: 14, fontWeight: '600' },
+  categoryTextActive: { color: Colors.white },
+  imageContainer: { width: '100%', height: 180, borderRadius: 16, overflow: 'hidden', backgroundColor: Colors.background, borderStyle: 'dashed', borderWidth: 2, borderColor: Colors.border, marginTop: 8 },
+  previewImage: { width: '100%', height: '100%', resizeMode: 'cover' },
+  imagePlaceholder: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 },
+  imagePlaceholderText: { color: Colors.primary, fontWeight: 'bold' },
   submitBtn: { marginTop: 32 }
 });

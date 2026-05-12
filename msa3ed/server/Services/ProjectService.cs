@@ -9,6 +9,16 @@ using Uis.Server.Models;
 
 namespace Uis.Server.Services;
 
+public interface IProjectService
+{
+    Task<ProjectRequest> CreateProjectRequestAsync(Guid studentId, CreateProjectRequestDto dto);
+    Task<IEnumerable<ProjectRequest>> GetStudentProjectsAsync(Guid studentId);
+    Task<IEnumerable<ProjectRequest>> GetOpenProjectsAsync();
+    Task<ProjectOffer> CreateProjectOfferAsync(Guid executorId, Guid projectId, CreateProjectOfferDto dto);
+    Task<Order> AcceptProjectOfferAsync(Guid studentId, Guid offerId);
+    Task<ProjectRequest?> GetProjectDetailsAsync(Guid projectId);
+}
+
 public class ProjectService : IProjectService
 {
     private readonly ApplicationDbContext _db;

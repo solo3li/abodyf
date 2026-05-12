@@ -104,6 +104,7 @@ builder.Services.AddScoped<Uis.Server.Services.INotificationService, Uis.Server.
 builder.Services.AddScoped<Uis.Server.Services.IAudioService, Uis.Server.Services.AudioService>();
 builder.Services.AddScoped<Uis.Server.Services.IOfferService, Uis.Server.Services.OfferService>();
 builder.Services.AddScoped<Uis.Server.Services.IServiceService, Uis.Server.Services.ServiceService>();
+builder.Services.AddScoped<Uis.Server.Services.IProjectService, Uis.Server.Services.ProjectService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();
@@ -113,10 +114,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true)
+        policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowAnyHeader();
     });
 });
 

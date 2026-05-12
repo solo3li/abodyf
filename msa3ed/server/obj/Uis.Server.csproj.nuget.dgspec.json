@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/workspace/msa3ed/server/Uis.Server.csproj": {}
+    "/app/Uis.Server.csproj": {}
   },
   "projects": {
-    "/workspace/msa3ed/server/Uis.Server.csproj": {
+    "/app/Uis.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspace/msa3ed/server/Uis.Server.csproj",
+        "projectUniqueName": "/app/Uis.Server.csproj",
         "projectName": "Uis.Server",
-        "projectPath": "/workspace/msa3ed/server/Uis.Server.csproj",
+        "projectPath": "/app/Uis.Server.csproj",
         "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/workspace/msa3ed/server/obj/",
+        "outputPath": "/app/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/root/.nuget/NuGet/NuGet.Config"

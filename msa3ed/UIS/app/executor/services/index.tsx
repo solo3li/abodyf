@@ -15,7 +15,7 @@ const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API
 export default function ExecutorServicesScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { executorServices, loading } = useSelector((state: RootState) => state.services);
+  const { executorServices = [], loading = false } = useSelector((state: RootState) => state.services || {});
 
   useEffect(() => {
     dispatch(fetchExecutorServices());

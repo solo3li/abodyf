@@ -3,7 +3,7 @@ import { apiFetch } from '../../services/api';
 
 export const fetchExecutorServices = createAsyncThunk('services/fetchExecutorServices', async (_, { rejectWithValue }) => {
   try {
-    return await apiFetch('/Services/MyServices');
+    return await apiFetch('/ExecutorServices/MyServices');
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
@@ -11,7 +11,7 @@ export const fetchExecutorServices = createAsyncThunk('services/fetchExecutorSer
 
 export const createService = createAsyncThunk('services/createService', async ({ data, image }: { data: any, image?: any }, { rejectWithValue }) => {
   try {
-    const service = await apiFetch('/Services', {
+    const service = await apiFetch('/ExecutorServices', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' }
@@ -25,7 +25,7 @@ export const createService = createAsyncThunk('services/createService', async ({
         type: image.mimeType || 'image/jpeg',
       } as any);
 
-      await apiFetch(`/Services/${service.id}/Image`, {
+      await apiFetch(`/ExecutorServices/${service.id}/Image`, {
         method: 'POST',
         body: formData,
       });
@@ -39,7 +39,7 @@ export const createService = createAsyncThunk('services/createService', async ({
 
 export const updateService = createAsyncThunk('services/updateService', async ({ id, data, image }: { id: string, data: any, image?: any }, { rejectWithValue }) => {
   try {
-    const service = await apiFetch(`/Services/${id}`, {
+    const service = await apiFetch(`/ExecutorServices/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' }
@@ -53,7 +53,7 @@ export const updateService = createAsyncThunk('services/updateService', async ({
         type: image.mimeType || 'image/jpeg',
       } as any);
 
-      await apiFetch(`/Services/${id}/Image`, {
+      await apiFetch(`/ExecutorServices/${id}/Image`, {
         method: 'POST',
         body: formData,
       });
@@ -67,7 +67,7 @@ export const updateService = createAsyncThunk('services/updateService', async ({
 
 export const submitServiceForReview = createAsyncThunk('services/submitServiceForReview', async (id: string, { rejectWithValue }) => {
   try {
-    await apiFetch(`/Services/${id}/Submit`, { method: 'POST' });
+    await apiFetch(`/ExecutorServices/${id}/Submit`, { method: 'POST' });
     return id;
   } catch (error: any) {
     return rejectWithValue(error.message);
@@ -76,7 +76,7 @@ export const submitServiceForReview = createAsyncThunk('services/submitServiceFo
 
 export const pauseService = createAsyncThunk('services/pauseService', async (id: string, { rejectWithValue }) => {
   try {
-    await apiFetch(`/Services/${id}/Pause`, { method: 'POST' });
+    await apiFetch(`/ExecutorServices/${id}/Pause`, { method: 'POST' });
     return id;
   } catch (error: any) {
     return rejectWithValue(error.message);
@@ -85,7 +85,7 @@ export const pauseService = createAsyncThunk('services/pauseService', async (id:
 
 export const resumeService = createAsyncThunk('services/resumeService', async (id: string, { rejectWithValue }) => {
   try {
-    await apiFetch(`/Services/${id}/Resume`, { method: 'POST' });
+    await apiFetch(`/ExecutorServices/${id}/Resume`, { method: 'POST' });
     return id;
   } catch (error: any) {
     return rejectWithValue(error.message);

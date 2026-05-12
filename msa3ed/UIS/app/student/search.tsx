@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { apiFetch } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
+import BottomSheet from '@gorhom/bottom-sheet';
+import AdvancedFilterSheet from '../../components/AdvancedFilterSheet';
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -13,12 +15,22 @@ export default function SearchScreen() {
   const [searchTerm, setSearchTerm] = useState(params.q as string || '');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState<any>({});
+  
+  const sheetRef = useRef<any>(null);
 
   const fetchResults = async () => {
     setLoading(true);
     try {
       const endpoint = activeTab === 'services' ? '/Services' : '/Executors';
-      const data = await apiFetch(`${endpoint}?searchTerm=${encodeURIComponent(searchTerm)}`);
+      let query = `?searchTerm=${encodeURIComponent(searchTerm)}`;
+      
+      if (filters.minPrice) query += `&minPrice=${filters.minPrice}`;
+      if (filters.maxPrice) query += `&maxPrice=${filters.maxPrice}`;
+      if (filters.minRating) query += `&minRating=${filters.minRating}`;
+      if (filters.maxDeliveryDays) query += `&maxDeliveryDays=${filters.maxDeliveryDays}`;
+
+      const data = await apiFetch(endpoint + query);
       setResults(data);
     } catch (err) {
       console.error(err);
@@ -29,7 +41,11 @@ export default function SearchScreen() {
 
   useEffect(() => {
     fetchResults();
-  }, [activeTab, searchTerm]);
+  }, [activeTab, searchTerm, filters]);
+
+  const handleApplyFilters = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   const renderItem = ({ item }: { item: any }) => (
     <Pressable 
@@ -68,7 +84,14 @@ export default function SearchScreen() {
         <Text style={styles.title}>البحث</Text>
       </View>
 
-      <SearchBar onSearch={setSearchTerm} value={searchTerm} />
+      <View style={styles.searchRow}>
+        <View style={{ flex: 1 }}>
+          <SearchBar onSearch={setSearchTerm} value={searchTerm} />
+        </View>
+        <Pressable style={styles.filterBtn} onPress={() => sheetRef.current?.expand()}>
+          <Ionicons name="options-outline" size={24} color={Colors.white} />
+        </Pressable>
+      </View>
 
       <View style={styles.tabs}>
         <Pressable 
@@ -101,6 +124,12 @@ export default function SearchScreen() {
           }
         />
       )}
+
+      <AdvancedFilterSheet 
+        sheetRef={sheetRef} 
+        onApply={handleApplyFilters} 
+        onClose={() => sheetRef.current?.close()} 
+      />
     </View>
   );
 }
@@ -110,6 +139,8 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row-reverse', alignItems: 'center', padding: 24, paddingTop: 60, gap: 16 },
   backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: 20, fontWeight: 'bold', color: Colors.text },
+  searchRow: { flexDirection: 'row-reverse', alignItems: 'center', paddingHorizontal: 24, marginBottom: 16 },
+  filterBtn: { width: 50, height: 50, borderRadius: 12, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center', marginLeft: 12 },
   tabs: { flexDirection: 'row-reverse', marginHorizontal: 24, marginBottom: 16, backgroundColor: Colors.background, borderRadius: 12, padding: 4 },
   tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10 },
   activeTab: { backgroundColor: Colors.white, elevation: 2 },

@@ -35,6 +35,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<ServiceOfferingTag> ServiceOfferingTags { get; set; } = null!;
     public DbSet<GalleryItem> GalleryItems { get; set; } = null!;
     public DbSet<ServiceApprovalLog> ServiceApprovalLogs { get; set; } = null!;
+    public DbSet<ProjectRequest> ProjectRequests { get; set; } = null!;
+    public DbSet<ProjectOffer> ProjectOffers { get; set; } = null!;
+    public DbSet<ProjectInvitation> ProjectInvitations { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

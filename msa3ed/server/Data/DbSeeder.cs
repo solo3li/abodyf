@@ -110,6 +110,42 @@ public static class DbSeeder
             );
         }
 
+        // 1.6 Seed Project Requests & Offers
+        if (!await context.ProjectRequests.AnyAsync())
+        {
+            var p1 = new ProjectRequest
+            {
+                StudentId = s1.Id,
+                CategoryId = categories.First(c => c.Name == "برمجة تطبيقات").Id,
+                Title = "احتاج تطبيق لطلب الطعام",
+                Description = "تطبيق مشابه لطلبات يدعم الدفع الإلكتروني وتتبع المندوب.",
+                Budget = 5000,
+                Deadline = DateTime.UtcNow.AddDays(30),
+                Status = "Open"
+            };
+            
+            var p2 = new ProjectRequest
+            {
+                StudentId = s2.Id,
+                CategoryId = categories.First(c => c.Name == "تصميم جرافيك").Id,
+                Title = "تصميم بروشور لشركة عقارات",
+                Description = "بروشور من 10 صفحات يحتوي على تفاصيل المشاريع وتصاميم 3D.",
+                Budget = 800,
+                Deadline = DateTime.UtcNow.AddDays(7),
+                Status = "Closed" // Will simulate accepted
+            };
+            
+            context.ProjectRequests.AddRange(p1, p2);
+            await context.SaveChangesAsync();
+
+            // Offers
+            context.ProjectOffers.AddRange(
+                new ProjectOffer { ProjectRequestId = p1.Id, ExecutorId = e1.Id, ProposedPrice = 4500, ProposedDays = 25, CoverLetter = "لقد قمت ببرمجة تطبيقات مشابهة ويمكنني إنجاز العمل.", Status = "Pending" },
+                new ProjectOffer { ProjectRequestId = p2.Id, ExecutorId = e2.Id, ProposedPrice = 800, ProposedDays = 5, CoverLetter = "أنا جاهزة للبدء فوراً.", Status = "ConvertedToOrder" }
+            );
+            await context.SaveChangesAsync();
+        }
+
         // 2. Seed Services
         if (!await context.Services.AnyAsync())
         {

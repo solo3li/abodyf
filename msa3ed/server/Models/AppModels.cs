@@ -210,7 +210,54 @@ public class Chat
     public Guid? ExecutorId { get; set; }
     public User? Executor { get; set; }
 
+    public Guid? ProjectOfferId { get; set; }
+    public ProjectOffer? ProjectOffer { get; set; }
+
     public ICollection<Message> Messages { get; set; } = new List<Message>();
+}
+
+public class ProjectRequest
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid StudentId { get; set; }
+    public User Student { get; set; } = null!;
+    public Guid CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Budget { get; set; }
+    public DateTime Deadline { get; set; }
+    public string Status { get; set; } = "Open"; // Open, Closed
+    public bool IsPublic { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<ProjectOffer> Offers { get; set; } = new List<ProjectOffer>();
+    public ICollection<ProjectInvitation> Invitations { get; set; } = new List<ProjectInvitation>();
+}
+
+public class ProjectOffer
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ProjectRequestId { get; set; }
+    public ProjectRequest ProjectRequest { get; set; } = null!;
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public decimal ProposedPrice { get; set; }
+    public int ProposedDays { get; set; }
+    public string CoverLetter { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected, ConvertedToOrder
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class ProjectInvitation
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ProjectRequestId { get; set; }
+    public ProjectRequest ProjectRequest { get; set; } = null!;
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class Message

@@ -58,6 +58,14 @@ export default function StudentLayout() {
         }}
       />
       <Drawer.Screen
+        name="../executor/projects/available"
+        options={{
+          title: 'تصفح المشاريع',
+          drawerIcon: ({ color, size }) => <Ionicons name="search-outline" size={size} color={color} />,
+          drawerItemStyle: { display: isExecutor ? 'flex' : 'none' },
+        }}
+      />
+      <Drawer.Screen
         name="(tabs)/executor-earnings"
         options={{
           title: 'الأرباح',

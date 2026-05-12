@@ -145,6 +145,24 @@ public class ServiceSummaryDto
     public string CategoryName { get; set; } = string.Empty;
 }
 
+public class CreateProjectRequestDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Budget { get; set; }
+    public DateTime Deadline { get; set; }
+    public Guid CategoryId { get; set; }
+    public bool IsPublic { get; set; } = true;
+    public List<Guid>? InvitedExecutors { get; set; }
+}
+
+public class CreateProjectOfferDto
+{
+    public decimal ProposedPrice { get; set; }
+    public int ProposedDays { get; set; }
+    public string CoverLetter { get; set; } = string.Empty;
+}
+
 public class CreateServiceDto
 {
     public string Title { get; set; } = string.Empty;

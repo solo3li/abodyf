@@ -65,3 +65,8 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
       return null;
   }
 };
+
+export const uriToBlob = async (uri: string): Promise<Blob> => {
+  const response = await fetch(uri);
+  return await response.blob();
+};

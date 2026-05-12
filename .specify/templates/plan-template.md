@@ -31,7 +31,10 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Principle I: Library-First** - Logic encapsulated in standalone modules?
+- [ ] **Principle II: Clean Architecture** - Explicit composition and idiomatic code?
+- [ ] **Principle III: Test-First & Full-Stack Verification** - Test tasks included for both FE and BE?
+- [ ] **Principle IV: Integration Testing** - Contract tests for all new/modified endpoints?
 
 ## Project Structure
 

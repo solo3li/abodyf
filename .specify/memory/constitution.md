@@ -1,50 +1,69 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+<sync_impact_report>
+{
+  "version_change": "1.0.0-template -> 1.1.0",
+  "modified_principles": [
+    { "old": "[PRINCIPLE_1_NAME]", "new": "I. Library-First" },
+    { "old": "[PRINCIPLE_2_NAME]", "new": "II. Clean Architecture" },
+    { "old": "[PRINCIPLE_3_NAME]", "new": "III. Test-First & Full-Stack Verification" },
+    { "old": "[PRINCIPLE_4_NAME]", "new": "IV. Integration & Contract Testing" },
+    { "old": "[PRINCIPLE_5_NAME]", "new": "V. Simplicity & Reliability" }
+  ],
+  "added_sections": [
+    "Additional Constraints",
+    "Development Workflow"
+  ],
+  "removed_sections": [],
+  "template_updates": [
+    { "path": ".specify/templates/tasks-template.md", "status": "✅ updated" }
+  ],
+  "todos": []
+}
+</sync_impact_report>
+-->
+
+# University Interface System (UIS) Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Library-First
+Logic for features and core domains MUST be encapsulated in standalone, self-contained libraries or services. These modules must be independently testable, well-documented, and serve a clear, focused purpose. Avoid creating libraries solely for organizational grouping; they must represent a cohesive unit of logic.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Clean Architecture
+Prioritize explicit composition, delegation, and structural integrity over complex inheritance or hidden logic (e.g., reflection, prototype manipulation). Adhere strictly to existing workspace conventions and idiomatic language features (e.g., type guards, explicit class instantiation). Never use hacks to bypass the type system or suppress warnings.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Test-First & Full-Stack Verification (NON-NEGOTIABLE)
+TDD (Test-Driven Development) is mandatory: tests MUST be written and fail before any implementation begins. Every new feature or fix MUST be verified with automated tests in both the frontend (React Native) and backend (ASP.NET Core) to ensure 100% functional stability and behavioral correctness across the entire stack.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Integration & Contract Testing
+Focus integration testing on inter-service communication, shared schemas, and API contract changes. Every external API endpoint must have a corresponding contract test to ensure compatibility between services. Inter-service dependencies must be explicitly modeled and tested.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Simplicity & Reliability
+Prioritize simple, readable code over clever or "just-in-case" abstractions. Follow YAGNI (You Ain't Gonna Need It) principles strictly. Validation is the only path to finality; a task is not considered complete until its behavior has been empirically verified and its structural integrity confirmed within the full project context.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Additional Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Tech Stack Alignment
+All development must align with the primary technologies: ASP.NET Core 10.0 for the backend and Expo/React Native for the mobile frontend. Use PostgreSQL for data persistence and SignalR for real-time features.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Security & Integrity
+Rigorously protect sensitive configuration, credentials, and system folders. Adhere to security best practices, ensuring no secrets are exposed in logs or source control.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Workflow
+
+### Specification & Planning
+Every feature must start with a `spec.md` defining user stories and requirements, followed by a `plan.md` detailing the technical approach and project structure. All implementation tasks must be derived from these documents and organized by user story.
+
+### Validation Gates
+No significant architectural changes or actions beyond the scope of a request may be taken without explicit confirmation. Every task must pass through a plan-act-validate cycle, with automated tests serving as the primary validation gate.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+This Constitution is the foundational mandate for the UIS project and supersedes all general practices or tool defaults.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Amendments
+Changes to this Constitution require a formal proposal, justification in a Sync Impact Report, and a semantic version bump. All amendments must be documented and propagated across dependent templates and artifacts.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### Compliance
+All code reviews and pull requests must verify compliance with these principles. Complexity introduced into the codebase must be explicitly justified against these standards.
+
+**Version**: 1.1.0 | **Ratified**: 2026-05-12 | **Last Amended**: 2026-05-12

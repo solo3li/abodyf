@@ -7,6 +7,8 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
+**Note**: Per Constitution Principle III, every user story MUST be verified with automated tests in both frontend and backend to ensure 100% functionality.
+
 <!--
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,

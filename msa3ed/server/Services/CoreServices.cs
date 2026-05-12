@@ -51,10 +51,16 @@ public class EmailService : IEmailService {
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
         using var smtp = new SmtpClient();
-        await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
-        await smtp.AuthenticateAsync(senderEmail, password);
-        await smtp.SendAsync(email);
-        await smtp.DisconnectAsync(true);
+        try {
+            smtp.Timeout = 5000; // 5 seconds timeout
+            await smtp.ConnectAsync(smtpServer, int.Parse(smtpPort), SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(senderEmail, password);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        } catch (Exception ex) {
+            // Log error and continue to prevent blocking the whole request flow
+            Console.WriteLine($"Email Error: {ex.Message}");
+        }
     }
 
     public async Task SendOtpEmailAsync(string to, string code)

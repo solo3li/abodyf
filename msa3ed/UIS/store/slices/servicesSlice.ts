@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { apiFetch } from '../../services/api';
+import { apiFetch, uriToBlob } from '../../services/api';
+import { Platform } from 'react-native';
 
 export const fetchExecutorServices = createAsyncThunk('services/fetchExecutorServices', async (_, { rejectWithValue }) => {
   try {
@@ -27,11 +28,16 @@ export const createService = createAsyncThunk('services/createService', async ({
 
     if (image) {
       const formData = new FormData();
-      formData.append('file', {
-        uri: image.uri,
-        name: image.fileName || 'service.jpg',
-        type: image.mimeType || 'image/jpeg',
-      } as any);
+      if (Platform.OS === 'web') {
+        const blob = await uriToBlob(image.uri);
+        formData.append('file', blob, image.fileName || 'service.jpg');
+      } else {
+        formData.append('file', {
+          uri: image.uri,
+          name: image.fileName || 'service.jpg',
+          type: image.mimeType || 'image/jpeg',
+        } as any);
+      }
 
       await apiFetch(`/ExecutorServices/${service.id}/Image`, {
         method: 'POST',
@@ -55,11 +61,16 @@ export const updateService = createAsyncThunk('services/updateService', async ({
 
     if (image) {
       const formData = new FormData();
-      formData.append('file', {
-        uri: image.uri,
-        name: image.fileName || 'service.jpg',
-        type: image.mimeType || 'image/jpeg',
-      } as any);
+      if (Platform.OS === 'web') {
+        const blob = await uriToBlob(image.uri);
+        formData.append('file', blob, image.fileName || 'service.jpg');
+      } else {
+        formData.append('file', {
+          uri: image.uri,
+          name: image.fileName || 'service.jpg',
+          type: image.mimeType || 'image/jpeg',
+        } as any);
+      }
 
       await apiFetch(`/ExecutorServices/${id}/Image`, {
         method: 'POST',

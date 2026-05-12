@@ -15,7 +15,9 @@ const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API
 export default function ExecutorServicesScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { executorServices = [], loading = false } = useSelector((state: RootState) => state.services || {});
+  const servicesState = useSelector((state: RootState) => state.services);
+  const executorServices = servicesState?.executorServices || [];
+  const loading = servicesState?.loading || false;
 
   useEffect(() => {
     dispatch(fetchExecutorServices());
@@ -23,7 +25,7 @@ export default function ExecutorServicesScreen() {
 
   const renderItem = ({ item }: any) => (
     <Pressable style={styles.card} onPress={() => router.push(`/executor/services/${item.id}`)}>
-      <Image source={{ uri: getApiUrl(item.imageUrl) }} style={styles.image} />
+      <Image source={{ uri: getApiUrl(item.imageUrl) }} style={styles.image} resizeMode="cover" />
       <View style={styles.content}>
         <Text style={styles.title}>{item.title}</Text>
         <View style={styles.footer}>

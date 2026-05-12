@@ -105,9 +105,9 @@ export default function ServiceForm({ initialData, onSubmit, loading, categories
       <Text style={styles.label}>صورة الخدمة</Text>
       <Pressable onPress={pickImage} style={styles.imageContainer}>
         {image ? (
-          <Image source={{ uri: image.uri }} style={styles.previewImage} />
+          <Image source={{ uri: image.uri }} style={styles.previewImage} resizeMode="cover" />
         ) : initialData?.imageUrl ? (
-          <Image source={{ uri: getApiUrl(initialData.imageUrl) }} style={styles.previewImage} />
+          <Image source={{ uri: getApiUrl(initialData.imageUrl) }} style={styles.previewImage} resizeMode="cover" />
         ) : (
           <View style={styles.imagePlaceholder}>
             <Ionicons name="image-outline" size={40} color={Colors.primary} />

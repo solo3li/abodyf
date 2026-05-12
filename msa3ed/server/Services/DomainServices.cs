@@ -23,36 +23,12 @@ public class KycService : IKycService {
     public async Task<IEnumerable<KycRequest>> GetPendingRequestsAsync() => await _db.KycRequests.Include(k=>k.User).Where(k => k.Status == "Pending").ToListAsync();
 }
 
-public interface ICatalogService { 
-    Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null); 
-    Task<IEnumerable<Category>> GetCategoriesAsync(); 
-}
-public class CatalogService : ICatalogService {
-    private readonly ApplicationDbContext _db; public CatalogService(ApplicationDbContext db) { _db = db; }
-    public async Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null) {
-        var query = _db.Services
-            .Include(s => s.Category)
-            .Include(s => s.Executor)
-            .Include(s => s.ServiceOfferingTags).ThenInclude(sot => sot.Tag)
-            .Where(s => s.Status == "Active" && s.IsActive);
 
-        if (!string.IsNullOrEmpty(category)) {
-            query = query.Where(s => s.Category.Name == category || s.CategoryId.ToString() == category);
-        }
-
-        if (!string.IsNullOrEmpty(tag)) {
-            query = query.Where(s => s.ServiceOfferingTags.Any(t => t.Tag.Name == tag));
-        }
-
-        return await query.ToListAsync();
-    }
-    public async Task<IEnumerable<Category>> GetCategoriesAsync() => await _db.Categories.ToListAsync();
+public interface IOrderService {
+    Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto);
+    Task<IEnumerable<Order>> GetOrdersAsync();
 }
 
-public interface IOrderService { 
-    Task<Order> CreateOrderAsync(Guid studentId, CreateOrderDto dto); 
-    Task<IEnumerable<Order>> GetOrdersAsync(); 
-}
 public class OrderService : IOrderService {
     private readonly ApplicationDbContext _db; 
     public OrderService(ApplicationDbContext db) { _db = db; }

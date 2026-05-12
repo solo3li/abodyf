@@ -5,7 +5,7 @@ import { Colors } from '../../../constants/Colors';
 import ServiceForm from '../../../components/ServiceForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { updateService, fetchExecutorServices, pauseService, resumeService, resetStatus } from '../../../store/slices/servicesSlice';
+import { updateService, fetchExecutorServices, pauseService, resumeService, resetStatus, fetchServiceById } from '../../../store/slices/servicesSlice';
 import { fetchCategories } from '../../../store/slices/catalogSlice';
 import { Ionicons } from '@expo/vector-icons';
 

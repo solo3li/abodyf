@@ -17,8 +17,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Install `@react-navigation/drawer` and `react-native-reanimated` in `msa3ed/UIS/package.json`
-- [ ] T002 [P] Configure `react-native-reanimated` plugin in `msa3ed/UIS/babel.config.js`
+- [x] T001 Install `@react-navigation/drawer` and `react-native-reanimated` in `msa3ed/UIS/package.json`
+- [x] T002 [P] Configure `react-native-reanimated` plugin in `msa3ed/UIS/babel.config.js`
 
 ---
 
@@ -28,8 +28,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Implement `searchTerm` filtering logic in `msa3ed/server/Services/CatalogService.cs`
-- [ ] T004 Update `GetServices` action to support `searchTerm` in `msa3ed/server/Controllers/Api/ApiControllers.cs`
+- [x] T003 [P] Implement `searchTerm` filtering logic in `msa3ed/server/Services/CatalogService.cs`
+- [x] T004 Update `GetServices` action to support `searchTerm` in `msa3ed/server/Controllers/Api/ApiControllers.cs`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -45,12 +45,12 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T005 [P] [US1] Frontend unit test for `Tabs` layout rendering in `msa3ed/UIS/app/student/(tabs)/__tests__/_layout.test.tsx`
+- [x] T005 [P] [US1] Frontend unit test for `Tabs` layout rendering in `msa3ed/UIS/app/student/(tabs)/__tests__/_layout.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Remove secondary tabs (Categories, Favourites, etc.) from `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
-- [ ] T007 [US1] Update Tab icons and labels for Home, Orders, Chat, and Profile in `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
+- [x] T006 [US1] Remove secondary tabs (Categories, Favourites, etc.) from `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
+- [x] T007 [US1] Update Tab icons and labels for Home, Orders, Chat, and Profile in `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -64,15 +64,15 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T008 [P] [US2] Frontend integration test for Drawer navigation in `msa3ed/UIS/app/__tests__/_layout.test.tsx`
+- [x] T008 [P] [US2] Frontend integration test for Drawer navigation in `msa3ed/UIS/app/__tests__/_layout.test.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Create a new top-level `msa3ed/UIS/app/student/_layout.tsx` with `Drawer` navigator
-- [ ] T010 [US2] Configure `Drawer` to include the `(tabs)` group as the primary screen
-- [ ] T011 [US2] Add secondary screens (Categories, Favourites, Support) as entries in the `Drawer` layout
-- [ ] T012 [P] [US2] Create custom `SidebarContent` component in `msa3ed/UIS/components/SidebarContent.tsx`
-- [ ] T013 [US2] Add "Hamburger" menu icon to student screen headers in `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
+- [x] T009 [US2] Create a new top-level `msa3ed/UIS/app/student/_layout.tsx` with `Drawer` navigator
+- [x] T010 [US2] Configure `Drawer` to include the `(tabs)` group as the primary screen
+- [x] T011 [US2] Add secondary screens (Categories, Favourites, Support) as entries in the `Drawer` layout
+- [x] T012 [P] [US2] Create custom `SidebarContent` component in `msa3ed/UIS/components/SidebarContent.tsx`
+- [x] T013 [US2] Add "Hamburger" menu icon to student screen headers in `msa3ed/UIS/app/student/(tabs)/_layout.tsx`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -86,15 +86,15 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T014 [P] [US3] Backend contract test for `GET /api/Services?searchTerm=...` in `msa3ed/Uis.Tests/CatalogControllerTests.cs`
-- [ ] T015 [P] [US3] Frontend unit test for `SearchBar` component in `msa3ed/UIS/components/__tests__/SearchBar.test.tsx`
+- [x] T014 [P] [US3] Backend contract test for `GET /api/Services?searchTerm=...` in `msa3ed/Uis.Tests/CatalogControllerTests.cs`
+- [x] T015 [P] [US3] Frontend unit test for `SearchBar` component in `msa3ed/UIS/components/__tests__/SearchBar.test.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T016 [P] [US3] Create `SearchBar` component in `msa3ed/UIS/components/SearchBar.tsx`
-- [ ] T017 [US3] Implement search logic in `msa3ed/UIS/store/slices/catalogSlice.ts` to call API with `searchTerm`
-- [ ] T018 [US3] Redesign `msa3ed/UIS/app/student/(tabs)/index.tsx` to include `SearchBar` and vertical `CategoryList`
-- [ ] T019 [P] [US3] Implement `CategoryList` component with vertical layout in `msa3ed/UIS/components/CategoryList.tsx`
+- [x] T016 [P] [US3] Create `SearchBar` component in `msa3ed/UIS/components/SearchBar.tsx`
+- [x] T017 [US3] Implement search logic in `msa3ed/UIS/store/slices/catalogSlice.ts` to call API with `searchTerm`
+- [x] T018 [US3] Redesign `msa3ed/UIS/app/student/(tabs)/index.tsx` to include `SearchBar` and vertical `CategoryList`
+- [x] T019 [P] [US3] Implement `CategoryList` component with vertical layout in `msa3ed/UIS/components/CategoryList.tsx`
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -108,13 +108,13 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T020 [P] [US4] Backend unit test for `SeedSampleDataAsync` logic in `msa3ed/Uis.Tests/Data/DbSeederTests.cs`
+- [x] T020 [P] [US4] Backend unit test for `SeedSampleDataAsync` logic in `msa3ed/Uis.Tests/Data/DbSeederTests.cs`
 
 ### Implementation for User Story 4
 
-- [ ] T021 [US4] Implement `SeedSampleDataAsync` method in `msa3ed/server/Data/DbSeeder.cs`
-- [ ] T022 [US4] Update `SeedAsync` in `msa3ed/server/Data/DbSeeder.cs` to invoke the new sample data seeder
-- [ ] T023 [P] [US4] Add `--seed-sample-data` flag support to `msa3ed/server/Program.cs` for manual triggering
+- [x] T021 [US4] Implement `SeedSampleDataAsync` method in `msa3ed/server/Data/DbSeeder.cs`
+- [x] T022 [US4] Update `SeedAsync` in `msa3ed/server/Data/DbSeeder.cs` to invoke the new sample data seeder
+- [x] T023 [P] [US4] Add `--seed-sample-data` flag support to `msa3ed/server/Program.cs` for manual triggering
 
 ---
 
@@ -122,9 +122,9 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T024 [P] Update `msa3ed/UIS/constants/Colors.ts` with any new theme colors for the refresh
-- [ ] T025 Run `msa3ed/UIS/quickstart.md` validation on physical device or emulator
-- [ ] T026 Code cleanup and linting across `msa3ed/UIS` and `msa3ed/server`
+- [x] T024 [P] Update `msa3ed/UIS/constants/Colors.ts` with any new theme colors for the refresh
+- [x] T025 Run `msa3ed/UIS/quickstart.md` validation on physical device or emulator
+- [x] T026 Code cleanup and linting across `msa3ed/UIS` and `msa3ed/server`
 
 ---
 

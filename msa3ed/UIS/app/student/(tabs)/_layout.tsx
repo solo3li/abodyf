@@ -1,9 +1,10 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
-import { Platform } from 'react-native';
+import { Platform, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '../../../context/AuthContext';
+import { DrawerToggleButton } from '@react-navigation/drawer';
 
 export default function TabLayout() {
   const { user } = useAuth();
@@ -12,7 +13,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerLeft: () => <DrawerToggleButton tintColor={Colors.primary} />,
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontWeight: '800', color: Colors.text, fontSize: 18 },
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
         tabBarBackground: () => (
@@ -59,10 +63,10 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "grid" : "grid-outline"} size={size} color={color} />
           ),
-          href: isExecutor ? null : undefined, // Hide for executors to save space, but still accessible
+          href: null,
         }}
       />
-      {/* EXECUTOR ONLY TABS */}
+      {/* EXECUTOR ONLY TABS - HIDDEN FROM BOTTOM BAR */}
       <Tabs.Screen
         name="executor-orders"
         options={{
@@ -70,7 +74,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "briefcase" : "briefcase-outline"} size={size} color={color} />
           ),
-          href: isExecutor ? undefined : null,
+          href: null,
         }}
       />
       <Tabs.Screen
@@ -80,7 +84,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "cash" : "cash-outline"} size={size} color={color} />
           ),
-          href: isExecutor ? undefined : null,
+          href: null,
         }}
       />
       {/* COMMON TABS */}
@@ -100,6 +104,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "mail" : "mail-outline"} size={size} color={color} />
           ),
+          href: null,
         }}
       />
       <Tabs.Screen

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -10,23 +10,35 @@ import { AppDispatch, RootState } from '../../../store';
 import { fetchCategories, fetchServices } from '../../../store/slices/catalogSlice';
 import { useAuth } from '../../../context/AuthContext';
 import { API_BASE_URL } from '../../../services/api';
+import SearchBar from '../../../components/SearchBar';
+import CategoryList from '../../../components/CategoryList';
 
 const { width } = Dimensions.get('window');
-
-// Default icons/colors if backend doesn't provide them
-const defaultIcons = ['school-outline', 'book-outline', 'color-palette-outline', 'language-outline', 'code-slash-outline'];
-const defaultColors = ['#EFF6FF', '#FEF2F2', '#F0FDF4', '#FFFBEB', '#EEF2FF'];
 
 export default function HomeScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { categories, services, loading } = useSelector((state: RootState) => state.catalog);
   const { user } = useAuth();
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchServices());
   }, [dispatch]);
+
+  const handleSearch = (text: string) => {
+    setSearchTerm(text);
+    dispatch(fetchServices({ searchTerm: text, category: selectedCategoryId }));
+  };
+
+  const handleSelectCategory = (id: string) => {
+    const newId = selectedCategoryId === id ? undefined : id;
+    setSelectedCategoryId(newId);
+    dispatch(fetchServices({ searchTerm, category: newId }));
+  };
 
   const getApiUrl = (path: string) => {
     if (!path) return 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=600';
@@ -53,73 +65,29 @@ export default function HomeScreen() {
               <View style={styles.badge} />
             </Pressable>
           </View>
-
-          {/* Search */}
-          <View style={styles.searchContainer}>
-            <Ionicons name="search-outline" size={20} color={Colors.textSecondary} style={styles.searchIcon} />
-            <TextInput 
-              style={styles.searchInput as any} 
-              placeholder="ابحث عن خدمات..."
-              placeholderTextColor={Colors.textSecondary}
-            />
-            <Pressable style={styles.filterBtn}>
-              <Ionicons name="options-outline" size={20} color={Colors.white} />
-            </Pressable>
-          </View>
         </LinearGradient>
       </View>
 
+      <SearchBar onSearch={handleSearch} value={searchTerm} />
+
       <View style={styles.content}>
         {/* Categories */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>التصنيفات</Text>
-            <Pressable onPress={() => router.push('/student/(tabs)/categories' as any)}>
-              <Text style={styles.seeAll}>الكل</Text>
-            </Pressable>
-          </View>
-          {loading && categories.length === 0 ? (
-            <ActivityIndicator color={Colors.primary} />
-          ) : (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesList}>
-              {categories.slice(0, 8).map((cat: any, index: number) => (
-                <Animated.View key={cat.id} entering={FadeInDown.delay(index * 50).springify()}>
-                  <Pressable style={styles.categoryCard} onPress={() => router.push(`/student/service/${cat.id}`)}>
-                    <View style={[styles.iconContainer, { backgroundColor: defaultColors[index % defaultColors.length] }]}>
-                      <Ionicons name={defaultIcons[index % defaultIcons.length] as any} size={28} color={Colors.primary} />
-                    </View>
-                    <Text style={styles.categoryTitle}>{cat.name}</Text>
-                  </Pressable>
-                </Animated.View>
-              ))}
-            </ScrollView>
-          )}
-        </View>
-
-        {/* Special Offer */}
-        <View style={styles.section}>
-          <LinearGradient
-            colors={[Colors.accent, '#F43F5E']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.banner}
-          >
-            <View style={styles.bannerContent}>
-              <Text style={styles.bannerTitle}>خصم 20% لفترة محدودة!</Text>
-              <Text style={styles.bannerSubtitle}>استخدم كود: UIS20</Text>
-              <Pressable style={styles.bannerBtn}>
-                <Text style={styles.bannerBtnText}>اطلب الآن</Text>
-              </Pressable>
-            </View>
-            <Ionicons name="gift" size={80} color="rgba(255,255,255,0.2)" style={styles.bannerIcon} />
-          </LinearGradient>
-        </View>
+        <CategoryList 
+          categories={categories} 
+          selectedCategoryId={selectedCategoryId} 
+          onSelectCategory={handleSelectCategory} 
+        />
 
         {/* Popular Services */}
-        <View style={[styles.section, { paddingBottom: 100 }]}>
-          <Text style={styles.sectionTitle}>خدمات شائعة</Text>
+        <View style={[styles.section, { paddingBottom: 100, marginTop: 24 }]}>
+          <Text style={styles.sectionTitle}>خدمات مقترحة</Text>
           {loading && services.length === 0 ? (
-            <ActivityIndicator color={Colors.primary} />
+            <ActivityIndicator color={Colors.primary} style={{ marginTop: 20 }} />
+          ) : services.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="search-outline" size={48} color={Colors.textSecondary} />
+              <Text style={styles.emptyText}>لم نجد خدمات تطابق بحثك</Text>
+            </View>
           ) : (
             <View style={styles.servicesGrid}>
               {services.map((service: any, index: number) => (
@@ -136,13 +104,8 @@ export default function HomeScreen() {
                       <Text style={styles.serviceTitle} numberOfLines={2}>{service.title}</Text>
                       
                       <View style={styles.providerInfo}>
-                        <Image source={{ uri: getApiUrl(service.providerAvatarUrl) }} style={styles.providerAvatar} />
-                        <Text style={styles.providerName}>{service.providerName || 'منصة UIS'}</Text>
-                      </View>
-
-                      <View style={styles.serviceMeta}>
-                        <Ionicons name="time-outline" size={14} color={Colors.textSecondary} />
-                        <Text style={styles.metaText}>{service.deliveryTime || 'يومان'}</Text>
+                        <Image source={{ uri: getApiUrl(service.executor?.profilePicture) }} style={styles.providerAvatar} />
+                        <Text style={styles.providerName}>{service.executor?.name || 'منصة UIS'}</Text>
                       </View>
 
                       <View style={styles.serviceFooter}>
@@ -167,14 +130,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.white,
   },
   headerWrapper: {
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     overflow: 'hidden',
-    boxShadow: [{ color: 'rgba(28, 55, 120, 0.15)', offsetX: 0, offsetY: 10, blurRadius: 20, spreadDistance: 0 }],
-    elevation: 10,
   },
   header: {
     padding: 24,
@@ -185,18 +146,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
   },
   greeting: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '900',
     color: Colors.white,
+    textAlign: 'right',
   },
   subtitle: {
     fontSize: 16,
     color: Colors.white,
     opacity: 0.8,
     marginTop: 4,
+    textAlign: 'right',
   },
   notificationBtn: {
     width: 44,
@@ -217,231 +179,115 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.primary,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchInput: {
-    flex: 1,
-    height: 56,
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    paddingHorizontal: 40,
-    fontSize: 16,
-    color: Colors.text,
-    textAlign: 'right',
-    boxShadow: [{ color: 'rgba(0, 0, 0, 0.05)', offsetX: 0, offsetY: 4, blurRadius: 10, spreadDistance: 0 }],
-    elevation: 2,
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 1,
-  },
-  filterBtn: {
-    width: 56,
-    height: 56,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 12,
-  },
   content: {
-    paddingTop: 24,
+    paddingBottom: 24,
   },
   section: {
     paddingHorizontal: 24,
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: Colors.text,
-  },
-  seeAll: {
-    fontSize: 14,
-    color: Colors.primary,
-    fontWeight: 'bold',
-  },
-  categoriesList: {
-    gap: 16,
-  },
-  categoryCard: {
-    alignItems: 'center',
-    width: 76,
-  },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  categoryTitle: {
-    fontSize: 12,
-    color: Colors.text,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  banner: {
-    borderRadius: 24,
-    padding: 24,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  bannerContent: {
-    flex: 1,
-    zIndex: 1,
-  },
-  bannerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: Colors.white,
-    marginBottom: 8,
-  },
-  bannerSubtitle: {
-    fontSize: 15,
-    color: Colors.white,
-    opacity: 0.9,
     marginBottom: 16,
-  },
-  bannerBtn: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  bannerBtnText: {
-    color: Colors.accent,
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  bannerIcon: {
-    position: 'absolute',
-    right: -20,
-    bottom: -20,
-    transform: [{ rotate: '-15deg' }],
+    textAlign: 'right',
   },
   servicesGrid: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: 16,
   },
   serviceCardWrapper: {
     width: width / 2 - 32,
-    marginBottom: 16,
   },
   serviceCard: {
     backgroundColor: Colors.white,
     borderRadius: 20,
     overflow: 'hidden',
-    boxShadow: [{ color: 'rgba(0, 0, 0, 0.05)', offsetX: 0, offsetY: 4, blurRadius: 10, spreadDistance: 0 }],
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   serviceImage: {
     width: '100%',
-    height: 140,
-  },
-  favoriteBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
+    height: 120,
   },
   imageOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 140,
+    height: 120,
     justifyContent: 'flex-end',
-    padding: 12,
+    padding: 8,
   },
   categoryTag: {
     color: Colors.white,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     backgroundColor: Colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
     alignSelf: 'flex-start',
   },
   serviceContent: {
-    padding: 16,
+    padding: 12,
   },
   serviceTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: 'bold',
     color: Colors.text,
-    lineHeight: 22,
-    marginBottom: 12,
+    textAlign: 'right',
+    height: 40,
   },
   providerInfo: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
-    marginBottom: 12,
+    marginTop: 8,
+    gap: 8,
   },
   providerAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    marginRight: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
   },
   providerName: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-  serviceMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 4,
-  },
-  metaText: {
     fontSize: 12,
     color: Colors.textSecondary,
-    fontWeight: '500',
   },
   serviceFooter: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    marginTop: 12,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
   rating: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
   ratingText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
     color: Colors.text,
-    marginLeft: 4,
   },
   price: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: 14,
+    fontWeight: 'bold',
     color: Colors.primary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    gap: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: Colors.textSecondary,
+    fontWeight: '600',
   },
 });

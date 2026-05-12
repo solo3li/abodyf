@@ -72,8 +72,7 @@ export default function ChatDetailsScreen() {
       await dispatch(sendMessage({ 
         chatId: currentChat.id, 
         content: content || '', 
-        attachment, 
-        attachmentType: type 
+        attachments: attachment ? [attachment] : [], 
       })).unwrap();
     } catch (err: any) {
       alert('فشل في إرسال الرسالة: ' + err.message);

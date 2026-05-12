@@ -58,7 +58,7 @@ export default function ServiceForm({ initialData, onSubmit, loading, categories
       categoryId,
       estimatedDeliveryDays: parseInt(deliveryDays),
       includedRevisions: parseInt(revisions),
-      tags: tags.split(',').map(t => t.trim()).filter(t => t !== ''),
+      tags: tags.split(',').map((t: string) => t.trim()).filter((t: string) => t !== ''),
     };
 
     await onSubmit(data, image);

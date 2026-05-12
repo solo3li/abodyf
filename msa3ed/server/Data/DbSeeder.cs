@@ -11,7 +11,7 @@ namespace Uis.Server.Data;
 
 public static class DbSeeder
 {
-    public static async Task SeedAsync(IServiceProvider serviceProvider)
+    public static async Task SeedAsync(IServiceProvider serviceProvider, bool forceSampleData = false)
     {
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -76,7 +76,25 @@ public static class DbSeeder
         }
         var categories = await context.Categories.ToListAsync();
 
-        // 6. Seed Services with High-Quality Images
+        // 6. Seed Sample Data if forced or if empty
+        if (forceSampleData || !await context.Services.AnyAsync())
+        {
+            await SeedSampleDataAsync(context, categories, studentRole, executorRole);
+        }
+
+        await SeedSystemSettings(context);
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedSampleDataAsync(ApplicationDbContext context, List<Category> categories, Role studentRole, Role executorRole)
+    {
+        // 1. Seed Users (Students and Executors)
+        var s1 = await GetOrCreateUser(context, "student1@uis.com", "أحمد محمد", "password123", new List<Role> { studentRole }, uni: "جامعة حلوان");
+        var s2 = await GetOrCreateUser(context, "student2@uis.com", "سارة علي", "password123", new List<Role> { studentRole }, uni: "جامعة عين شمس");
+        var e1 = await GetOrCreateUser(context, "exec1@uis.com", "عمر خالد", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة القاهرة", bio: "خبير في تطوير تطبيقات الموبايل والويب.");
+        var e2 = await GetOrCreateUser(context, "exec2@uis.com", "ليلى حسن", "password123", new List<Role> { executorRole, studentRole }, isExecutor: true, uni: "جامعة الإسكندرية", bio: "مصممة جرافيك متخصصة في الهويات البصرية.");
+
+        // 2. Seed Services
         if (!await context.Services.AnyAsync())
         {
             var services = new List<Service>
@@ -87,7 +105,7 @@ public static class DbSeeder
                     BasePrice = 150, 
                     CategoryId = categories.First(c => c.Name == "تصميم جرافيك").Id,
                     ImageUrl = "https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=800",
-                    Rating = 4.9m, ReviewsCount = 128, DeliveryTime = "يومان"
+                    Rating = 4.9m, ReviewsCount = 128, DeliveryTime = "يومان", ExecutorId = e2.Id
                 },
                 new Service { 
                     Title = "برمجة تطبيق موبايل (React Native) متكامل", 
@@ -95,7 +113,7 @@ public static class DbSeeder
                     BasePrice = 1200, 
                     CategoryId = categories.First(c => c.Name == "برمجة تطبيقات").Id,
                     ImageUrl = "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=800",
-                    Rating = 5.0m, ReviewsCount = 45, DeliveryTime = "7 أيام"
+                    Rating = 5.0m, ReviewsCount = 45, DeliveryTime = "7 أيام", ExecutorId = e1.Id
                 },
                 new Service { 
                     Title = "ترجمة أكاديمية للمقالات والأبحاث العلمية", 
@@ -103,7 +121,7 @@ public static class DbSeeder
                     BasePrice = 80, 
                     CategoryId = categories.First(c => c.Name == "ترجمة معتمدة").Id,
                     ImageUrl = "https://images.unsplash.com/photo-1544650039-2287f6071477?q=80&w=800",
-                    Rating = 4.7m, ReviewsCount = 89, DeliveryTime = "يوم واحد"
+                    Rating = 4.7m, ReviewsCount = 89, DeliveryTime = "يوم واحد", ExecutorId = e1.Id
                 },
                 new Service { 
                     Title = "كتابة وتنسيق البحث العلمي (APA Style)", 
@@ -111,31 +129,12 @@ public static class DbSeeder
                     BasePrice = 300, 
                     CategoryId = categories.First(c => c.Name == "أبحاث علمية").Id,
                     ImageUrl = "https://images.unsplash.com/photo-1456324504439-367cee3b3c32?q=80&w=800",
-                    Rating = 4.8m, ReviewsCount = 210, DeliveryTime = "4 أيام"
-                },
-                new Service { 
-                    Title = "تحليل بيانات باستخدام SPSS أو Python", 
-                    Description = "إجراء التحليلات الإحصائية وتفسير النتائج لمشاريع التخرج والرسائل العلمية.", 
-                    BasePrice = 450, 
-                    CategoryId = categories.First(c => c.Name == "تحليل بيانات").Id,
-                    ImageUrl = "https://images.unsplash.com/photo-1551288049-bbdac8626ad1?q=80&w=800",
-                    Rating = 4.9m, ReviewsCount = 34, DeliveryTime = "3 أيام"
-                },
-                new Service { 
-                    Title = "تصميم هوية بصرية متكاملة (Logo & Branding)", 
-                    Description = "تصميم شعار واختيار ألوان وخطوط لمشروعك الناشئ أو مسابقتك الجامعية.", 
-                    BasePrice = 250, 
-                    CategoryId = categories.First(c => c.Name == "تصميم جرافيك").Id,
-                    ImageUrl = "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=800",
-                    Rating = 4.6m, ReviewsCount = 67, DeliveryTime = "3 أيام"
+                    Rating = 4.8m, ReviewsCount = 210, DeliveryTime = "4 أيام", ExecutorId = e2.Id
                 }
             };
             context.Services.AddRange(services);
             await context.SaveChangesAsync();
         }
-
-        await SeedSystemSettings(context);
-        await context.SaveChangesAsync();
     }
 
     private static async Task SeedSystemSettings(ApplicationDbContext context)

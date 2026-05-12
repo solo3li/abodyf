@@ -114,7 +114,7 @@ export const resumeService = createAsyncThunk('services/resumeService', async (i
 const servicesSlice = createSlice({
   name: 'services',
   initialState: {
-    executorServices: [],
+    executorServices: [] as any[],
     currentService: null as any,
     loading: false,
     error: null as string | null,

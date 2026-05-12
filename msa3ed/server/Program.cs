@@ -121,7 +121,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Call Database Seeder
-await Uis.Server.Data.DbSeeder.SeedAsync(app.Services);
+bool forceSampleData = args.Contains("--seed-sample-data");
+await Uis.Server.Data.DbSeeder.SeedAsync(app.Services, forceSampleData);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

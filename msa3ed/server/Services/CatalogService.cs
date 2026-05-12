@@ -9,7 +9,7 @@ namespace Uis.Server.Services;
 
 public interface ICatalogService
 {
-    Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null);
+    Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null, string? searchTerm = null);
     Task<IEnumerable<Category>> GetCategoriesAsync();
 }
 
@@ -22,7 +22,7 @@ public class CatalogService : ICatalogService
         _db = db;
     }
 
-    public async Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null)
+    public async Task<IEnumerable<Service>> GetServicesAsync(string? category = null, string? tag = null, string? searchTerm = null)
     {
         var query = _db.Services
             .Include(s => s.Category)
@@ -38,6 +38,12 @@ public class CatalogService : ICatalogService
         if (!string.IsNullOrEmpty(tag))
         {
             query = query.Where(s => s.ServiceOfferingTags.Any(t => t.Tag.Name == tag));
+        }
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            searchTerm = searchTerm.ToLower();
+            query = query.Where(s => s.Title.ToLower().Contains(searchTerm) || s.Description.ToLower().Contains(searchTerm));
         }
 
         return await query.ToListAsync();

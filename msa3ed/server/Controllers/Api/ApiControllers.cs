@@ -143,8 +143,8 @@ public class UsersController : ControllerBase {
 [Route("api/[controller]")]
 public class ServicesController : ControllerBase {
     private readonly ICatalogService _catalogService; public ServicesController(ICatalogService catalogService) { _catalogService = catalogService; }
-    [HttpGet] public async Task<IActionResult> GetAll([FromQuery] string? category, [FromQuery] string? tag) {
-        var services = await _catalogService.GetServicesAsync(category, tag);
+    [HttpGet] public async Task<IActionResult> GetAll([FromQuery] string? category, [FromQuery] string? tag, [FromQuery] string? searchTerm) {
+        var services = await _catalogService.GetServicesAsync(category, tag, searchTerm);
         return Ok(services.Select(s => new {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category?.Name, s.CategoryId, s.ImageUrl,
             s.EstimatedDeliveryDays, s.IncludedRevisions, s.Status,

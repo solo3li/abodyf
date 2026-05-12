@@ -9,9 +9,18 @@ export const fetchCategories = createAsyncThunk('catalog/fetchCategories', async
   }
 });
 
-export const fetchServices = createAsyncThunk('catalog/fetchServices', async (_, { rejectWithValue }) => {
+export const fetchServices = createAsyncThunk('catalog/fetchServices', async (params: { category?: string, searchTerm?: string } | undefined, { rejectWithValue }) => {
   try {
-    return await apiFetch('/Services');
+    let url = '/Services';
+    const query = [];
+    if (params?.category) query.push(`category=${params.category}`);
+    if (params?.searchTerm) query.push(`searchTerm=${encodeURIComponent(params.searchTerm)}`);
+    
+    if (query.length > 0) {
+      url += '?' + query.join('&');
+    }
+    
+    return await apiFetch(url);
   } catch (error: any) {
     return rejectWithValue(error.message);
   }

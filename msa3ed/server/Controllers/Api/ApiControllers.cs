@@ -142,27 +142,26 @@ public class UsersController : ControllerBase {
 [ApiController]
 [Route("api/[controller]")]
 public class ServicesController : ControllerBase {
-    private readonly ApplicationDbContext _db; public ServicesController(ApplicationDbContext db) { _db = db; }
-    [HttpGet] public async Task<IActionResult> GetAll() {
-        var services = await _db.Services.Include(s => s.Category).Include(s => s.Executor).Where(s => s.IsActive).ToListAsync();
+    private readonly ICatalogService _catalogService; public ServicesController(ICatalogService catalogService) { _catalogService = catalogService; }
+    [HttpGet] public async Task<IActionResult> GetAll([FromQuery] string? category, [FromQuery] string? tag) {
+        var services = await _catalogService.GetServicesAsync(category, tag);
         return Ok(services.Select(s => new {
-            s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
-            s.Rating, s.ReviewsCount, s.DeliveryTime,
-            ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture,
-            ProviderId = s.ExecutorId
+            s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category?.Name, s.CategoryId, s.ImageUrl,
+            s.EstimatedDeliveryDays, s.IncludedRevisions, s.Status,
+            Tags = s.ServiceOfferingTags.Select(t => t.Tag.Name),
+            Executor = s.Executor != null ? new { s.Executor.Id, Name = s.Executor.FullName, s.Executor.ProfilePicture, s.Executor.Rating, s.Executor.CompletedOrdersCount } : null
         }));
     }
     
     [HttpGet("{id}")] public async Task<IActionResult> GetById(Guid id) {
-        var s = await _db.Services.Include(s => s.Category).Include(s => s.Executor).FirstOrDefaultAsync(x => x.Id == id);
+        var services = await _catalogService.GetServicesAsync();
+        var s = services.FirstOrDefault(x => x.Id == id);
         if (s == null) return NotFound();
         return Ok(new {
-            s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
-            s.Rating, s.ReviewsCount, s.DeliveryTime,
-            ProviderName = s.Executor?.FullName ?? "منصة UIS",
-            ProviderAvatarUrl = s.Executor?.ProfilePicture,
-            ProviderId = s.ExecutorId
+            s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category?.Name, s.CategoryId, s.ImageUrl,
+            s.EstimatedDeliveryDays, s.IncludedRevisions, s.Status,
+            Tags = s.ServiceOfferingTags.Select(t => t.Tag.Name),
+            Executor = s.Executor != null ? new { s.Executor.Id, Name = s.Executor.FullName, s.Executor.ProfilePicture, s.Executor.Rating, s.Executor.CompletedOrdersCount } : null
         });
     }
 }

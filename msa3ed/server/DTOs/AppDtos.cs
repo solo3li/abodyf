@@ -116,3 +116,46 @@ public class InitiateChatDto
 {
     public Guid ExecutorId { get; set; }
 }
+
+public class ServiceDto
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal BasePrice { get; set; }
+    public Guid CategoryId { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
+    public int DeliveryDays { get; set; }
+    public int Revisions { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public List<string> Tags { get; set; } = new();
+    public string? RejectionReason { get; set; }
+    public Guid? ExecutorId { get; set; }
+    public string? ExecutorName { get; set; }
+}
+
+public class ServiceSummaryDto
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public decimal BasePrice { get; set; }
+    public string? ImageUrl { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string CategoryName { get; set; } = string.Empty;
+}
+
+public class CreateServiceDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public Guid CategoryId { get; set; }
+    public decimal BasePrice { get; set; }
+    public int EstimatedDeliveryDays { get; set; }
+    public int IncludedRevisions { get; set; }
+    public List<string> Tags { get; set; } = new();
+}
+
+public class UpdateServiceDto : CreateServiceDto
+{
+}

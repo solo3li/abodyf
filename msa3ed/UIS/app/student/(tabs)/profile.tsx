@@ -29,7 +29,10 @@ export default function ProfileScreen() {
     { icon: 'settings', title: 'الإعدادات', route: '/shared/settings' },
     { icon: 'help-buoy', title: 'الدعم والنزاعات', route: '/shared/support/tickets' },
     ...(user?.isExecutor 
-      ? [{ icon: 'briefcase', title: 'الطلبات المتاحة للتنفيذ', route: '/student/(tabs)/executor-orders', color: Colors.success }]
+      ? [
+          { icon: 'list', title: 'إدارة خدماتي', route: '/executor/services', color: Colors.primary },
+          { icon: 'briefcase', title: 'الطلبات المتاحة للتنفيذ', route: '/student/(tabs)/executor-orders', color: Colors.success }
+        ]
       : [{ icon: 'briefcase', title: 'العمل كمنفذ (KYC)', route: '/executor/kyc-submit', color: Colors.warning }]),
     { icon: 'log-out', title: 'تسجيل الخروج', action: handleLogout, color: Colors.error },
   ];

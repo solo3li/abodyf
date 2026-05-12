@@ -14,3 +14,20 @@ Thumbs.db
 
 # Specs temporary/local files
 /root/.gemini/tmp/
+
+# Node.js
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+packages/
+*.db
+*.db-journal
+/wwwroot/uploads/*
+!/wwwroot/uploads/.gitkeep

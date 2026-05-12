@@ -105,6 +105,30 @@ public class Service
     public decimal Rating { get; set; } = 5.0m;
     public int ReviewsCount { get; set; } = 0;
     public string DeliveryTime { get; set; } = "يومان";
+
+    public int EstimatedDeliveryDays { get; set; }
+    public int IncludedRevisions { get; set; }
+    public string Status { get; set; } = "Draft"; // Draft, PendingApproval, Active, Paused, Rejected
+    public string? RejectionReason { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<ServiceOfferingTag> ServiceOfferingTags { get; set; } = new List<ServiceOfferingTag>();
+}
+
+public class ServiceTag
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
+    public ICollection<ServiceOfferingTag> ServiceOfferingTags { get; set; } = new List<ServiceOfferingTag>();
+}
+
+public class ServiceOfferingTag
+{
+    public Guid ServiceId { get; set; }
+    public Service Service { get; set; } = null!;
+    public Guid TagId { get; set; }
+    public ServiceTag Tag { get; set; } = null!;
 }
 
 public class Order

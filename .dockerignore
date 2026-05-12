@@ -1,0 +1,26 @@
+# Node.js
+node_modules/
+dist/
+build/
+coverage/
+
+# .NET
+bin/
+obj/
+/wwwroot/uploads/*
+!/wwwroot/uploads/.gitkeep
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Misc
+.vscode/
+.idea/
+*.log
+.env*

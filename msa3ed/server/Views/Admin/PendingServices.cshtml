@@ -1,0 +1,95 @@
+@model IEnumerable<Uis.Server.Models.Service>
+
+@{
+    ViewData["Title"] = "الخدمات المعلقة";
+}
+
+<div class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-black text-gray-800">خدمات بانتظار المراجعة</h1>
+    <span class="px-4 py-2 bg-warning/10 text-warning rounded-xl text-sm font-bold">
+        @Model.Count() خدمة معلقة
+    </span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @foreach (var service in Model)
+    {
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
+            @if (!string.IsNullOrEmpty(service.ImageUrl))
+            {
+                <img src="@service.ImageUrl" class="w-full h-48 object-cover" />
+            }
+            <div class="p-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-[10px] font-bold uppercase tracking-wider">
+                        @service.Category.Name
+                    </span>
+                    <span class="text-gray-400 text-xs">@service.UpdatedAt.ToLocalTime().ToString("g")</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">@service.Title</h3>
+                <p class="text-sm text-gray-500 mb-4 line-clamp-2">@service.Description</p>
+                
+                <div class="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-xl">
+                    <img src="@(service.Executor?.ProfilePicture ?? "/img/default-avatar.png")" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" />
+                    <div>
+                        <p class="text-xs font-bold text-gray-800">@service.Executor?.FullName</p>
+                        <p class="text-[10px] text-gray-400">منفذ الخدمة</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <form asp-action="ApproveService" asp-route-id="@service.Id" method="post" class="flex-1">
+                        <button type="submit" class="w-full py-3 bg-success text-white rounded-xl text-xs font-black hover:bg-success/90 transition-colors">
+                            <i class="fas fa-check ml-1"></i> قبول
+                        </button>
+                    </form>
+                    <button onclick="openRejectModal('@service.Id', '@service.Title')" class="flex-1 py-3 bg-error/10 text-error rounded-xl text-xs font-black hover:bg-error/20 transition-colors">
+                        <i class="fas fa-times ml-1"></i> رفض
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="py-20 text-center bg-white rounded-3xl border-2 border-dashed border-gray-100">
+        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-coffee text-3xl text-gray-300"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800">لا توجد خدمات معلقة حالياً</h3>
+        <p class="text-gray-400">جميع الخدمات المقدمة تمت مراجعتها.</p>
+    </div>
+}
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
+        <div class="p-6 border-b border-gray-50">
+            <h3 class="text-xl font-black text-gray-800" id="modalTitle">رفض الخدمة</h3>
+        </div>
+        <form asp-action="RejectService" method="post" class="p-6">
+            <input type="hidden" name="id" id="rejectServiceId" />
+            <div class="mb-6">
+                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">سبب الرفض</label>
+                <textarea name="reason" required rows="4" class="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl text-sm transition-all outline-none" placeholder="اشرح للمنفذ لماذا تم رفض خدمته..."></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeRejectModal()" class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl text-sm font-black hover:bg-gray-200 transition-all">إلغاء</button>
+                <button type="submit" class="flex-1 py-4 bg-error text-white rounded-2xl text-sm font-black hover:bg-error/90 shadow-lg shadow-error/30 transition-all">تأكيد الرفض</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(id, title) {
+        document.getElementById('rejectServiceId').value = id;
+        document.getElementById('modalTitle').innerText = 'رفض: ' + title;
+        document.getElementById('rejectModal').classList.remove('hidden');
+    }
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+    }
+</script>

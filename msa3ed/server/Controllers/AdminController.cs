@@ -14,13 +14,15 @@ public class AdminController : Controller
     private readonly INotificationService _notificationService;
     private readonly IFileService _fileService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
+    private readonly IServiceService _serviceService;
 
-    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub)
+    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IServiceService serviceService)
     {
         _db = db;
         _notificationService = notificationService;
         _fileService = fileService;
         _hub = hub;
+        _serviceService = serviceService;
     }
 
     [HttpGet("")]
@@ -1116,5 +1118,26 @@ public class AdminController : Controller
         await _db.SaveChangesAsync();
         TempData["Success"] = "تم تحديث إعدادات البريد بنجاح";
         return RedirectToAction(nameof(EmailSettings));
+    }
+
+    [HttpGet("Services/Pending")]
+    public async Task<IActionResult> PendingServices()
+    {
+        var services = await _serviceService.GetPendingServicesAsync();
+        return View(services);
+    }
+
+    [HttpPost("Services/Approve/{id}")]
+    public async Task<IActionResult> ApproveService(Guid id)
+    {
+        await _serviceService.ApproveServiceAsync(id);
+        return RedirectToAction(nameof(PendingServices));
+    }
+
+    [HttpPost("Services/Reject/{id}")]
+    public async Task<IActionResult> RejectService(Guid id, string reason)
+    {
+        await _serviceService.RejectServiceAsync(id, reason);
+        return RedirectToAction(nameof(PendingServices));
     }
 }

@@ -31,6 +31,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Permission> Permissions { get; set; } = null!;
     public DbSet<RolePermission> RolePermissions { get; set; } = null!;
     public DbSet<SystemSetting> SystemSettings { get; set; } = null!;
+    public DbSet<ServiceTag> ServiceTags { get; set; } = null!;
+    public DbSet<ServiceOfferingTag> ServiceOfferingTags { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +43,20 @@ public class ApplicationDbContext : DbContext
             .HasMany(u => u.Roles)
             .WithMany(r => r.Users)
             .UsingEntity(j => j.ToTable("UserRoles"));
+
+        // Configure Many-to-Many between Service and ServiceTag
+        modelBuilder.Entity<ServiceOfferingTag>()
+            .HasKey(sot => new { sot.ServiceId, sot.TagId });
+
+        modelBuilder.Entity<ServiceOfferingTag>()
+            .HasOne(sot => sot.Service)
+            .WithMany(s => s.ServiceOfferingTags)
+            .HasForeignKey(sot => sot.ServiceId);
+
+        modelBuilder.Entity<ServiceOfferingTag>()
+            .HasOne(sot => sot.Tag)
+            .WithMany(t => t.ServiceOfferingTags)
+            .HasForeignKey(sot => sot.TagId);
 
         // Configure Favorite (Unique constraint on UserId and ServiceId)
         modelBuilder.Entity<Favorite>()

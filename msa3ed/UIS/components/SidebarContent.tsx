@@ -10,6 +10,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { height } = Dimensions.get('window');
 
+const DrawerItem = ({ icon, label, onPress }: { icon: keyof typeof Ionicons.glyphMap, label: string, onPress: () => void }) => (
+  <Pressable style={({ pressed }) => [styles.drawerItem, pressed && styles.drawerItemPressed]} onPress={onPress}>
+    <Ionicons name={icon} size={22} color={Colors.text} style={styles.drawerItemIcon} />
+    <Text style={styles.drawerItemLabel}>{label}</Text>
+  </Pressable>
+);
+
 export default function SidebarContent(props: any) {
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -62,7 +69,47 @@ export default function SidebarContent(props: any) {
         <View style={styles.divider} />
 
         <View style={styles.menuContainer}>
-          <DrawerItemList {...props} />
+          <DrawerItem 
+            icon="home-outline" 
+            label="الرئيسية" 
+            onPress={() => router.push('/student/(tabs)')} 
+          />
+          <DrawerItem 
+            icon="grid-outline" 
+            label="الأقسام" 
+            onPress={() => router.push('/student/(tabs)/categories')} 
+          />
+          <DrawerItem 
+            icon="heart-outline" 
+            label="المفضلة" 
+            onPress={() => router.push('/student/(tabs)/favourites')} 
+          />
+          <DrawerItem 
+            icon="mail-outline" 
+            label="الوارد" 
+            onPress={() => router.push('/student/(tabs)/inbox')} 
+          />
+
+          {user?.isExecutor && (
+            <>
+              <View style={styles.divider} />
+              <DrawerItem 
+                icon="briefcase-outline" 
+                label="طلبات التنفيذ" 
+                onPress={() => router.push('/student/(tabs)/executor-orders')} 
+              />
+              <DrawerItem 
+                icon="search-outline" 
+                label="تصفح المشاريع" 
+                onPress={() => router.push('/executor/projects/available')} 
+              />
+              <DrawerItem 
+                icon="cash-outline" 
+                label="الأرباح" 
+                onPress={() => router.push('/student/(tabs)/executor-earnings')} 
+              />
+            </>
+          )}
         </View>
 
         <View style={styles.footer}>
@@ -105,4 +152,8 @@ const styles = StyleSheet.create({
   logoutBtn: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logoutIconContainer: { width: 40, height: 40, borderRadius: 12, backgroundColor: Colors.error + '10', justifyContent: 'center', alignItems: 'center' },
   logoutText: { fontSize: 16, fontWeight: '600', color: Colors.error },
+  drawerItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, marginBottom: 4 },
+  drawerItemPressed: { backgroundColor: Colors.primary + '10' },
+  drawerItemIcon: { marginRight: 12, width: 24, textAlign: 'center' },
+  drawerItemLabel: { fontSize: 16, color: Colors.text, fontWeight: '500' },
 });

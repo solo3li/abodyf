@@ -83,7 +83,7 @@ export default function MessageBubble({ message, isSender }: MessageBubbleProps)
 }
 
 const styles = StyleSheet.create({
-  messageBubble: { maxWidth: '85%', padding: 16, borderRadius: 20, marginBottom: 12, shadowColor: 'rgba(0, 0, 0, 0.03)', shadowOffset: { width: 0, height: 2 }, shadowRadius: 5, shadowOpacity: 1, elevation: 1 },
+  messageBubble: { maxWidth: '85%', padding: 16, borderRadius: 20, marginBottom: 12, boxShadow: [{ color: 'rgba(0, 0, 0, 0.03)', offsetX: 0, offsetY: 2, blurRadius: 5, spreadDistance: 0 }], elevation: 1 },
   senderBubble: { alignSelf: 'flex-start', backgroundColor: Colors.primary, borderBottomLeftRadius: 4 },
   receiverBubble: { alignSelf: 'flex-end', backgroundColor: Colors.white, borderBottomRightRadius: 4, borderWidth: 1, borderColor: Colors.border },
   senderName: { fontSize: 12, fontWeight: 'bold', color: Colors.primary, marginBottom: 4, textAlign: 'left' },

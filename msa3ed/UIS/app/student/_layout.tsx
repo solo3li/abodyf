@@ -27,54 +27,6 @@ export default function StudentLayout() {
         }}
       />
       <Drawer.Screen
-        name="(tabs)/categories"
-        options={{
-          title: 'الأقسام',
-          drawerIcon: ({ color, size }) => <Ionicons name="grid-outline" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="(tabs)/favourites"
-        options={{
-          title: 'المفضلة',
-          drawerIcon: ({ color, size }) => <Ionicons name="heart-outline" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="(tabs)/inbox"
-        options={{
-          title: 'الوارد',
-          drawerIcon: ({ color, size }) => <Ionicons name="mail-outline" size={size} color={color} />,
-        }}
-      />
-
-      {/* EXECUTOR CONSOLE */}
-      <Drawer.Screen
-        name="(tabs)/executor-orders"
-        options={{
-          title: 'طلبات التنفيذ',
-          drawerIcon: ({ color, size }) => <Ionicons name="briefcase-outline" size={size} color={color} />,
-          drawerItemStyle: { display: isExecutor ? 'flex' : 'none' },
-        }}
-      />
-      <Drawer.Screen
-        name="../executor/projects/available"
-        options={{
-          title: 'تصفح المشاريع',
-          drawerIcon: ({ color, size }) => <Ionicons name="search-outline" size={size} color={color} />,
-          drawerItemStyle: { display: isExecutor ? 'flex' : 'none' },
-        }}
-      />
-      <Drawer.Screen
-        name="(tabs)/executor-earnings"
-        options={{
-          title: 'الأرباح',
-          drawerIcon: ({ color, size }) => <Ionicons name="cash-outline" size={size} color={color} />,
-          drawerItemStyle: { display: isExecutor ? 'flex' : 'none' },
-        }}
-      />
-
-      <Drawer.Screen
         name="checkout"
         options={{
           drawerItemStyle: { display: 'none' },
@@ -82,6 +34,48 @@ export default function StudentLayout() {
       />
       <Drawer.Screen
         name="payment-result"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="search"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="profile/[id]"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="profile/edit-profile"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="projects/create"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="projects/mine"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="projects/[id]/offers"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="service/[id]"
         options={{
           drawerItemStyle: { display: 'none' },
         }}

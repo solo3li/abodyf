@@ -4,13 +4,15 @@ import { Audio } from 'expo-av';
 import { Colors } from '../../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { API_BASE_URL } from '../../../../services/api';
+import Waveform from '../../../../components/Waveform';
 
 interface AudioPlayerWidgetProps {
   url: string;
+  waveformData?: number[];
   isSender: boolean;
 }
 
-export default function AudioPlayerWidget({ url, isSender }: AudioPlayerWidgetProps) {
+export default function AudioPlayerWidget({ url, waveformData, isSender }: AudioPlayerWidgetProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -67,7 +69,8 @@ export default function AudioPlayerWidget({ url, isSender }: AudioPlayerWidgetPr
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const progress = duration > 0 ? (position / duration) * 100 : 0;
+  const progress = duration > 0 ? (position / duration) : 0;
+  const peaks = waveformData && waveformData.length > 0 ? waveformData : [40, 60, 80, 50, 70, 90, 40, 30, 50, 70, 60, 40, 80, 90, 50];
 
   return (
     <View style={[styles.container, { backgroundColor: isSender ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)' }]}>
@@ -76,9 +79,12 @@ export default function AudioPlayerWidget({ url, isSender }: AudioPlayerWidgetPr
       </Pressable>
       
       <View style={styles.progressContainer}>
-        <View style={[styles.progressBarBg, { backgroundColor: isSender ? 'rgba(255,255,255,0.4)' : Colors.border }]}>
-          <View style={[styles.progressBarFill, { width: `${progress}%`, backgroundColor: isSender ? Colors.white : Colors.primary }]} />
-        </View>
+        <Waveform 
+          peaks={peaks} 
+          progress={progress} 
+          color={isSender ? Colors.white : Colors.primary} 
+          height={30}
+        />
         <Text style={[styles.timeText, { color: isSender ? Colors.white : Colors.textSecondary }]}>
           {formatTime(position)} / {duration > 0 ? formatTime(duration) : '--:--'}
         </Text>
@@ -91,7 +97,5 @@ const styles = StyleSheet.create({
   container: { flexDirection: 'row', alignItems: 'center', padding: 8, borderRadius: 24, width: 220, gap: 12 },
   playBtn: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
   progressContainer: { flex: 1, justifyContent: 'center', gap: 4 },
-  progressBarBg: { height: 4, borderRadius: 2, width: '100%' },
-  progressBarFill: { height: '100%', borderRadius: 2 },
   timeText: { fontSize: 10, fontWeight: '500', textAlign: 'left' }
 });

@@ -122,7 +122,7 @@ public class ChatService : IChatService {
             .Include(c => c.Executor)
             .Include(c => c.Messages.OrderByDescending(m => m.SentAt).Take(1))
             .Where(c => c.Type == ChatType.PrivateChat && (c.StudentId == userId || c.ExecutorId == userId))
-            .OrderByDescending(c => c.Messages.Max(m => (DateTime?)m.SentAt) ?? c.Id.ToByteArray()[0] == 0 ? DateTime.MinValue : DateTime.UtcNow) // fallback sort
+            .OrderByDescending(c => c.Messages.Max(m => (DateTime?)m.SentAt) ?? (c.Id.ToByteArray()[0] == 0 ? DateTime.MinValue : DateTime.UtcNow)) // fallback sort
             .ToListAsync();
     }
     public async Task<CustomOffer> SendCustomOfferAsync(Guid chatId, Guid executorId, CustomOffer offer) {

@@ -47,17 +47,19 @@
                             <span class="text-[10px] opacity-60">@msg.SentAt.ToLocalTime().ToString("HH:mm")</span>
                         </div>
                         <p class="text-sm leading-relaxed font-medium">@msg.Content</p>
-                        @if (!string.IsNullOrEmpty(msg.AttachmentUrl))
+                        @if (msg.Attachments != null && msg.Attachments.Any())
                         {
-                            <div class="mt-3">
-                                @if(msg.AttachmentType == "image") {
-                                    <a href="@msg.AttachmentUrl" target="_blank"><img src="@msg.AttachmentUrl" class="max-w-full rounded-lg max-h-40" /></a>
-                                } else if(msg.AttachmentType == "voice") {
-                                    <audio controls src="@msg.AttachmentUrl" class="w-full max-w-[200px] mt-2"></audio>
-                                } else {
-                                    <a href="@msg.AttachmentUrl" target="_blank" class="flex items-center p-2 bg-black/10 rounded-lg text-xs font-bold hover:bg-black/20 w-fit">
-                                        <i class="fas fa-file-download ml-2"></i> تحميل المرفق
-                                    </a>
+                            <div class="mt-3 space-y-2">
+                                @foreach(var att in msg.Attachments) {
+                                    if(att.FileType == "Image") {
+                                        <a href="@att.Url" target="_blank"><img src="@att.Url" class="max-w-full rounded-lg max-h-40" /></a>
+                                    } else if(att.FileType == "Audio") {
+                                        <audio controls src="@att.Url" class="w-full max-w-[200px] mt-2"></audio>
+                                    } else {
+                                        <a href="@att.Url" target="_blank" class="flex items-center p-2 bg-black/10 rounded-lg text-xs font-bold hover:bg-black/20 w-fit">
+                                            <i class="fas fa-file-download ml-2"></i> @att.FileName
+                                        </a>
+                                    }
                                 }
                             </div>
                         }

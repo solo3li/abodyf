@@ -168,11 +168,22 @@ public class Message
     public Guid SenderId { get; set; }
     public User Sender { get; set; } = null!;
     public string Content { get; set; } = string.Empty;
-    public string? AttachmentUrl { get; set; }
-    public string? AttachmentType { get; set; } // e.g., Image, Document, Audio
+    public int[]? WaveformData { get; set; }
+    public ICollection<MessageAttachment> Attachments { get; set; } = new List<MessageAttachment>();
     public Guid? CustomOfferId { get; set; }
     public CustomOffer? CustomOffer { get; set; }
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
+}
+
+public class MessageAttachment
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid MessageId { get; set; }
+    public Message Message { get; set; } = null!;
+    public string Url { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public string FileType { get; set; } = string.Empty; // Image, Document, Audio
+    public long FileSize { get; set; }
 }
 
 public class CustomOffer
@@ -182,7 +193,7 @@ public class CustomOffer
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int DeliveryDays { get; set; }
-    public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected, Expired
+    public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected, Withdrawn, Expired
     public Guid ExecutorId { get; set; }
     public User Executor { get; set; } = null!;
     public Guid StudentId { get; set; }
@@ -210,8 +221,7 @@ public class TicketMessage
     public Guid SenderId { get; set; }
     public User Sender { get; set; } = null!;
     public string Content { get; set; } = string.Empty;
-    public string? AttachmentUrl { get; set; }
-    public string? AttachmentType { get; set; }
+    public ICollection<MessageAttachment> Attachments { get; set; } = new List<MessageAttachment>();
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 }
 

@@ -1,0 +1,16 @@
+# General
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Specs temporary/local files
+/root/.gemini/tmp/

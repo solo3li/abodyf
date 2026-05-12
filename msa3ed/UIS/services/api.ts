@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 // Dynamically determine the local API URL based on the platform and environment.
-let LOCAL_URL = 'http://localhost:5035';
+let LOCAL_URL = 'http://209.38.238.175:5035';
 
 if (Platform.OS === 'android') {
   // Android emulators need 10.0.2.2 to reach the host machine's localhost

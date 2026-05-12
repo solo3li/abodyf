@@ -7,7 +7,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import AudioRecorder from './AudioRecorder';
 
 interface ChatInputProps {
-  onSend: (content?: string, attachment?: any, type?: string) => Promise<void>;
+  onSend: (content?: string, attachments?: any[], audioFile?: any) => Promise<void>;
   sending: boolean;
   extraButtons?: React.ReactNode;
 }
@@ -20,16 +20,16 @@ export default function ChatInput({ onSend, sending, extraButtons }: ChatInputPr
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       quality: 0.7,
+      allowsMultipleSelection: true,
     });
 
     if (!result.canceled) {
-      const asset = result.assets[0];
-      const file = {
+      const files = result.assets.map(asset => ({
         uri: asset.uri,
         name: asset.fileName || 'chat_upload.jpg',
         type: asset.mimeType || 'image/jpeg',
-      };
-      await onSend('', file, 'image');
+      }));
+      await onSend('', files);
     }
   };
 
@@ -37,16 +37,16 @@ export default function ChatInput({ onSend, sending, extraButtons }: ChatInputPr
     const result = await DocumentPicker.getDocumentAsync({
       type: '*/*',
       copyToCacheDirectory: true,
+      multiple: true,
     });
 
     if (!result.canceled) {
-      const asset = result.assets[0];
-      const file = {
+      const files = result.assets.map(asset => ({
         uri: asset.uri,
         name: asset.name || 'document',
         type: asset.mimeType || 'application/octet-stream',
-      };
-      await onSend('', file, 'document');
+      }));
+      await onSend('', files);
     }
   };
 
@@ -59,12 +59,12 @@ export default function ChatInput({ onSend, sending, extraButtons }: ChatInputPr
 
   const handleRecordingComplete = async (uri: string, durationMillis: number) => {
     setIsRecordingMode(false);
-    const file = {
+    const audioFile = {
       uri,
       name: 'voice_message.m4a',
       type: 'audio/m4a'
     };
-    await onSend('', file, 'audio');
+    await onSend('', [], audioFile);
   };
 
   if (isRecordingMode) {
@@ -87,11 +87,9 @@ export default function ChatInput({ onSend, sending, extraButtons }: ChatInputPr
       <Pressable style={styles.attachBtn} onPress={pickImage} disabled={sending}>
         <Ionicons name="image" size={24} color={Colors.textSecondary} />
       </Pressable>
-      {hasMic && (
-        <Pressable style={styles.attachBtn} onPress={() => setIsRecordingMode(true)} disabled={sending}>
-          <Ionicons name="mic" size={24} color={Colors.textSecondary} />
-        </Pressable>
-      )}
+      <Pressable style={styles.attachBtn} onPress={() => setIsRecordingMode(true)} disabled={sending}>
+        <Ionicons name="mic" size={24} color={Colors.textSecondary} />
+      </Pressable>
       <TextInput 
         style={styles.input} 
         placeholder="اكتب رسالتك هنا..." 
@@ -112,8 +110,5 @@ const styles = StyleSheet.create({
   inputContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, paddingBottom: 32, backgroundColor: Colors.white, borderTopWidth: 1, borderTopColor: Colors.border, minHeight: 76 },
   attachBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   input: { flex: 1, minHeight: 44, maxHeight: 100, backgroundColor: Colors.background, borderRadius: 22, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, fontSize: 16, color: Colors.text, textAlign: 'right', marginHorizontal: 8 },
-  sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' },
-});
-t, textAlign: 'right', marginHorizontal: 8 },
   sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' },
 });

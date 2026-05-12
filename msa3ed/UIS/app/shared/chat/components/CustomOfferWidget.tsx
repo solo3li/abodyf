@@ -44,6 +44,7 @@ export default function CustomOfferWidget({ offer }: CustomOfferWidgetProps) {
     switch (offer.status) {
       case 'Accepted': return Colors.success;
       case 'Rejected': return Colors.error;
+      case 'Withdrawn': return Colors.textSecondary;
       default: return Colors.warning;
     }
   };
@@ -52,6 +53,7 @@ export default function CustomOfferWidget({ offer }: CustomOfferWidgetProps) {
     switch (offer.status) {
       case 'Accepted': return 'مقبول';
       case 'Rejected': return 'مرفوض';
+      case 'Withdrawn': return 'تم سحبه';
       default: return 'قيد الانتظار';
     }
   };

@@ -783,8 +783,11 @@ public class AdminController : Controller
         if (request.Attachment != null && request.Attachment.Length > 0)
         {
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(request.Attachment.FileName);
-            message.AttachmentUrl = await _fileService.UploadFileAsync(request.Attachment.OpenReadStream(), fileName);
-            message.AttachmentType = request.AttachmentType ?? "file";
+            var url = await _fileService.UploadFileAsync(request.Attachment.OpenReadStream(), fileName);
+            message.Attachments.Add(new MessageAttachment { 
+                Url = url, FileName = request.Attachment.FileName, 
+                FileType = request.AttachmentType ?? "file", FileSize = request.Attachment.Length 
+            });
         }
 
         _db.TicketMessages.Add(message);
@@ -797,16 +800,14 @@ public class AdminController : Controller
             SentAt = message.SentAt,
             SenderId = message.SenderId,
             SenderName = "مدير النظام",
-            AttachmentUrl = message.AttachmentUrl,
-            AttachmentType = message.AttachmentType
+            Attachments = message.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize })
         });
 
         return Json(new { 
             success = true, 
             senderName = "مدير النظام", 
             content = message.Content, 
-            attachmentUrl = message.AttachmentUrl,
-            attachmentType = message.AttachmentType,
+            attachments = message.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize }),
             time = message.SentAt.ToLocalTime().ToString("HH:mm") 
         });
     }
@@ -836,8 +837,11 @@ public class AdminController : Controller
         if (attachment != null && attachment.Length > 0)
         {
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
-            message.AttachmentUrl = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
-            message.AttachmentType = attachmentType ?? "file";
+            var url = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
+            message.Attachments.Add(new MessageAttachment { 
+                Url = url, FileName = attachment.FileName, 
+                FileType = attachmentType ?? "file", FileSize = attachment.Length 
+            });
         }
 
         _db.TicketMessages.Add(message);
@@ -850,8 +854,7 @@ public class AdminController : Controller
             SentAt = message.SentAt,
             SenderId = message.SenderId,
             SenderName = "مدير النظام",
-            AttachmentUrl = message.AttachmentUrl,
-            AttachmentType = message.AttachmentType
+            Attachments = message.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize })
         });
 
         return RedirectToAction(nameof(TicketDetails), new { id = ticketId });

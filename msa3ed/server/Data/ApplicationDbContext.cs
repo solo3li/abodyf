@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Escrow> Escrows { get; set; } = null!;
     public DbSet<Chat> Chats { get; set; } = null!;
     public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<MessageAttachment> MessageAttachments { get; set; } = null!;
     public DbSet<CustomOffer> CustomOffers { get; set; } = null!;
     public DbSet<Ticket> Tickets { get; set; } = null!;
     public DbSet<TicketMessage> TicketMessages { get; set; } = null!;

@@ -25,18 +25,34 @@ export const fetchInbox = createAsyncThunk('chat/fetchInbox', async (_, { reject
   }
 });
 
-export const sendMessage = createAsyncThunk('chat/sendMessage', async ({ chatId, content, attachment, attachmentType }: { chatId: string, content?: string, attachment?: any, attachmentType?: string }, { rejectWithValue }) => {
+export const sendMessage = createAsyncThunk('chat/sendMessage', async ({ chatId, content, attachments, audioFile }: { chatId: string, content?: string, attachments?: any[], audioFile?: any }, { rejectWithValue }) => {
   try {
     const formData = new FormData();
     if (content) formData.append('content', content);
-    if (attachment) {
-      formData.append('attachment', attachment as any);
-      if (attachmentType) formData.append('attachmentType', attachmentType);
+    if (attachments) {
+      attachments.forEach((file, index) => {
+        formData.append(`attachments`, file as any);
+      });
+    }
+    if (audioFile) {
+      formData.append('audioFile', audioFile as any);
     }
     
     return await apiFetch(`/Chat/${chatId}/Message`, {
       method: 'POST',
       body: formData
+    });
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const initiatePrivateChat = createAsyncThunk('chat/initiatePrivateChat', async (executorId: string, { rejectWithValue }) => {
+  try {
+    return await apiFetch(`/Chat/Private/Initiate`, {
+      method: 'POST',
+      body: JSON.stringify({ executorId }),
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (error: any) {
     return rejectWithValue(error.message);
@@ -88,6 +104,10 @@ const chatSlice = createSlice({
     builder.addCase(fetchPrivateChat.pending, (state) => { state.loading = true; });
     builder.addCase(fetchPrivateChat.fulfilled, (state, action) => { state.loading = false; state.currentChat = action.payload; });
     builder.addCase(fetchPrivateChat.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
+
+    builder.addCase(initiatePrivateChat.pending, (state) => { state.loading = true; });
+    builder.addCase(initiatePrivateChat.fulfilled, (state, action) => { state.loading = false; state.currentChat = action.payload; });
+    builder.addCase(initiatePrivateChat.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; });
 
     builder.addCase(fetchInbox.pending, (state) => { state.loading = true; });
     builder.addCase(fetchInbox.fulfilled, (state, action) => { state.loading = false; state.inbox = action.payload; });

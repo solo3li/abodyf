@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "G3cTcCeKdf8=",
+  "dgSpecHash": "WR4JPiFwY00=",
   "success": true,
-  "projectFilePath": "/src/msa3ed/server/Uis.Server.csproj",
+  "projectFilePath": "/workspace/msa3ed/server/Uis.Server.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
+    "/root/.nuget/packages/ffmpegcore/5.1.0/ffmpegcore.5.1.0.nupkg.sha512",
     "/root/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
+    "/root/.nuget/packages/instances/3.0.0/instances.3.0.0.nupkg.sha512",
     "/root/.nuget/packages/mailkit/4.16.0/mailkit.4.16.0.nupkg.sha512",
     "/root/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.7/microsoft.aspnetcore.authentication.jwtbearer.10.0.7.nupkg.sha512",
     "/root/.nuget/packages/microsoft.build.framework/18.0.2/microsoft.build.framework.18.0.2.nupkg.sha512",

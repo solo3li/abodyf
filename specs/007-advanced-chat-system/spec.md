@@ -7,6 +7,12 @@
 
 ## Clarifications
 
+### Session 2026-05-12
+- Q: How should audio waveform data be handled for instant rendering? → A: Pre-calculate and store simplified peak data (50-100 points) within the Message payload.
+- Q: Should executors be able to withdraw a custom offer after sending it? → A: Yes, executors can withdraw offers anytime before acceptance, changing status to `Withdrawn` and disabling the accept action.
+- Q: Can users send multiple attachments in a single message? → A: Yes, support multiple attachments (array of URLs/metadata) per single message.
+- Q: What is the scope of "improving" the Admin Panel chat? → A: Enhanced Monitoring & Support. Admins gain full visibility into advanced message types (audio, attachments, offers) in Support and Chat logs, with real-time sync for active support sessions.
+
 ### Session 2026-05-11
 - Q: Where should the new Private Chats (Inbox) be located in the UI? → A: Create a brand new dedicated "Inbox" tab just for private chats.
 - Q: Should Custom Offers be available in all chats, or just the Private Inbox? → A: Exclusive to Private Inbox (Pre-order negotiation only).
@@ -88,12 +94,14 @@ As any user, I want to record and send voice messages, so that I can quickly exp
 - **FR-006**: Users MUST be able to preview (listen to) their voice recording before sending.
 - **FR-007**: Voice messages in the chat feed MUST display a playable audio component with a waveform visualization.
 - **FR-008**: These advanced chat features (attachments, voice, real-time sync) MUST be uniformly implemented across contexts, but the Private Inbox MUST utilize a dedicated real-time hub (e.g., `PrivateChatHub`) separated from the active Order/Ticket chats.
+- **FR-009**: The Admin Panel MUST be updated to support the rendering and playback of all new message types (Audio, Attachments, Custom Offers) within the Support Ticket and Chat Log views.
+- **FR-010**: The Private Inbox MUST support basic message organization through "All", "Unread", and "Starred" filters.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Chat**: Needs an indicator (e.g., `ChatType` enum) to distinguish between `OrderChat`, `PrivateChat`, and `TicketChat`. (Note: Existing DB records will be migrated to `OrderChat`).
-- **Message**: Needs robust typing to handle `Text`, `Image`, `Document`, `Audio`, and `CustomOffer` payloads.
-- **CustomOffer**: Links to a `Message` and eventually an `Order`. Fields: Price, DeliveryDays, Description, Status (Pending, Accepted, Rejected).
+- **Message**: Needs robust typing to handle `Text`, `Image`, `Document`, `Audio`, and `CustomOffer` payloads. For `Audio` messages, includes a `WaveformData` field (array of integers) for instant rendering. For media/files, supports an array of `Attachments` (URL, FileName, FileType, FileSize).
+- **CustomOffer**: Links to a `Message` and eventually an `Order`. Fields: Price, DeliveryDays, Description, Status (Pending, Accepted, Rejected, Withdrawn).
 
 ---
 
@@ -113,3 +121,16 @@ As any user, I want to record and send voice messages, so that I can quickly exp
 - **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.
 bM).
 - **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.
+s**: The mobile app will handle requesting microphone and file storage permissions natively.
+ttachments handled?**: The system must enforce a maximum file size (e.g., 20MB) and present a clear error message if the limit is exceeded before upload begins.
+
+## Assumptions
+
+- **Storage**: The system will utilize the existing local file storage (`wwwroot/uploads`) for all chat attachments and voice records, enforcing a hard 20MB limit.
+- **Audio Format**: Voice recordings will be saved in a standard, cross-platform format (e.g., MP4/AAC or WebM).
+- **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.
+bM).
+- **Permissions**: The mobile app will handle requesting microphone and file storage permissions natively.
+s**: The mobile app will handle requesting microphone and file storage permissions natively.
+questing microphone and file storage permissions natively.
+ively.

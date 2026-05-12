@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Pressable, ScrollView } from 'react-native';
 import { Colors } from '../../../constants/Colors';
 import Animated, { FadeInLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchInbox } from '../../../store/slices/chatSlice';
 import { API_BASE_URL } from '../../../services/api';
 import LoadingState from '../../../components/LoadingState';
@@ -17,6 +17,7 @@ export default function InboxScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { inbox, loading, error } = useSelector((state: RootState) => state.chat);
+  const [filter, setFilter] = useState('All');
 
   useEffect(() => {
     dispatch(fetchInbox());
@@ -24,20 +25,20 @@ export default function InboxScreen() {
 
   const renderItem = ({ item, index }: any) => (
     <Animated.View entering={FadeInLeft.delay(index * 100)}>
-      <Pressable style={styles.chatCard} onPress={() => router.push(`/shared/chat/private/${item.partnerId}`)}>
+      <Pressable style={styles.chatCard} onPress={() => router.push(`/shared/chat/private/${item.otherParticipant.id}`)}>
         <View>
-          <Image source={{ uri: getApiUrl(item.partnerImage) }} style={styles.avatar} />
+          <Image source={{ uri: getApiUrl(item.otherParticipant.profilePicture) }} style={styles.avatar} />
         </View>
         <View style={styles.chatInfo}>
           <View style={styles.chatHeader}>
-            <Text style={styles.name}>{item.partnerName || 'مستخدم'}</Text>
+            <Text style={styles.name}>{item.otherParticipant.name || 'مستخدم'}</Text>
             <Text style={[styles.time, item.unreadCount > 0 && styles.timeUnread]}>
-              {item.lastMessageAt ? new Date(item.lastMessageAt).toLocaleDateString('ar-EG') : 'الآن'}
+              {item.lastMessage?.sentAt ? new Date(item.lastMessage.sentAt).toLocaleDateString('ar-EG') : 'الآن'}
             </Text>
           </View>
           <View style={styles.messageRow}>
             <Text style={[styles.lastMessage, item.unreadCount > 0 && styles.lastMessageUnread]} numberOfLines={1}>
-              {item.lastMessage || 'لا توجد رسائل بعد'}
+              {item.lastMessage?.content || 'لا توجد رسائل بعد'}
             </Text>
             {item.unreadCount > 0 && (
               <LinearGradient
@@ -58,6 +59,23 @@ export default function InboxScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>البريد الوارد (الخاص)</Text>
       </View>
+      
+      <View style={styles.filterContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+          {['All', 'Unread', 'Starred'].map((f) => (
+            <Pressable 
+              key={f} 
+              style={[styles.filterChip, filter === f && styles.filterChipActive]} 
+              onPress={() => setFilter(f)}
+            >
+              <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
+                {f === 'All' ? 'الكل' : f === 'Unread' ? 'غير مقروء' : 'المفضلة'}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
       {error ? (
         <EmptyState 
           icon="alert-circle-outline" 
@@ -96,14 +114,41 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     backgroundColor: Colors.white,
     alignItems: 'center',
-    boxShadow: [{ color: 'rgba(0,0,0,0.05)', offsetX: 0, offsetY: 2, blurRadius: 10, spreadDistance: 0 }],
-    elevation: 2,
-    zIndex: 10,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '900',
     color: Colors.text,
+  },
+  filterContainer: {
+    backgroundColor: Colors.white,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  filterScroll: {
+    paddingHorizontal: 24,
+  },
+  filterChip: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: Colors.background,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  filterChipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  filterText: {
+    color: Colors.textSecondary,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  filterTextActive: {
+    color: Colors.white,
   },
   list: {
     padding: 24,
@@ -116,7 +161,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 16,
     alignItems: 'center',
-    boxShadow: [{ color: 'rgba(0,0,0,0.03)', offsetX: 0, offsetY: 4, blurRadius: 10, spreadDistance: 0 }],
     elevation: 2,
     borderWidth: 1,
     borderColor: Colors.border,

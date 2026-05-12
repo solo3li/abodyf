@@ -80,15 +80,15 @@ export default function PrivateChatScreen() {
     };
   }, [currentChat?.id, token, dispatch]);
 
-  const handleSend = async (content?: string, attachment?: any, type: string = 'file') => {
-    if (!content?.trim() && !attachment) return;
+  const handleSend = async (content?: string, attachments?: any[], audioFile?: any) => {
+    if (!content?.trim() && (!attachments || attachments.length === 0) && !audioFile) return;
     setSending(true);
     try {
       await dispatch(sendMessage({ 
         chatId: currentChat.id, 
         content: content || '', 
-        attachment, 
-        attachmentType: type 
+        attachments, 
+        audioFile
       })).unwrap();
     } catch (err: any) {
       alert('فشل في إرسال الرسالة: ' + err.message);

@@ -12,8 +12,8 @@ interface MessageBubbleProps {
     content: string;
     senderId: string;
     senderName?: string;
-    attachmentUrl?: string;
-    attachmentType?: string;
+    attachments?: any[];
+    waveformData?: number[];
     sentAt: string | Date;
     customOffer?: any;
   };
@@ -23,10 +23,40 @@ interface MessageBubbleProps {
 export default function MessageBubble({ message, isSender }: MessageBubbleProps) {
   const getFullUrl = (url: string) => url.startsWith('http') ? url : API_BASE_URL + url;
 
-  const handleOpenDocument = () => {
-    if (message.attachmentUrl) {
-      Linking.openURL(getFullUrl(message.attachmentUrl));
+  const handleOpenDocument = (url: string) => {
+    Linking.openURL(getFullUrl(url));
+  };
+
+  const renderAttachment = (att: any, index: number) => {
+    const type = att.fileType?.toLowerCase() || '';
+    
+    if (type === 'image') {
+      return (
+        <Image key={index} source={{ uri: getFullUrl(att.url) }} style={styles.messageImage} resizeMode="cover" />
+      );
     }
+
+    if (type === 'audio') {
+      return (
+        <View key={index} style={{ marginTop: 8 }}>
+          <AudioPlayerWidget url={att.url} waveformData={message.waveformData} isSender={isSender} />
+        </View>
+      );
+    }
+
+    if (type === 'document' || type === 'file') {
+      return (
+        <Pressable key={index} style={styles.fileContainer} onPress={() => handleOpenDocument(att.url)}>
+          <Ionicons name="document" size={24} color={isSender ? Colors.white : Colors.primary} />
+          <Text style={[styles.fileText, { color: isSender ? Colors.white : Colors.text }]} numberOfLines={1}>
+            {att.fileName || 'مستند مرفق'}
+          </Text>
+          <Ionicons name="download-outline" size={20} color={isSender ? Colors.white : Colors.primary} />
+        </Pressable>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -39,30 +69,9 @@ export default function MessageBubble({ message, isSender }: MessageBubbleProps)
         <>
           {message.content ? <Text style={[styles.messageText, isSender ? styles.senderText : styles.receiverText]}>{message.content}</Text> : null}
           
-          {message.attachmentUrl && message.attachmentType === 'image' && (
-              <Image source={{ uri: getFullUrl(message.attachmentUrl) }} style={styles.messageImage} resizeMode="cover" />
-          )}
-
-          {message.attachmentUrl && message.attachmentType === 'audio' && (
-              <View style={{ marginTop: message.content ? 8 : 0 }}>
-                  <AudioPlayerWidget url={message.attachmentUrl} isSender={isSender} />
-              </View>
-          )}
-
-          {message.attachmentUrl && message.attachmentType === 'document' && (
-              <Pressable style={styles.fileContainer} onPress={handleOpenDocument}>
-                  <Ionicons name="document" size={24} color={isSender ? Colors.white : Colors.primary} />
-                  <Text style={[styles.fileText, { color: isSender ? Colors.white : Colors.text }]} numberOfLines={1}>مستند مرفق</Text>
-                  <Ionicons name="download-outline" size={20} color={isSender ? Colors.white : Colors.primary} />
-              </Pressable>
-          )}
-
-          {message.attachmentUrl && (!['image', 'document', 'audio'].includes(message.attachmentType || '')) && (
-              <Pressable style={styles.fileContainer} onPress={handleOpenDocument}>
-                  <Ionicons name="document-attach" size={24} color={isSender ? Colors.white : Colors.primary} />
-                  <Text style={[styles.fileText, { color: isSender ? Colors.white : Colors.text }]} numberOfLines={1}>ملف مرفق</Text>
-              </Pressable>
-          )}
+          <View style={styles.attachmentsContainer}>
+            {message.attachments?.map((att, idx) => renderAttachment(att, idx))}
+          </View>
         </>
       )}
 
@@ -81,6 +90,7 @@ const styles = StyleSheet.create({
   messageText: { fontSize: 16, lineHeight: 24, textAlign: 'left' },
   senderText: { color: Colors.white },
   receiverText: { color: Colors.text },
+  attachmentsContainer: { marginTop: 4 },
   messageImage: { width: 220, height: 220, borderRadius: 12, marginTop: 8 },
   fileContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8, padding: 10, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 10 },
   fileText: { fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'left' },

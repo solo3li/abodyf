@@ -254,9 +254,11 @@ public class OrdersController : ControllerBase {
 public class PaymentsController : ControllerBase {
     private readonly ApplicationDbContext _db;
     private readonly IPaymentService _paymentService;
-    public PaymentsController(ApplicationDbContext db, IPaymentService paymentService) { 
+    private readonly IEscrowService _escrow;
+    public PaymentsController(ApplicationDbContext db, IPaymentService paymentService, IEscrowService escrow) { 
         _db = db; 
         _paymentService = paymentService;
+        _escrow = escrow;
     }
     
     [HttpPost("{orderId}")] public async Task<IActionResult> Process(Guid orderId, [FromBody] decimal amount) {
@@ -305,32 +307,43 @@ public class PaymentsController : ControllerBase {
 public class ChatController : ControllerBase {
     private readonly ApplicationDbContext _db;
     private readonly IFileService _fileService;
+    private readonly IAudioService _audioService;
     private readonly Uis.Server.Services.IChatService _chatService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.PrivateChatHub> _privateHub;
-    public ChatController(ApplicationDbContext db, IFileService fileService, Uis.Server.Services.IChatService chatService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.PrivateChatHub> privateHub) {
+    public ChatController(ApplicationDbContext db, IFileService fileService, IAudioService audioService, Uis.Server.Services.IChatService chatService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.PrivateChatHub> privateHub) {
         _db = db;
         _fileService = fileService;
+        _audioService = audioService;
         _chatService = chatService;
         _hub = hub;
         _privateHub = privateHub;
     }
 
-    [HttpGet("Inbox")] public async Task<IActionResult> GetInbox() {
+    [HttpGet("Inbox")] public async Task<IActionResult> GetInbox([FromQuery] string filter = "All") {
         var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(myIdStr == null) return Unauthorized();
         var myId = Guid.Parse(myIdStr);
 
         var chats = await _chatService.GetInboxAsync(myId);
 
-        return Ok(chats.Select(c => new {
-            c.Id,
-            PartnerId = c.StudentId == myId ? c.ExecutorId : c.StudentId,
-            PartnerName = c.StudentId == myId ? c.Executor?.FullName : c.Student?.FullName,
-            PartnerImage = c.StudentId == myId ? c.Executor?.ProfilePicture : c.Student?.ProfilePicture,
-            LastMessage = c.Messages.FirstOrDefault()?.Content,
-            LastMessageAt = c.Messages.FirstOrDefault()?.SentAt,
-            UnreadCount = 0 // Not implemented yet
+        // Apply basic filtering (T037)
+        if (filter == "Starred") {
+            // Starred logic not yet in DB, returning all for now
+        }
+
+        return Ok(chats.Select(c => new ChatSummaryDto {
+            Id = c.Id,
+            Type = c.Type.ToString(),
+            OtherParticipant = new UserDto {
+                Id = (c.StudentId == myId ? c.ExecutorId : c.StudentId) ?? Guid.Empty,
+                Name = (c.StudentId == myId ? c.Executor?.FullName : c.Student?.FullName) ?? "Unknown",
+                ProfilePicture = c.StudentId == myId ? c.Executor?.ProfilePicture : c.Student?.ProfilePicture
+            },
+            LastMessage = c.Messages.OrderByDescending(m => m.SentAt).Select(m => new MessageDto {
+                Id = m.Id, Content = m.Content, SentAt = m.SentAt
+            }).FirstOrDefault(),
+            UnreadCount = 0
         }));
     }
 
@@ -341,7 +354,7 @@ public class ChatController : ControllerBase {
         var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId && (o.StudentId == myId || o.ExecutorId == myId));
         if (order == null) return NotFound("Order not found or access denied.");
 
-        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).FirstOrDefaultAsync(c => c.OrderId == orderId);
+        var chat = await _db.Chats.Include(c => c.Messages).ThenInclude(m => m.Sender).Include(c => c.Messages).ThenInclude(m => m.Attachments).FirstOrDefaultAsync(c => c.OrderId == orderId);
         
         if (chat == null) {
             chat = new Chat { OrderId = orderId };
@@ -349,34 +362,40 @@ public class ChatController : ControllerBase {
             await _db.SaveChangesAsync();
         }
 
-        return Ok(new {
-            chat.Id,
-            Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType
-            })
+        return Ok(new ChatDto {
+            Id = chat.Id,
+            Type = chat.Type.ToString(),
+            OrderId = chat.OrderId,
+            Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new MessageDto {
+                Id = m.Id, ChatId = m.ChatId, SenderId = m.SenderId, Content = m.Content, SentAt = m.SentAt,
+                WaveformData = m.WaveformData,
+                Attachments = m.Attachments.Select(a => new AttachmentDto { Url = a.Url, FileName = a.FileName, FileType = a.FileType, FileSize = a.FileSize }).ToList()
+            }).ToList()
         });
     }
 
-    [HttpPost("Private")] public async Task<IActionResult> InitPrivateChat([FromBody] Guid userId) {
-        return await GetPrivateChat(userId);
-    }
-
-    [HttpGet("Private/{userId}")] public async Task<IActionResult> GetPrivateChat(Guid userId) {
+    [HttpPost("Private/Initiate")] public async Task<IActionResult> InitiatePrivateChat([FromBody] InitiateChatDto dto) {
         var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(myIdStr == null) return Unauthorized();
         var myId = Guid.Parse(myIdStr);
 
-        var chat = await _chatService.InitializePrivateChatAsync(myId, userId);
+        var chat = await _chatService.InitializePrivateChatAsync(myId, dto.ExecutorId);
 
-        return Ok(new {
-            chat.Id,
-            Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender?.FullName, m.AttachmentUrl, m.AttachmentType, m.CustomOffer
-            })
+        return Ok(new ChatDto {
+            Id = chat.Id,
+            Type = chat.Type.ToString(),
+            Messages = chat.Messages.OrderBy(m => m.SentAt).Select(m => new MessageDto {
+                Id = m.Id, ChatId = m.ChatId, SenderId = m.SenderId, Content = m.Content, SentAt = m.SentAt,
+                WaveformData = m.WaveformData,
+                CustomOffer = m.CustomOffer != null ? new CustomOfferDto {
+                    Id = m.CustomOffer.Id, Title = m.CustomOffer.Title, Price = m.CustomOffer.Price, Status = m.CustomOffer.Status
+                } : null,
+                Attachments = m.Attachments.Select(a => new AttachmentDto { Url = a.Url, FileName = a.FileName, FileType = a.FileType, FileSize = a.FileSize }).ToList()
+            }).ToList()
         });
     }
 
-    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, IFormFile? attachment, [FromForm] string? attachmentType, [FromForm] string? attachmentUrl = null) {
+    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, [FromForm] List<IFormFile>? attachments, [FromForm] IFormFile? audioFile) {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(userIdStr == null) return Unauthorized();
         var uid = Guid.Parse(userIdStr);
@@ -386,39 +405,44 @@ public class ChatController : ControllerBase {
         
         var msg = new Message { ChatId = chatId, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
 
-        if (attachment != null && attachment.Length > 0)
-        {
-            if (attachment.Length > 20 * 1024 * 1024) return BadRequest("File exceeds 20MB limit.");
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
-            msg.AttachmentUrl = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
-            msg.AttachmentType = attachmentType ?? "file";
+        if (audioFile != null && audioFile.Length > 0) {
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
+            var url = await _fileService.UploadFileAsync(audioFile.OpenReadStream(), fileName);
+            msg.Attachments.Add(new MessageAttachment { 
+                Url = url, FileName = audioFile.FileName, FileType = "Audio", FileSize = audioFile.Length 
+            });
+            // T031: Process waveform
+            msg.WaveformData = await _audioService.ExtractWaveformDataAsync(Path.Combine("wwwroot", "uploads", fileName));
         }
-        else if (!string.IsNullOrEmpty(attachmentUrl))
-        {
-            msg.AttachmentUrl = attachmentUrl;
-            msg.AttachmentType = attachmentType ?? "file";
+
+        if (attachments != null) {
+            foreach (var file in attachments) {
+                if (file.Length > 20 * 1024 * 1024) continue;
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var url = await _fileService.UploadFileAsync(file.OpenReadStream(), fileName);
+                string type = file.ContentType.StartsWith("image/") ? "Image" : "Document";
+                msg.Attachments.Add(new MessageAttachment { 
+                    Url = url, FileName = file.FileName, FileType = type, FileSize = file.Length 
+                });
+            }
         }
 
         _db.Messages.Add(msg);
         await _db.SaveChangesAsync();
 
-        var payload = new {
-            Id = msg.Id,
-            Content = msg.Content,
-            SentAt = msg.SentAt,
-            SenderId = msg.SenderId,
-            SenderName = sender?.FullName,
-            AttachmentUrl = msg.AttachmentUrl,
-            AttachmentType = msg.AttachmentType
+        var dto = new MessageDto {
+            Id = msg.Id, ChatId = msg.ChatId, SenderId = msg.SenderId, Content = msg.Content, SentAt = msg.SentAt,
+            WaveformData = msg.WaveformData,
+            Attachments = msg.Attachments.Select(a => new AttachmentDto { Url = a.Url, FileName = a.FileName, FileType = a.FileType, FileSize = a.FileSize }).ToList()
         };
 
         if (chat.Type == ChatType.PrivateChat) {
-            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", payload);
+            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
         } else {
-            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", payload);
+            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
         }
 
-        return Ok(msg);
+        return Ok(dto);
     }
 
     [HttpPost("Attachments")]
@@ -510,12 +534,13 @@ public class TicketController : ControllerBase {
     }
 
     [HttpGet("{id}")] public async Task<IActionResult> GetById(Guid id) {
-        var ticket = await _db.Tickets.Include(t => t.Messages).ThenInclude(m => m.Sender).FirstOrDefaultAsync(t => t.Id == id);
+        var ticket = await _db.Tickets.Include(t => t.Messages).ThenInclude(m => m.Sender).Include(t => t.Messages).ThenInclude(m => m.Attachments).FirstOrDefaultAsync(t => t.Id == id);
         if (ticket == null) return NotFound();
         return Ok(new {
             ticket.Id, ticket.Subject, ticket.Status,
             Messages = ticket.Messages.OrderBy(m => m.SentAt).Select(m => new {
-                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName, m.AttachmentUrl, m.AttachmentType
+                m.Id, m.Content, m.SentAt, m.SenderId, SenderName = m.Sender.FullName,
+                Attachments = m.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize })
             })
         });
     }
@@ -528,7 +553,7 @@ public class TicketController : ControllerBase {
         return Ok(ticket);
     }
 
-    [HttpPost("{id}/Reply")] public async Task<IActionResult> Reply(Guid id, [FromForm] string? content, IFormFile? attachment, [FromForm] string? attachmentType) {
+    [HttpPost("{id}/Reply")] public async Task<IActionResult> Reply(Guid id, [FromForm] string? content, [FromForm] List<IFormFile>? attachments) {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(userIdStr == null) return Unauthorized();
         var uid = Guid.Parse(userIdStr);
@@ -536,11 +561,15 @@ public class TicketController : ControllerBase {
 
         var msg = new TicketMessage { TicketId = id, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
 
-        if (attachment != null && attachment.Length > 0)
-        {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
-            msg.AttachmentUrl = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
-            msg.AttachmentType = attachmentType ?? "file";
+        if (attachments != null) {
+            foreach (var file in attachments) {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var url = await _fileService.UploadFileAsync(file.OpenReadStream(), fileName);
+                string type = file.ContentType.StartsWith("image/") ? "Image" : "Document";
+                msg.Attachments.Add(new MessageAttachment { 
+                    Url = url, FileName = file.FileName, FileType = type, FileSize = file.Length 
+                });
+            }
         }
 
         _db.TicketMessages.Add(msg);
@@ -552,8 +581,7 @@ public class TicketController : ControllerBase {
             SentAt = msg.SentAt,
             SenderId = msg.SenderId,
             SenderName = sender?.FullName,
-            AttachmentUrl = msg.AttachmentUrl,
-            AttachmentType = msg.AttachmentType
+            Attachments = msg.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize })
         });
 
         return Ok(msg);

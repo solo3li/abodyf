@@ -15,7 +15,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 WORKDIR /app
 
 # Install PostgreSQL, Redis, Bash, and sed (to fix line endings)
-RUN apk add --no-cache postgresql redis bash sed
+RUN apk add --no-cache postgresql redis bash sed krb5-libs
 
 # Setup PostgreSQL directories and permissions
 RUN mkdir -p /var/lib/postgresql/data /var/log/postgresql && \

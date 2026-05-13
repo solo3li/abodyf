@@ -15,6 +15,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<EmailOtp> EmailOtps { get; set; } = null!;
     public DbSet<KycRequest> KycRequests { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    // Feature 013
+    public DbSet<SubCategory> SubCategories { get; set; } = null!;
+    public DbSet<ModerationAction> ModerationActions { get; set; } = null!;
+    public DbSet<ChatReadReceipt> ChatReadReceipts { get; set; } = null!;
     public DbSet<Service> Services { get; set; } = null!;
     public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<Payment> Payments { get; set; } = null!;
@@ -66,6 +70,11 @@ public class ApplicationDbContext : DbContext
         // Configure Favorite (Unique constraint on UserId and ServiceId)
         modelBuilder.Entity<Favorite>()
             .HasIndex(f => new { f.UserId, f.ServiceId })
+            .IsUnique();
+
+        // Feature 013: Unique constraint on ChatReadReceipt (ChatId, UserId)
+        modelBuilder.Entity<ChatReadReceipt>()
+            .HasIndex(r => new { r.ChatId, r.UserId })
             .IsUnique();
 
         // Configure SystemSetting

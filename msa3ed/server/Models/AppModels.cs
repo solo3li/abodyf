@@ -115,6 +115,16 @@ public class Category
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
+    public ICollection<SubCategory> SubCategories { get; set; } = new List<SubCategory>();
+}
+
+public class SubCategory
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
 }
 
 public class Service
@@ -137,10 +147,15 @@ public class Service
 
     public int EstimatedDeliveryDays { get; set; }
     public int IncludedRevisions { get; set; }
-    public string Status { get; set; } = "Draft"; // Draft, PendingApproval, Active, Paused, Rejected
+    public string Status { get; set; } = "PendingApproval"; // Draft, PendingApproval, Active, Paused, Rejected
     public string? RejectionReason { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    // Feature 013: subcategory, re-approval tracking
+    public Guid? SubCategoryId { get; set; }
+    public SubCategory? SubCategory { get; set; }
+    public DateTime? LastEditedAt { get; set; }
+    public Guid? LastEditedByExecutorId { get; set; }
 
     public ICollection<ServiceOfferingTag> ServiceOfferingTags { get; set; } = new List<ServiceOfferingTag>();
 }
@@ -260,6 +275,8 @@ public class ProjectInvitation
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
+public enum MessageType { Text, Voice, Image, Video, File }
+
 public class Message
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -268,7 +285,14 @@ public class Message
     public Guid SenderId { get; set; }
     public User Sender { get; set; } = null!;
     public string Content { get; set; } = string.Empty;
+    // Feature 013: rich media
+    public MessageType Type { get; set; } = MessageType.Text;
     public int[]? WaveformData { get; set; }
+    public int? VoiceDurationSeconds { get; set; }
+    // Feature 013: admin soft-delete
+    public bool IsDeleted { get; set; } = false;
+    public Guid? DeletedByAdminId { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public ICollection<MessageAttachment> Attachments { get; set; } = new List<MessageAttachment>();
     public Guid? CustomOfferId { get; set; }
     public CustomOffer? CustomOffer { get; set; }
@@ -281,9 +305,12 @@ public class MessageAttachment
     public Guid MessageId { get; set; }
     public Message Message { get; set; } = null!;
     public string Url { get; set; } = string.Empty;
+    // Feature 013: thumbnail for image/video previews
+    public string? ThumbnailUrl { get; set; }
     public string FileName { get; set; } = string.Empty;
-    public string FileType { get; set; } = string.Empty; // Image, Document, Audio
+    public string FileType { get; set; } = string.Empty; // Image, Video, Document, Audio
     public long FileSize { get; set; }
+    public int? DurationSeconds { get; set; }
 }
 
 public class CustomOffer
@@ -321,6 +348,10 @@ public class TicketMessage
     public Guid SenderId { get; set; }
     public User Sender { get; set; } = null!;
     public string Content { get; set; } = string.Empty;
+    // Feature 013: rich media support matching Message model
+    public MessageType Type { get; set; } = MessageType.Text;
+    public int[]? WaveformData { get; set; }
+    public int? VoiceDurationSeconds { get; set; }
     public ICollection<MessageAttachment> Attachments { get; set; } = new List<MessageAttachment>();
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 }
@@ -359,4 +390,34 @@ public class SystemSetting
     public string Key { get; set; } = string.Empty; // e.g., "SmtpHost", "EmailTemplate"
     public string Value { get; set; } = string.Empty;
     public string? Description { get; set; }
+}
+
+// Feature 013: Admin moderation audit log
+public enum ModerationActionType { MessageFlagged, MessageDeleted, UserMuted }
+
+public class ModerationAction
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid AdminId { get; set; }
+    public User Admin { get; set; } = null!;
+    public ModerationActionType ActionType { get; set; }
+    public Guid? TargetMessageId { get; set; }
+    public Message? TargetMessage { get; set; }
+    public Guid? TargetUserId { get; set; }
+    public User? TargetUser { get; set; }
+    public int? DurationMinutes { get; set; }
+    public DateTime? MuteExpiresAt { get; set; }
+    public string? Notes { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+// Feature 013: Read receipts for unread count tracking
+public class ChatReadReceipt
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ChatId { get; set; }
+    public Chat Chat { get; set; } = null!;
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+    public DateTime LastReadAt { get; set; } = DateTime.UtcNow;
 }

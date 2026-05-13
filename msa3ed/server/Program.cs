@@ -105,6 +105,9 @@ builder.Services.AddScoped<Uis.Server.Services.IAudioService, Uis.Server.Service
 builder.Services.AddScoped<Uis.Server.Services.IOfferService, Uis.Server.Services.OfferService>();
 builder.Services.AddScoped<Uis.Server.Services.IServiceService, Uis.Server.Services.ServiceService>();
 builder.Services.AddScoped<Uis.Server.Services.IProjectService, Uis.Server.Services.ProjectService>();
+// Feature 013: new services
+builder.Services.AddScoped<Uis.Server.Services.ISearchService, Uis.Server.Services.SearchService>();
+builder.Services.AddScoped<Uis.Server.Services.IModerationService, Uis.Server.Services.ModerationService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();

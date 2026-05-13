@@ -170,7 +170,10 @@ public class ServicesController : ControllerBase {
 [Route("api/[controller]")]
 public class CategoriesController : ControllerBase {
     private readonly ApplicationDbContext _db; public CategoriesController(ApplicationDbContext db) { _db = db; }
-    [HttpGet] public async Task<IActionResult> GetAll() => Ok(await _db.Categories.ToListAsync());
+    [HttpGet] public async Task<IActionResult> GetAll() => Ok(await _db.Categories.Include(c => c.SubCategories).ToListAsync());
+    // Feature 013: T064 — subcategory endpoint
+    [HttpGet("{id}/SubCategories")] public async Task<IActionResult> GetSubCategories(Guid id) =>
+        Ok(await _db.SubCategories.Where(s => s.CategoryId == id && s.IsActive).ToListAsync());
 }
 
 [ApiController]
@@ -326,24 +329,53 @@ public class ChatController : ControllerBase {
 
         var chats = await _chatService.GetInboxAsync(myId);
 
-        // Apply basic filtering (T037)
-        if (filter == "Starred") {
-            // Starred logic not yet in DB, returning all for now
-        }
+        // Feature 013 T055: include lastMessageType and unreadCount
+        var readReceipts = await _db.ChatReadReceipts
+            .Where(r => r.UserId == myId)
+            .ToDictionaryAsync(r => r.ChatId, r => r.LastReadAt);
 
-        return Ok(chats.Select(c => new ChatSummaryDto {
-            Id = c.Id,
-            Type = c.Type.ToString(),
-            OtherParticipant = new UserDto {
-                Id = (c.StudentId == myId ? c.ExecutorId : c.StudentId) ?? Guid.Empty,
-                Name = (c.StudentId == myId ? c.Executor?.FullName : c.Student?.FullName) ?? "Unknown",
-                ProfilePicture = c.StudentId == myId ? c.Executor?.ProfilePicture : c.Student?.ProfilePicture
-            },
-            LastMessage = c.Messages.OrderByDescending(m => m.SentAt).Select(m => new MessageDto {
-                Id = m.Id, Content = m.Content, SentAt = m.SentAt
-            }).FirstOrDefault(),
-            UnreadCount = 0
+        return Ok(chats.Select(c => {
+            var lastMsg = c.Messages.OrderByDescending(m => m.SentAt).FirstOrDefault();
+            var lastReadAt = readReceipts.TryGetValue(c.Id, out var lr) ? lr : DateTime.MinValue;
+            var unreadCount = c.Messages.Count(m => m.SentAt > lastReadAt && m.SenderId != myId && !m.IsDeleted);
+            var lastMsgType = lastMsg?.Type.ToString() ?? "Text";
+            var lastMsgPreview = lastMsg?.IsDeleted == true ? "[تم حذف الرسالة]"
+                : lastMsg?.Type == MessageType.Voice ? "🎤 رسالة صوتية"
+                : lastMsg?.Type == MessageType.Image ? "📷 صورة"
+                : lastMsg?.Type == MessageType.Video ? "🎥 فيديو"
+                : lastMsg?.Type == MessageType.File ? "📎 ملف"
+                : lastMsg?.Content ?? "";
+
+            return new {
+                chatId = c.Id,
+                type = c.Type.ToString(),
+                contactId = (c.StudentId == myId ? c.ExecutorId : c.StudentId) ?? Guid.Empty,
+                contactName = (c.StudentId == myId ? c.Executor?.FullName : c.Student?.FullName) ?? "Unknown",
+                contactAvatar = c.StudentId == myId ? c.Executor?.ProfilePicture : c.Student?.ProfilePicture,
+                lastMessagePreview = lastMsgPreview,
+                lastMessageType = lastMsgType,
+                unreadCount,
+                lastMessageAt = lastMsg?.SentAt
+            };
         }));
+    }
+
+    // Feature 013 T056: mark conversation as read
+    [HttpPost("Inbox/{chatId}/Read")] public async Task<IActionResult> MarkRead(Guid chatId) {
+        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(myIdStr == null) return Unauthorized();
+        var myId = Guid.Parse(myIdStr);
+
+        var receipt = await _db.ChatReadReceipts
+            .FirstOrDefaultAsync(r => r.ChatId == chatId && r.UserId == myId);
+        if (receipt == null) {
+            receipt = new ChatReadReceipt { ChatId = chatId, UserId = myId, LastReadAt = DateTime.UtcNow };
+            _db.ChatReadReceipts.Add(receipt);
+        } else {
+            receipt.LastReadAt = DateTime.UtcNow;
+        }
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpGet("Order/{orderId}")] public async Task<IActionResult> GetOrderChat(Guid orderId) {        var myIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -394,34 +426,50 @@ public class ChatController : ControllerBase {
         });
     }
 
-    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, [FromForm] List<IFormFile>? attachments, [FromForm] IFormFile? audioFile) {
+    [HttpPost("{chatId}/Message")] public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, [FromForm] List<IFormFile>? attachments, [FromForm] IFormFile? audioFile, [FromForm] string? waveformDataJson) {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if(userIdStr == null) return Unauthorized();
         var uid = Guid.Parse(userIdStr);
-        var sender = await _db.Users.FindAsync(uid);
         var chat = await _db.Chats.FindAsync(chatId);
         if (chat == null) return NotFound("Chat not found.");
-        
+
+        // Feature 013 T030: enforce 50MB limit on all file uploads
+        const long MaxFileSize = 50L * 1024 * 1024;
+        const int MaxVoiceSeconds = 300;
+
         var msg = new Message { ChatId = chatId, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
 
         if (audioFile != null && audioFile.Length > 0) {
+            if (audioFile.Length > MaxFileSize) return BadRequest(new { error = "FILE_TOO_LARGE", maxBytes = MaxFileSize });
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
             var url = await _fileService.UploadFileAsync(audioFile.OpenReadStream(), fileName);
-            msg.Attachments.Add(new MessageAttachment { 
-                Url = url, FileName = audioFile.FileName, FileType = "Audio", FileSize = audioFile.Length 
-            });
-            // T031: Process waveform
-            msg.WaveformData = await _audioService.ExtractWaveformDataAsync(Path.Combine("wwwroot", "uploads", fileName));
+            // Feature 013 T022: set voice type and waveform
+            msg.Type = MessageType.Voice;
+            var waveform = await _audioService.ExtractWaveformDataAsync(Path.Combine("wwwroot", "uploads", fileName));
+            msg.WaveformData = waveform.Length > 0 ? waveform
+                : (!string.IsNullOrEmpty(waveformDataJson)
+                    ? System.Text.Json.JsonSerializer.Deserialize<int[]>(waveformDataJson) ?? Array.Empty<int>()
+                    : Array.Empty<int>());
+            var durationAttachment = new MessageAttachment {
+                Url = url, FileName = audioFile.FileName, FileType = "Audio", FileSize = audioFile.Length
+            };
+            msg.Attachments.Add(durationAttachment);
         }
 
         if (attachments != null) {
             foreach (var file in attachments) {
-                if (file.Length > 20 * 1024 * 1024) continue;
+                if (file.Length > MaxFileSize) return BadRequest(new { error = "FILE_TOO_LARGE", maxBytes = MaxFileSize });
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 var url = await _fileService.UploadFileAsync(file.OpenReadStream(), fileName);
-                string type = file.ContentType.StartsWith("image/") ? "Image" : "Document";
-                msg.Attachments.Add(new MessageAttachment { 
-                    Url = url, FileName = file.FileName, FileType = type, FileSize = file.Length 
+                // Feature 013 T031: detect image/video/file type
+                string fileType;
+                MessageType msgType;
+                if (file.ContentType.StartsWith("image/")) { fileType = "Image"; msgType = MessageType.Image; }
+                else if (file.ContentType.StartsWith("video/")) { fileType = "Video"; msgType = MessageType.Video; }
+                else { fileType = "Document"; msgType = MessageType.File; }
+                if (msg.Type == MessageType.Text) msg.Type = msgType; // set type from first attachment
+                msg.Attachments.Add(new MessageAttachment {
+                    Url = url, FileName = file.FileName, FileType = fileType, FileSize = file.Length
                 });
             }
         }
@@ -429,16 +477,21 @@ public class ChatController : ControllerBase {
         _db.Messages.Add(msg);
         await _db.SaveChangesAsync();
 
-        var dto = new MessageDto {
-            Id = msg.Id, ChatId = msg.ChatId, SenderId = msg.SenderId, Content = msg.Content, SentAt = msg.SentAt,
-            WaveformData = msg.WaveformData,
-            Attachments = msg.Attachments.Select(a => new AttachmentDto { Url = a.Url, FileName = a.FileName, FileType = a.FileType, FileSize = a.FileSize }).ToList()
+        var dto = new {
+            id = msg.Id, chatId = msg.ChatId, senderId = msg.SenderId,
+            type = msg.Type.ToString(), content = msg.Content, sentAt = msg.SentAt,
+            waveformData = msg.WaveformData, voiceDurationSeconds = msg.VoiceDurationSeconds,
+            isDeleted = msg.IsDeleted,
+            attachments = msg.Attachments.Select(a => new {
+                a.Id, a.Url, a.ThumbnailUrl, a.FileName, a.FileType, a.FileSize, a.DurationSeconds
+            }).ToList()
         };
 
+        var hubGroup = chatId.ToString();
         if (chat.Type == ChatType.PrivateChat) {
-            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
+            await _privateHub.Clients.Group(hubGroup).SendAsync("ReceiveMessage", dto);
         } else {
-            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
+            await _hub.Clients.Group(hubGroup).SendAsync("ReceiveMessage", dto);
         }
 
         return Ok(dto);

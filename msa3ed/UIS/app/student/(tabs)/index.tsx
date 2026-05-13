@@ -10,6 +10,8 @@ import { AppDispatch, RootState } from '../../../store';
 import { fetchCategories, fetchServices } from '../../../store/slices/catalogSlice';
 import { useAuth } from '../../../context/AuthContext';
 import { API_BASE_URL } from '../../../services/api';
+import WalletCard from '../../../components/WalletCard';
+import { fetchWallet } from '../../../store/slices/walletSlice';
 
 const { width } = Dimensions.get('window');
 
@@ -21,11 +23,13 @@ export default function HomeScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { categories, services, loading } = useSelector((state: RootState) => state.catalog);
+  const { balance, currency } = useSelector((state: RootState) => state.wallet);
   const { user } = useAuth();
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchServices());
+    dispatch(fetchWallet());
   }, [dispatch]);
 
   const getApiUrl = (path: string) => {
@@ -70,6 +74,11 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.content}>
+        {/* Wallet Card */}
+        <View style={styles.walletSection}>
+            <WalletCard balance={balance} currency={currency} />
+        </View>
+
         {/* Categories */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -173,8 +182,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     overflow: 'hidden',
-    boxShadow: [{ color: 'rgba(28, 55, 120, 0.15)', offsetX: 0, offsetY: 10, blurRadius: 20, spreadDistance: 0 }],
-    elevation: 10,
   },
   header: {
     padding: 24,
@@ -444,4 +451,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: Colors.primary,
   },
+  walletSection: {
+    paddingHorizontal: 20,
+    marginTop: -24,
+    marginBottom: 20,
+    zIndex: 10,
+  }
 });

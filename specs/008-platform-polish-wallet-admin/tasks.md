@@ -7,38 +7,38 @@
 **Goal**: Prepare the database and foundational services for the new features.
 **Test**: The backend compiles, migrations are applied successfully, and services are injected.
 
-- [ ] T001 Update `User` model with `WalletBalance`, add `WalletTransaction` and `AuditLog` entities, and update `SystemSetting` keys in `msa3ed/server/Models/AppModels.cs` and `msa3ed/server/Data/ApplicationDbContext.cs`.
-- [ ] T002 Generate EF Core migration `AddWalletAndAuditLog` and apply it to the database in `msa3ed/server`.
-- [ ] T003 Create `IWalletService` and `WalletService` with atomic ledger methods in `msa3ed/server/Services/WalletService.cs`.
-- [ ] T004 Create `IAuditLogService` and `AuditLogService` in `msa3ed/server/Services/AuditLogService.cs`.
-- [ ] T005 Register `IWalletService` and `IAuditLogService` in `msa3ed/server/Program.cs`.
+- [x] T001 Update `User` model with `WalletBalance`, add `WalletTransaction` and `AuditLog` entities, and update `SystemSetting` keys in `msa3ed/server/Models/AppModels.cs` and `msa3ed/server/Data/ApplicationDbContext.cs`.
+- [x] T002 Generate EF Core migration `AddWalletAndAuditLog` and apply it to the database in `msa3ed/server`.
+- [x] T003 Create `IWalletService` and `WalletService` with atomic ledger methods in `msa3ed/server/Services/WalletService.cs`.
+- [x] T004 Create `IAuditLogService` and `AuditLogService` in `msa3ed/server/Services/AuditLogService.cs`.
+- [x] T005 Register `IWalletService` and `IAuditLogService` in `msa3ed/server/Program.cs`.
 
 ## Phase 2: Internal Wallet (US2)
 **Goal**: Implement the wallet backbone for holding balances, topping up, and processing order payments.
 **Test**: Student can view balance, add funds (top-up), and place an order using wallet funds.
 
-- [ ] T006 [P] [US2] Implement `WalletController` (`GET /api/Wallet`, `POST /api/Wallet/TopUp`) in `msa3ed/server/Controllers/Api/WalletController.cs`.
-- [ ] T007 [US2] Update order creation in `msa3ed/server/Controllers/Api/OrdersController.cs` to deduct from `WalletBalance` atomatically, preventing order creation if insufficient funds.
-- [ ] T008 [P] [US2] Create Redux state slice for wallet in `msa3ed/UIS/store/slices/walletSlice.ts` and add it to `store/index.ts`.
-- [ ] T009 [US2] Create the frontend Wallet screen UI with top-up and transaction history in `msa3ed/UIS/app/student/(tabs)/wallet/index.tsx`.
-- [ ] T010 [US2] Update `profile.tsx` to display real wallet balance and navigate to the wallet screen in `msa3ed/UIS/app/student/(tabs)/profile.tsx`.
+- [x] T006 [P] [US2] Implement `WalletController` (`GET /api/Wallet`, `POST /api/Wallet/TopUp`) in `msa3ed/server/Controllers/Api/WalletController.cs`.
+- [x] T007 [US2] Update order creation in `msa3ed/server/Controllers/Api/OrdersController.cs` to deduct from `WalletBalance` atomatically, preventing order creation if insufficient funds.
+- [x] T008 [P] [US2] Create Redux state slice for wallet in `msa3ed/UIS/store/slices/walletSlice.ts` and add it to `store/index.ts`.
+- [x] T009 [US2] Create the frontend Wallet screen UI with top-up and transaction history in `msa3ed/UIS/app/student/(tabs)/wallet/index.tsx`.
+- [x] T010 [US2] Update `profile.tsx` to display real wallet balance and navigate to the wallet screen in `msa3ed/UIS/app/student/(tabs)/profile.tsx`.
 
 ## Phase 3: Redesigned Home Page (US1)
 **Goal**: Polish the Home page design and integrate the Wallet Summary Card.
 **Test**: Launch app as student, see matching UI tokens, and see real-time wallet balance at the top of Home.
 
-- [ ] T011 [P] [US1] Create a reusable `WalletCard` component in `msa3ed/UIS/components/WalletCard.tsx`.
-- [ ] T012 [US1] Refactor Home page layout, styles, and incorporate `WalletCard` in `msa3ed/UIS/app/student/(tabs)/index.tsx`.
+- [x] T011 [P] [US1] Create a reusable `WalletCard` component in `msa3ed/UIS/components/WalletCard.tsx`.
+- [x] T012 [US1] Refactor Home page layout, styles, and incorporate `WalletCard` in `msa3ed/UIS/app/student/(tabs)/index.tsx`.
 
 ## Phase 4: Full Admin Panel Control (US3)
 **Goal**: Secure the admin panel and add complete control for Wallet and Audit logs.
 **Test**: Visit `/Admin`, verify it requires Admin auth. Manually credit a user's wallet and see the log appear in Audit Logs.
 
-- [ ] T013 [P] [US3] Add `[Authorize]` attribute with Admin-only check to `msa3ed/server/Controllers/AdminController.cs`.
-- [ ] T014 [US3] Implement Wallet management actions (List, Details, Credit, Debit) in `msa3ed/server/Controllers/AdminController.cs`.
-- [ ] T015 [US3] Create Wallet admin views in `msa3ed/server/Views/Admin/WalletList.cshtml` and `WalletDetails.cshtml`.
-- [ ] T016 [US3] Implement Audit Log view action in `msa3ed/server/Controllers/AdminController.cs` and create `msa3ed/server/Views/Admin/AuditLogs.cshtml`.
-- [ ] T017 [US3] Inject `IAuditLogService` into `AdminController` and log critical actions (User toggle, KYC approve, etc.) in `msa3ed/server/Controllers/AdminController.cs`.
+- [x] T013 [P] [US3] Add `[Authorize]` attribute with Admin-only check to `msa3ed/server/Controllers/AdminController.cs`.
+- [x] T014 [US3] Implement Wallet management actions (List, Details, Credit, Debit) in `msa3ed/server/Controllers/AdminController.cs`.
+- [x] T015 [US3] Create Wallet admin views in `msa3ed/server/Views/Admin/WalletList.cshtml` and `WalletDetails.cshtml`.
+- [x] T016 [US3] Implement Audit Log view action in `msa3ed/server/Controllers/AdminController.cs` and create `msa3ed/server/Views/Admin/AuditLogs.cshtml`.
+- [x] T017 [US3] Inject `IAuditLogService` into `AdminController` and log critical actions (User toggle, KYC approve, etc.) in `msa3ed/server/Controllers/AdminController.cs`.
 - [ ] T018 [US3] Update System Settings admin views to manage Commission Rate, Max Top Up, and Platform Name in `msa3ed/server/Controllers/AdminController.cs` and `Views/Admin/Settings.cshtml`.
 
 ## Phase 5: Full Frontend-Backend Integration (US4)

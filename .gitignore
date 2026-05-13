@@ -14,3 +14,17 @@ Thumbs.db
 
 # Specs temporary/local files
 /root/.gemini/tmp/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+packages/
+
+# React Native / Expo
+node_modules/
+dist/
+build/
+.expo/
+coverage/

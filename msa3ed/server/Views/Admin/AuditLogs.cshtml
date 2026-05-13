@@ -1,0 +1,53 @@
+@model IEnumerable<Uis.Server.Models.AuditLog>
+@{
+    ViewData["Title"] = "سجل الإجراءات";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 text-gray-800">سجل الإجراءات الإدارية (Audit Logs)</h2>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">آخر الإجراءات</h6>
+        <form method="get" class="form-inline">
+            <select name="entityType" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+                <option value="">كل الكيانات</option>
+                <option value="User" selected="@(ViewBag.EntityType == "User" ? "selected" : null)">المستخدمين (User)</option>
+                <option value="KYC" selected="@(ViewBag.EntityType == "KYC" ? "selected" : null)">طلبات KYC</option>
+                <option value="Wallet" selected="@(ViewBag.EntityType == "Wallet" ? "selected" : null)">المحفظة</option>
+            </select>
+            <noscript><button type="submit" class="btn btn-sm btn-primary">تصفية</button></noscript>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>الوقت</th>
+                        <th>المشرف</th>
+                        <th>الإجراء</th>
+                        <th>الكيان</th>
+                        <th>معرف الكيان</th>
+                        <th>التفاصيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.CreatedAt.ToString("g")</td>
+                            <td>@(log.Admin?.FullName ?? "غير معروف")</td>
+                            <td><span class="badge badge-info">@log.Action</span></td>
+                            <td>@log.EntityType</td>
+                            <td>@log.EntityId</td>
+                            <td>@log.Details</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

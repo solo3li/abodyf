@@ -5,6 +5,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../../context/AuthContext';
 import { API_BASE_URL } from '../../../services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../store';
+import { fetchWallet } from '../../../store/slices/walletSlice';
+import { useEffect } from 'react';
 
 const { width } = Dimensions.get('window');
 
@@ -17,6 +21,13 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
 
+  const dispatch = useDispatch<AppDispatch>();
+  const { balance, currency } = useSelector((state: RootState) => state.wallet);
+
+  useEffect(() => {
+    dispatch(fetchWallet());
+  }, [dispatch]);
+
   const handleLogout = () => {
     logout();
     router.replace('/(auth)/login');
@@ -24,7 +35,7 @@ export default function ProfileScreen() {
 
   const menuItems = [
     { icon: 'person', title: 'تعديل الملف الشخصي', route: '/student/profile/edit-profile' },
-    { icon: 'wallet', title: 'المحفظة', value: '0 ج.م', route: '' },
+    { icon: 'wallet', title: 'المحفظة', value: `${balance.toFixed(2)} ${currency}`, route: '/student/(tabs)/wallet' },
     { icon: 'heart', title: 'المفضلة', route: '/student/(tabs)/favourites' },
     { icon: 'settings', title: 'الإعدادات', route: '/shared/settings' },
     { icon: 'help-buoy', title: 'الدعم والنزاعات', route: '/shared/support/tickets' },

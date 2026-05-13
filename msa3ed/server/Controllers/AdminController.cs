@@ -8,19 +8,24 @@ using Uis.Server.Services;
 namespace Uis.Server.Controllers;
 
 [Route("[controller]")]
+[Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
     private readonly ApplicationDbContext _db;
     private readonly INotificationService _notificationService;
     private readonly IFileService _fileService;
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
+    private readonly IWalletService _walletService;
+    private readonly IAuditLogService _auditLogService;
 
-    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub)
+    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IWalletService walletService, IAuditLogService auditLogService)
     {
         _db = db;
         _notificationService = notificationService;
         _fileService = fileService;
         _hub = hub;
+        _walletService = walletService;
+        _auditLogService = auditLogService;
     }
 
     [HttpGet("")]
@@ -187,6 +192,11 @@ public class AdminController : Controller
         {
             user.IsActive = !user.IsActive;
             await _db.SaveChangesAsync();
+
+            var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+            var statusStr = user.IsActive ? "مفعل" : "معطل";
+            await _auditLogService.LogActionAsync(adminId, "ToggleUserStatus", "User", user.Id.ToString(), $"تم تغيير حالة المستخدم إلى: {statusStr}");
         }
         return RedirectToAction(nameof(Users));
     }
@@ -306,6 +316,10 @@ public class AdminController : Controller
             
             await _db.SaveChangesAsync();
             await _notificationService.SendNotificationAsync(request.UserId, "تم توثيق حسابك بنجاح! يمكنك الآن البدء في تقديم الخدمات كمنفذ.", "توثيق الحساب");
+
+            var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+            await _auditLogService.LogActionAsync(adminId, "ApproveKyc", "KYC", request.Id.ToString(), $"تم قبول طلب توثيق حساب للمستخدم: {request.UserId}");
         }
         return RedirectToAction(nameof(Kyc));
     }
@@ -319,6 +333,10 @@ public class AdminController : Controller
             request.Status = "Rejected";
             request.RejectionReason = reason;
             await _db.SaveChangesAsync();
+
+            var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+            await _auditLogService.LogActionAsync(adminId, "RejectKyc", "KYC", request.Id.ToString(), $"تم رفض طلب توثيق. السبب: {reason}");
         }
         return RedirectToAction(nameof(Kyc));
     }
@@ -1113,8 +1131,101 @@ public class AdminController : Controller
                 _db.SystemSettings.Add(new SystemSetting { Key = key, Value = value });
             }
         }
-        await _db.SaveChangesAsync();
         TempData["Success"] = "تم تحديث إعدادات البريد بنجاح";
         return RedirectToAction(nameof(EmailSettings));
+    }
+
+    [HttpGet("Wallet")]
+    public async Task<IActionResult> WalletList(string searchTerm = "")
+    {
+        var usersQuery = _db.Users.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            usersQuery = usersQuery.Where(u => u.FullName.Contains(searchTerm) || u.Email.Contains(searchTerm));
+        }
+
+        var users = await usersQuery
+            .OrderByDescending(u => u.WalletBalance)
+            .Take(50)
+            .ToListAsync();
+
+        ViewBag.SearchTerm = searchTerm;
+        return View(users);
+    }
+
+    [HttpGet("WalletDetails/{id}")]
+    public async Task<IActionResult> WalletDetails(Guid id)
+    {
+        var user = await _db.Users.FindAsync(id);
+        if (user == null) return NotFound();
+
+        var transactions = await _db.WalletTransactions
+            .Where(t => t.UserId == id)
+            .OrderByDescending(t => t.CreatedAt)
+            .Take(50)
+            .ToListAsync();
+
+        ViewBag.User = user;
+        return View(transactions);
+    }
+
+    [HttpPost("WalletCredit")]
+    public async Task<IActionResult> WalletCredit(Guid userId, decimal amount, string reason)
+    {
+        var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        var result = await _walletService.AdminCreditAsync(userId, amount, reason);
+        if (result.Success)
+        {
+            await _auditLogService.LogActionAsync(adminId, "WalletCredit", "User", userId.ToString(), $"إيداع {amount} ج.م. السبب: {reason}");
+            TempData["SuccessMessage"] = result.Message;
+        }
+        else
+        {
+            TempData["ErrorMessage"] = result.Message;
+        }
+
+        return RedirectToAction("WalletDetails", new { id = userId });
+    }
+
+    [HttpPost("WalletDebit")]
+    public async Task<IActionResult> WalletDebit(Guid userId, decimal amount, string reason)
+    {
+        var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        var result = await _walletService.AdminDebitAsync(userId, amount, reason);
+        if (result.Success)
+        {
+            await _auditLogService.LogActionAsync(adminId, "WalletDebit", "User", userId.ToString(), $"خصم {amount} ج.م. السبب: {reason}");
+            TempData["SuccessMessage"] = result.Message;
+        }
+        else
+        {
+            TempData["ErrorMessage"] = result.Message;
+        }
+
+        return RedirectToAction("WalletDetails", new { id = userId });
+    }
+
+    [HttpGet("AuditLogs")]
+    public async Task<IActionResult> AuditLogs(string entityType = "")
+    {
+        var logsQuery = _db.AuditLogs.Include(a => a.Admin).AsQueryable();
+
+        if (!string.IsNullOrEmpty(entityType))
+        {
+            logsQuery = logsQuery.Where(a => a.EntityType == entityType);
+        }
+
+        var logs = await logsQuery
+            .OrderByDescending(a => a.CreatedAt)
+            .Take(100)
+            .ToListAsync();
+
+        ViewBag.EntityType = entityType;
+        return View(logs);
     }
 }

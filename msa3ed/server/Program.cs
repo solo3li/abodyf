@@ -101,6 +101,8 @@ builder.Services.AddScoped<Uis.Server.Services.ITicketService, Uis.Server.Servic
 builder.Services.AddScoped<Uis.Server.Services.INotificationService, Uis.Server.Services.NotificationService>();
 builder.Services.AddScoped<Uis.Server.Services.IAudioService, Uis.Server.Services.AudioService>();
 builder.Services.AddScoped<Uis.Server.Services.IOfferService, Uis.Server.Services.OfferService>();
+builder.Services.AddScoped<Uis.Server.Services.IWalletService, Uis.Server.Services.WalletService>();
+builder.Services.AddScoped<Uis.Server.Services.IAuditLogService, Uis.Server.Services.AuditLogService>();
 
 // Configure SignalR
 builder.Services.AddSignalR();

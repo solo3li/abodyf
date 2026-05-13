@@ -179,7 +179,14 @@ public class CategoriesController : ControllerBase {
 [Authorize]
 public class OrdersController : ControllerBase {
     private readonly ApplicationDbContext _db; 
-    public OrdersController(ApplicationDbContext db) { _db = db; }
+    private readonly IWalletService _walletService;
+    private readonly IEscrowService _escrow;
+
+    public OrdersController(ApplicationDbContext db, IWalletService walletService, IEscrowService escrow) { 
+        _db = db; 
+        _walletService = walletService;
+        _escrow = escrow;
+    }
 
     [HttpGet] public async Task<IActionResult> GetMyOrders() {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -239,11 +246,27 @@ public class OrdersController : ControllerBase {
             StudentId = studentId, 
             ServiceId = dto.ServiceId, 
             Price = dto.Price,
-            Status = "Pending" // Set to Pending immediately since we are bypassing payment
+            Status = "AwaitingPayment" 
         };
         
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
+
+        // Process payment from wallet
+        var paymentResult = await _walletService.ProcessOrderPaymentAsync(studentId, order.Id, dto.Price);
+        if (!paymentResult.Success) {
+            _db.Orders.Remove(order);
+            await _db.SaveChangesAsync();
+            return BadRequest(new { message = paymentResult.Message });
+        }
+
+        // Add to Escrow
+        order.Status = "Pending";
+        await _escrow.HoldFundsAsync(order.Id, dto.Price);
+        
+        // Save the updated status and escrow
+        await _db.SaveChangesAsync();
+
         return Ok(order);
     }
 }

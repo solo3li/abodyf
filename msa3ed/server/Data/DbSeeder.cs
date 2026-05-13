@@ -148,7 +148,10 @@ public static class DbSeeder
                 new SystemSetting { Key = "Email.SenderName", Value = "UIS", Description = "Sender Display Name" },
                 new SystemSetting { Key = "Email.SenderEmail", Value = "fps60y@gmail.com", Description = "Sender Email Address" },
                 new SystemSetting { Key = "Email.Password", Value = "pljh isws wssg oakn", Description = "SMTP App Password" },
-                new SystemSetting { Key = "Email.Template.Base", Value = EmailTemplates.GetDefaultBaseTemplate(), Description = "Main HTML Template Wrapper (Use {TITLE} and {CONTENT})" }
+                new SystemSetting { Key = "Email.Template.Base", Value = EmailTemplates.GetDefaultBaseTemplate(), Description = "Main HTML Template Wrapper (Use {TITLE} and {CONTENT})" },
+                new SystemSetting { Key = "CommissionRate", Value = "0.10", Description = "Platform Commission Rate" },
+                new SystemSetting { Key = "MaxWalletTopUp", Value = "10000", Description = "Max Top-Up Limit" },
+                new SystemSetting { Key = "PlatformName", Value = "UIS", Description = "Platform Name" }
             );
         }
     }

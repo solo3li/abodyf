@@ -120,6 +120,13 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="wallet/index"
+        options={{
+          href: null,
+          title: 'المحفظة',
+        }}
+      />
     </Tabs>
   );
 }

@@ -22,6 +22,9 @@ public class User
     // Many-to-many relationship with Roles
     public ICollection<Role> Roles { get; set; } = new List<Role>();
     
+    // Wallet
+    public decimal WalletBalance { get; set; } = 0.00m;
+
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -259,4 +262,29 @@ public class SystemSetting
     public string Key { get; set; } = string.Empty; // e.g., "SmtpHost", "EmailTemplate"
     public string Value { get; set; } = string.Empty;
     public string? Description { get; set; }
+}
+
+public class WalletTransaction
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+    public decimal Amount { get; set; }
+    public string Type { get; set; } = string.Empty; // TopUp, OrderPayment, EscrowRelease, AdminCredit, AdminDebit, Refund
+    public string Description { get; set; } = string.Empty;
+    public Guid? RelatedOrderId { get; set; }
+    public Order? Order { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class AuditLog
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid AdminId { get; set; }
+    public User Admin { get; set; } = null!;
+    public string Action { get; set; } = string.Empty;
+    public string TargetEntityType { get; set; } = string.Empty;
+    public string TargetEntityId { get; set; } = string.Empty;
+    public string Details { get; set; } = string.Empty; // JSON string
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

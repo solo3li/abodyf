@@ -80,6 +80,7 @@ student or executor being online.
 2. **Given** an admin opens a conversation, **When** the thread loads, **Then** all message types (text, voice, image, video, file) render correctly using the same rich media components as the UIS app.
 3. **Given** an admin views a support ticket, **When** they click Reply, **Then** they can send a text reply and attach files, and the response appears in the ticket thread visible to the submitting user.
 4. **Given** a new support ticket is submitted, **When** the admin panel is open, **Then** the admin receives a real-time notification badge with the ticket details.
+5. **Given** an admin views any conversation, **When** they identify an inappropriate message, **Then** they can flag it for review, delete it permanently, or mute the offending participant — each action recorded in an audit log with actor identity and timestamp.
 
 ---
 
@@ -174,13 +175,14 @@ rating filters → see filtered results update in real time — verifiable witho
 
 ### Edge Cases
 
-- What happens when a voice message recording is interrupted by an incoming call or app backgrounding?
-- How does the system handle a video attachment that exceeds the maximum allowed file size?
+- **[Resolved]** Voice recording interrupted by a call or app backgrounding: recording auto-pauses; user can resume or discard when they return to the app.
+- **[Resolved]** Video or file attachment exceeds the 50 MB size limit: the upload is rejected client-side before transmission with a clear error message; no data is sent to the server.
+- **[Resolved]** Media upload fails mid-transfer (network drop): upload retries automatically up to 3 times; if all retries fail, a manual "Retry" button appears on the failed message bubble in the conversation thread.
 - What if a service is edited by an executor after approval — does it revert to "Pending Approval"?
 - What if an executor submits a service that is identical to a previously rejected one?
 - What happens when a search returns thousands of results — is pagination or infinite scroll used?
 - How are voice messages displayed in conversations when the device has audio access disabled?
-- What if an admin rejects a service that already has active orders attached to it?
+- **[Resolved]** Admin rejects a service with active orders: existing orders proceed to completion unaffected; the service is immediately hidden from all new discovery and no new orders can be placed on it.
 
 ---
 
@@ -191,12 +193,15 @@ rating filters → see filtered results update in real time — verifiable witho
 **Rich Chat Media**
 
 - **FR-001**: Users MUST be able to record voice messages within any chat conversation or support ticket thread, with a real-time waveform visualizer displayed during recording.
+- **FR-028**: When a voice message recording is interrupted by an incoming call or the app moving to the background, the recording MUST auto-pause and preserve the recorded audio captured so far. When the user returns to the app, they MUST be presented with options to resume recording or discard the partial recording.
 - **FR-002**: Users MUST be able to preview a recorded voice message (play, re-record, discard) before sending it.
+- **FR-030**: When a media attachment upload fails (network error, server error), the system MUST automatically retry the upload up to 3 times with exponential back-off. If all retries fail, the message bubble MUST display a visible "Retry" action button and an error indicator. A client-side file-size check MUST reject any attachment exceeding 50 MB before any upload attempt begins, displaying a clear error message to the user.
 - **FR-003**: Chat messages MUST support inline display of images (thumbnail + full-screen view), videos (thumbnail + in-app playback), voice recordings (waveform bubble + playback), and file attachments (icon + download).
 - **FR-004**: Voice message playback MUST show an animated progress indicator synchronized with audio playback position and display message duration.
 - **FR-005**: All rich media features MUST function consistently on iOS, Android, and Web platforms within the UIS app.
 - **FR-006**: The admin panel chat and ticket views MUST render the same rich media message types as the UIS app.
 - **FR-007**: Smooth entry/exit animations MUST be applied to all message types as they appear in the conversation thread.
+- **FR-032**: Admins MUST be able to perform full moderation actions on any conversation (direct or support ticket): (a) flag a message or conversation for review, (b) permanently delete an individual message with confirmation, and (c) mute a participant for a configurable duration. Every moderation action MUST be recorded in an immutable audit log with: admin identity, action type, target (message ID or participant ID), timestamp, and optional notes.
 
 **Home Screen UIS**
 
@@ -220,6 +225,7 @@ rating filters → see filtered results update in real time — verifiable witho
 - **FR-019**: Executors MUST receive an in-app notification when their service is approved or rejected, including the rejection reason if applicable.
 - **FR-020**: Service edits by an executor on an already-approved service MUST revert the service to "Pending Approval" until re-reviewed by an admin.
 - **FR-021**: The service record MUST store full audit history: submission date, reviewer identity, decision, timestamp, and review notes.
+- **FR-029**: When an admin rejects a service that has one or more active orders, the service MUST be immediately hidden from all student-facing discovery and search results, but all existing active orders on that service MUST continue to completion without interruption. No new orders MAY be placed on a rejected service.
 
 **Advanced Search & Filters**
 
@@ -229,14 +235,19 @@ rating filters → see filtered results update in real time — verifiable witho
 - **FR-025**: The admin Executor Management screen MUST include a filterable search for executors by name, specialty, status, and join date.
 - **FR-026**: Search results MUST only include approved ("Active") services; pending and rejected services MUST be excluded.
 
+**Localization & Accessibility**
+
+- **FR-031**: All new and modified UI screens — including chat threads, voice recording UI, waveform visualizer, home screen sections, inbox, advanced search & filter panels, and admin service approval queue — MUST fully support RTL (right-to-left) layout and Arabic text rendering. Chat bubbles, media controls, waveform progress bars, filter chip bars, and navigation elements MUST mirror correctly in RTL mode.
+
 ### Key Entities
 
-- **Message**: Content unit in a conversation. Types: text, voice, image, video, file. Attributes: sender, timestamp, read status, media metadata (duration, size, MIME type, thumbnail URL).
-- **VoiceRecording**: Pre-send recording object. Attributes: audio data, duration, waveform amplitude data, status (recording / preview / discarded / sent).
-- **ServiceListing**: An executor's offered service. Attributes: title, description, category, subcategory, price, delivery time, status (Pending / Active / Rejected / Suspended), submission date, approvedBy, rejectedReason, auditLog.
+- **Message**: Content unit in a conversation. Types: text, voice, image, video, file. Attributes: sender, timestamp, read status, media metadata (duration, size, MIME type, thumbnail URL), uploadStatus (pending / uploading / failed / delivered).
+- **VoiceRecording**: Pre-send recording object. Attributes: audio data, duration, waveform amplitude data, status (recording / **paused** / preview / discarded / sent). The `paused` state is entered when an OS interruption occurs; the partial audio is retained in memory until the user explicitly resumes or discards.
+- **ServiceListing**: An executor's offered service. Attributes: title, description, category, subcategory, price, delivery time, status (Pending / Active / Rejected / Suspended), submission date, approvedBy, rejectedReason, auditLog. A `Rejected` status hides the listing from all discovery surfaces but does NOT cancel in-progress orders; those orders run to completion under the original terms.
 - **ServiceAuditEntry**: Single audit record on a ServiceListing. Attributes: action (submitted / approved / rejected / edited), actorId, actorRole, timestamp, notes.
 - **SearchFilter**: Ephemeral user state. Attributes: keyword, category, subcategory, priceMin, priceMax, minRating, availability, deliveryTimeframe, sortOrder.
 - **Conversation**: Thread between two or more participants. Attributes: participants, lastMessage, unreadCounts, type (direct / support ticket).
+- **ModerationAction**: Immutable audit record of an admin moderation event. Attributes: adminId, actionType (flagged / messageDeleted / participantMuted), targetId, targetType (message / participant), timestamp, durationMinutes (for mutes), notes.
 
 ---
 
@@ -254,6 +265,8 @@ rating filters → see filtered results update in real time — verifiable witho
 - **SC-008**: 100% of executor service submission, approval, and rejection events are recorded in the audit log with actor, timestamp, and notes.
 - **SC-009**: Waveform visualizer animates at a consistent frame rate with no visible stutter during voice recording across all supported platforms.
 - **SC-010**: Unread message badge counts in the Inbox update in real time without requiring a manual refresh.
+- **SC-011**: All new UI components render correctly in RTL layout with Arabic text — verified by automated snapshot tests covering chat bubbles, waveform visualizer, filter panels, home sections, and inbox rows with no misaligned or clipped elements.
+- **SC-012**: 100% of admin moderation actions (flag, delete, mute) are recorded in the audit log with admin identity, action type, target, and timestamp — verifiable via backend audit log contract tests.
 
 ---
 
@@ -268,3 +281,16 @@ rating filters → see filtered results update in real time — verifiable witho
 - Search results are paginated with a default page size of 20 items; infinite scroll is used on mobile and pagination controls on web.
 - The waveform visualizer uses amplitude data sampled from the audio recording on-device; no server-side audio processing is required for visualization.
 - Only platform admins (not executors or students) can access the Service Approval queue and Executor Management admin screens.
+- All new screens use the existing Arabic locale and RTL layout system already present in the project; no new translation infrastructure needs to be introduced.
+
+---
+
+## Clarifications
+
+### Session 2026-05-13
+
+- Q: What happens when a voice message recording is interrupted by an incoming call or app backgrounding? → A: Recording auto-pauses; user can resume or discard when they return to the app (Option A).
+- Q: What if an admin rejects a service that already has active orders attached to it? → A: Existing active orders proceed to completion unaffected; the service is hidden from new discovery and no new orders can be placed (Option B).
+- Q: What happens when a media attachment upload fails mid-transfer? → A: Auto-retry up to 3 times with exponential back-off; if all retries fail, a manual "Retry" button appears on the failed message bubble (Option B).
+- Q: What is the RTL/Arabic localization scope for all new UI screens? → A: Full RTL layout and Arabic text rendering required on ALL new screens — chat, waveform, home, inbox, filters, admin approval queue (Option A).
+- Q: What moderation controls do admins have over direct chat conversations? → A: Full moderation — view, flag, permanently delete individual messages, and mute participants; every action recorded in an immutable audit log (Option A).

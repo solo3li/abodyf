@@ -1,53 +1,54 @@
 @model IEnumerable<Uis.Server.Models.AuditLog>
 @{
     ViewData["Title"] = "سجل الإجراءات";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h3 text-gray-800">سجل الإجراءات الإدارية (Audit Logs)</h2>
-</div>
-
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">آخر الإجراءات</h6>
-        <form method="get" class="form-inline">
-            <select name="entityType" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+    <div class="flex justify-between items-center mb-8">
+        <h3 class="text-xl font-black text-gray-800 flex items-center"><i class="fas fa-clipboard-list ml-3 text-indigo-500"></i> سجل الإجراءات الإدارية</h3>
+        
+        <form method="get" class="flex items-center gap-4">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">تصفية حسب الكيان:</label>
+            <select name="entityType" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500" onchange="this.form.submit()">
                 <option value="">كل الكيانات</option>
-                <option value="User" selected="@(ViewBag.EntityType == "User" ? "selected" : null)">المستخدمين (User)</option>
-                <option value="KYC" selected="@(ViewBag.EntityType == "KYC" ? "selected" : null)">طلبات KYC</option>
+                <option value="User" selected="@(ViewBag.EntityType == "User" ? "selected" : null)">المستخدمين</option>
+                <option value="KYC" selected="@(ViewBag.EntityType == "KYC" ? "selected" : null)">توثيق KYC</option>
+                <option value="SystemSetting" selected="@(ViewBag.EntityType == "SystemSetting" ? "selected" : null)">الإعدادات</option>
                 <option value="Wallet" selected="@(ViewBag.EntityType == "Wallet" ? "selected" : null)">المحفظة</option>
             </select>
-            <noscript><button type="submit" class="btn btn-sm btn-primary">تصفية</button></noscript>
         </form>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>الوقت</th>
-                        <th>المشرف</th>
-                        <th>الإجراء</th>
-                        <th>الكيان</th>
-                        <th>معرف الكيان</th>
-                        <th>التفاصيل</th>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-right border-collapse">
+            <thead>
+                <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                    <th class="pb-4 px-4">الوقت</th>
+                    <th class="pb-4 px-4">المشرف</th>
+                    <th class="pb-4 px-4">الإجراء</th>
+                    <th class="pb-4 px-4">الكيان</th>
+                    <th class="pb-4 px-4">التفاصيل</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @foreach (var log in Model)
+                {
+                    <tr class="group hover:bg-gray-50/50 transition-all">
+                        <td class="py-5 px-4 text-xs font-bold text-gray-500 whitespace-nowrap">@log.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                        <td class="py-5 px-4">
+                            <div class="flex items-center">
+                                <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-[10px] font-black ml-2">@(log.Admin?.FullName?.Substring(0, 1) ?? "?")</div>
+                                <span class="text-sm font-bold text-gray-800">@(log.Admin?.FullName ?? "النظام")</span>
+                            </div>
+                        </td>
+                        <td class="py-5 px-4">
+                            <span class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-black text-[9px] uppercase border border-indigo-100">@log.Action</span>
+                        </td>
+                        <td class="py-5 px-4 text-xs font-bold text-gray-400">@log.EntityType <span class="text-[9px] font-medium opacity-50 block mt-0.5">ID: @log.EntityId</span></td>
+                        <td class="py-5 px-4 text-sm text-gray-600 max-w-xs truncate" title="@log.Details">@log.Details</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var log in Model)
-                    {
-                        <tr>
-                            <td>@log.CreatedAt.ToString("g")</td>
-                            <td>@(log.Admin?.FullName ?? "غير معروف")</td>
-                            <td><span class="badge badge-info">@log.Action</span></td>
-                            <td>@log.EntityType</td>
-                            <td>@log.EntityId</td>
-                            <td>@log.Details</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
 </div>

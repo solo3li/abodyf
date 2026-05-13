@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,14 +7,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { useEffect } from 'react';
-import { fetchOrderById } from '../../../store/slices/ordersSlice';
+import { fetchOrderById, acceptOrder, completeOrder } from '../../../store/slices/ordersSlice';
 import { API_BASE_URL } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { currentOrder, loading } = useSelector((state: RootState) => state.orders);
+  const { user } = useAuth();
   const order = currentOrder as any;
 
   useEffect(() => {
@@ -23,10 +25,30 @@ export default function OrderDetailsScreen() {
     }
   }, [id, dispatch]);
 
+  const handleAccept = async () => {
+    try {
+      await dispatch(acceptOrder(order.id)).unwrap();
+      Alert.alert('نجاح', 'تم قبول الطلب بنجاح. يمكنك الآن البدء في العمل.');
+      dispatch(fetchOrderById(order.id));
+    } catch (error: any) {
+      Alert.alert('خطأ', error || 'فشل قبول الطلب');
+    }
+  };
+
+  const handleComplete = async () => {
+    try {
+      await dispatch(completeOrder(order.id)).unwrap();
+      Alert.alert('نجاح', 'تم إكمال الطلب بنجاح وتم تحرير المبلغ إلى محفظتك.');
+      dispatch(fetchOrderById(order.id));
+    } catch (error: any) {
+      Alert.alert('خطأ', error || 'فشل إكمال الطلب');
+    }
+  };
+
   const getStatusColor = (status: string) => {
-    if (status === 'قيد التنفيذ' || status === 'In Progress') return Colors.warning;
-    if (status === 'مكتمل' || status === 'Completed') return Colors.success;
-    if (status === 'ملغي' || status === 'Cancelled') return Colors.error;
+    if (status === 'InProgress' || status === 'قيد التنفيذ' || status === 'In Progress') return Colors.warning;
+    if (status === 'Completed' || status === 'مكتمل' || status === 'Completed') return Colors.success;
+    if (status === 'Cancelled' || status === 'ملغي' || status === 'Cancelled') return Colors.error;
     return Colors.primary;
   };
 
@@ -47,6 +69,11 @@ export default function OrderDetailsScreen() {
       </View>
     );
   }
+
+  const isStudent = user?.id === order.studentId;
+  const isExecutor = user?.id === order.executorId;
+  const canAccept = !isStudent && !order.executorId && order.status === 'Pending';
+  const canComplete = isExecutor && order.status === 'InProgress';
 
   return (
     <View style={styles.container}>
@@ -73,12 +100,12 @@ export default function OrderDetailsScreen() {
         <Animated.View entering={FadeInUp.delay(200)} style={styles.card}>
           <Text style={styles.sectionTitle}>تفاصيل الدفع</Text>
           <View style={styles.row}>
-            <Text style={styles.label}>المبلغ المدفوع</Text>
+            <Text style={styles.label}>المبلغ</Text>
             <Text style={styles.value}>{order.totalPrice || order.price} ج.م</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>طريقة الدفع</Text>
-            <Text style={styles.value}>البطاقة الائتمانية</Text>
+            <Text style={styles.label}>الحالة</Text>
+            <Text style={[styles.value, { color: Colors.success }]}>مدفوع (في الضمان)</Text>
           </View>
         </Animated.View>
 
@@ -89,21 +116,21 @@ export default function OrderDetailsScreen() {
               <View style={[styles.timelineDot, styles.timelineDotActive]} />
               <View style={styles.timelineContent}>
                 <Text style={styles.timelineTitle}>تم استلام الطلب</Text>
-                <Text style={styles.timelineDate}>{order.createdAt || '2023-10-25 10:00 ص'}</Text>
+                <Text style={styles.timelineDate}>{formatDate(order.createdAt)}</Text>
               </View>
             </View>
             <View style={styles.timelineLine} />
             <View style={styles.timelineItem}>
-              <View style={[styles.timelineDot, (order.status === 'قيد التنفيذ' || order.status === 'In Progress' || order.status === 'مكتمل' || order.status === 'Completed') ? styles.timelineDotActive : undefined]} />
+              <View style={[styles.timelineDot, (order.status === 'InProgress' || order.status === 'Completed') ? styles.timelineDotActive : undefined]} />
               <View style={styles.timelineContent}>
                 <Text style={styles.timelineTitle}>قيد التنفيذ</Text>
               </View>
             </View>
             <View style={styles.timelineLine} />
             <View style={styles.timelineItem}>
-              <View style={[styles.timelineDot, (order.status === 'مكتمل' || order.status === 'Completed') ? styles.timelineDotActive : undefined]} />
+              <View style={[styles.timelineDot, (order.status === 'Completed') ? styles.timelineDotActive : undefined]} />
               <View style={styles.timelineContent}>
-                <Text style={[styles.timelineTitle, (order.status !== 'مكتمل' && order.status !== 'Completed') && { color: Colors.textSecondary }]}>مكتمل</Text>
+                <Text style={[styles.timelineTitle, (order.status !== 'Completed') && { color: Colors.textSecondary }]}>مكتمل</Text>
               </View>
             </View>
           </View>
@@ -111,10 +138,24 @@ export default function OrderDetailsScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Pressable style={styles.chatBtn} onPress={() => router.push(`/shared/chat/${order.id}`)}>
-          <Ionicons name="chatbubbles-outline" size={24} color={Colors.primary} />
-          <Text style={styles.chatBtnText}>تواصل حول الطلب</Text>
-        </Pressable>
+        <View style={styles.actionButtons}>
+          <Pressable style={styles.chatBtn} onPress={() => router.push(`/shared/chat/${order.id}`)}>
+            <Ionicons name="chatbubbles-outline" size={24} color={Colors.primary} />
+            <Text style={styles.chatBtnText}>محادثة</Text>
+          </Pressable>
+
+          {canAccept && (
+            <Pressable style={styles.primaryBtn} onPress={handleAccept}>
+              <Text style={styles.primaryBtnText}>قبول الطلب</Text>
+            </Pressable>
+          )}
+
+          {canComplete && (
+            <Pressable style={[styles.primaryBtn, { backgroundColor: Colors.success }]} onPress={handleComplete}>
+              <Text style={styles.primaryBtnText}>إكمال الطلب</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -152,6 +193,9 @@ const styles = StyleSheet.create({
   timelineDate: { fontSize: 13, color: Colors.textSecondary, marginTop: 4 },
   timelineLine: { width: 2, height: 30, backgroundColor: Colors.border, marginLeft: 5, marginVertical: 4 },
   footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 24, backgroundColor: Colors.white, borderTopWidth: 1, borderTopColor: Colors.border },
-  chatBtn: { flexDirection: 'row', height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary + '15' },
-  chatBtnText: { color: Colors.primary, fontSize: 18, fontWeight: 'bold', marginLeft: 8 },
+  actionButtons: { flexDirection: 'row', gap: 12 },
+  chatBtn: { flex: 1, flexDirection: 'row', height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary + '15' },
+  chatBtnText: { color: Colors.primary, fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+  primaryBtn: { flex: 2, height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary },
+  primaryBtnText: { color: Colors.white, fontSize: 16, fontWeight: 'bold' },
 });

@@ -59,7 +59,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "grid" : "grid-outline"} size={size} color={color} />
           ),
-          href: isExecutor ? null : undefined, // Hide for executors to save space, but still accessible
+          href: null,
         }}
       />
       {/* EXECUTOR ONLY TABS */}

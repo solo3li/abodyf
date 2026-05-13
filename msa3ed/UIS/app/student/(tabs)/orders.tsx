@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, Alert } from 'react-native';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -6,33 +6,45 @@ import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { useEffect } from 'react';
-import { fetchMyOrders } from '../../../store/slices/ordersSlice';
+import { fetchMyOrders, completeOrder } from '../../../store/slices/ordersSlice';
 import LoadingState from '../../../components/LoadingState';
 import EmptyState from '../../../components/EmptyState';
 import { API_BASE_URL } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function OrdersScreen() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { myOrders, loading } = useSelector((state: RootState) => state.orders);
+  const { user } = useAuth();
 
   useEffect(() => {
     dispatch(fetchMyOrders());
   }, [dispatch]);
 
+  const handleComplete = async (id: string) => {
+    try {
+      await dispatch(completeOrder(id)).unwrap();
+      Alert.alert('نجاح', 'تم إكمال الطلب وتحرير الأموال إلى محفظتك بنجاح.');
+    } catch (error: any) {
+      Alert.alert('خطأ', error || 'فشل إكمال الطلب');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'InProgress':
       case 'قيد التنفيذ':
       case 'In Progress':
         return Colors.warning;
-      case 'مكتمل':
       case 'Completed':
+      case 'مكتمل':
         return Colors.success;
-      case 'ملغي':
       case 'Cancelled':
+      case 'ملغي':
         return Colors.error;
-      case 'بانتظار الرد':
       case 'Pending':
+      case 'بانتظار الرد':
         return Colors.primary;
       default:
         return Colors.textSecondary;
@@ -41,14 +53,15 @@ export default function OrdersScreen() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case 'InProgress':
       case 'قيد التنفيذ':
       case 'In Progress': return 'time';
-      case 'مكتمل':
-      case 'Completed': return 'checkmark-circle';
-      case 'ملغي':
-      case 'Cancelled': return 'close-circle';
-      case 'بانتظار الرد':
-      case 'Pending': return 'hourglass';
+      case 'Completed':
+      case 'مكتمل': return 'checkmark-circle';
+      case 'Cancelled':
+      case 'ملغي': return 'close-circle';
+      case 'Pending':
+      case 'بانتظار الرد': return 'hourglass';
       default: return 'help-circle';
     }
   };
@@ -70,33 +83,57 @@ export default function OrdersScreen() {
 
   const renderItem = ({ item, index }: any) => {
     const statusColor = getStatusColor(item.status);
+    const isExecutor = user?.id === item.executorId;
+    const canComplete = isExecutor && item.status === 'InProgress';
+
     return (
       <Animated.View entering={FadeInDown.delay(index * 100)}>
-        <Pressable style={styles.orderCard} onPress={() => router.push(`/shared/order/${item.id}`)}>
-          <View style={styles.orderHeader}>
-            <View style={styles.orderIdContainer}>
-              <Ionicons name="receipt-outline" size={16} color={Colors.textSecondary} />
-              <Text style={styles.orderId}>#{item.id.substring(0, 8)}</Text>
+        <View style={styles.orderCard}>
+          <Pressable onPress={() => router.push(`/shared/order/${item.id}`)}>
+            <View style={styles.orderHeader}>
+              <View style={styles.orderIdContainer}>
+                <Ionicons name="receipt-outline" size={16} color={Colors.textSecondary} />
+                <Text style={styles.orderId}>#{item.id.substring(0, 8)}</Text>
+              </View>
+              <View style={[styles.statusBadge, { backgroundColor: statusColor + '15' }]}>
+                <Ionicons name={getStatusIcon(item.status) as any} size={14} color={statusColor} style={{ marginLeft: 4 }} />
+                <Text style={[styles.statusText, { color: statusColor }]}>{item.status}</Text>
+              </View>
             </View>
-            <View style={[styles.statusBadge, { backgroundColor: statusColor + '15' }]}>
-              <Ionicons name={getStatusIcon(item.status) as any} size={14} color={statusColor} style={{ marginLeft: 4 }} />
-              <Text style={[styles.statusText, { color: statusColor }]}>{item.status}</Text>
+            
+            <View style={styles.serviceInfoRow}>
+              <Image source={{ uri: getApiUrl(item.serviceImageUrl) }} style={styles.serviceThumb} />
+              <Text style={styles.serviceTitle} numberOfLines={2}>{item.serviceName || item.serviceTitle}</Text>
             </View>
-          </View>
-          
-          <View style={styles.serviceInfoRow}>
-            <Image source={{ uri: getApiUrl(item.serviceImageUrl) }} style={styles.serviceThumb} />
-            <Text style={styles.serviceTitle} numberOfLines={2}>{item.serviceName || item.serviceTitle}</Text>
-          </View>
-          
-          <View style={styles.orderFooter}>
-            <View style={styles.dateContainer}>
-              <Ionicons name="calendar-outline" size={16} color={Colors.textSecondary} />
-              <Text style={styles.dateText}>{formatDate(item.createdAt || item.date)}</Text>
+            
+            <View style={styles.orderFooter}>
+              <View style={styles.dateContainer}>
+                <Ionicons name="calendar-outline" size={16} color={Colors.textSecondary} />
+                <Text style={styles.dateText}>{formatDate(item.createdAt || item.date)}</Text>
+              </View>
+              <Text style={styles.price}>{item.totalPrice || item.price} ج.م</Text>
             </View>
-            <Text style={styles.price}>{item.totalPrice || item.price} ج.م</Text>
-          </View>
-        </Pressable>
+          </Pressable>
+
+          {canComplete && (
+            <Pressable 
+              style={styles.completeBtn} 
+              onPress={() => {
+                Alert.alert(
+                  'تأكيد الإكمال',
+                  'هل أنت متأكد من إكمال الطلب؟ سيتم تحرير الأموال إلى محفظتك فوراً.',
+                  [
+                    { text: 'إلغاء', style: 'cancel' },
+                    { text: 'نعم، اكتمل', onPress: () => handleComplete(item.id) }
+                  ]
+                );
+              }}
+            >
+              <Ionicons name="checkmark-done-outline" size={18} color={Colors.white} />
+              <Text style={styles.completeBtnText}>إكمال الطلب وتحرير الرصيد</Text>
+            </Pressable>
+          )}
+        </View>
       </Animated.View>
     );
   };
@@ -234,5 +271,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '900',
     color: Colors.primary,
+  },
+  completeBtn: {
+    backgroundColor: Colors.success,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+    gap: 8,
+  },
+  completeBtnText: {
+    color: Colors.white,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });

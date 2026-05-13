@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -25,12 +25,25 @@ export default function HomeScreen() {
   const { categories, services, loading } = useSelector((state: RootState) => state.catalog);
   const { balance, currency } = useSelector((state: RootState) => state.wallet);
   const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     dispatch(fetchCategories());
-    dispatch(fetchServices());
     dispatch(fetchWallet());
   }, [dispatch]);
+
+  // Debounced search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim().length >= 2) {
+        dispatch(fetchServices({ search: searchQuery.trim() }));
+      } else if (searchQuery.trim().length === 0) {
+        dispatch(fetchServices({}));
+      }
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, dispatch]);
 
   const getApiUrl = (path: string) => {
     if (!path) return 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=600';
@@ -65,6 +78,8 @@ export default function HomeScreen() {
               style={styles.searchInput as any} 
               placeholder="ابحث عن خدمات..."
               placeholderTextColor={Colors.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
             <Pressable style={styles.filterBtn}>
               <Ionicons name="options-outline" size={20} color={Colors.white} />

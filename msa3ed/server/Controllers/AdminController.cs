@@ -1135,6 +1135,40 @@ public class AdminController : Controller
         return RedirectToAction(nameof(EmailSettings));
     }
 
+    [HttpGet("Settings/General")]
+    public async Task<IActionResult> GeneralSettings()
+    {
+        var keys = new[] { "CommissionRate", "MaxWalletTopUp", "PlatformName" };
+        var settings = await _db.SystemSettings.Where(s => keys.Contains(s.Key)).ToListAsync();
+        return View(settings);
+    }
+
+    [HttpPost("Settings/General/Update")]
+    public async Task<IActionResult> UpdateGeneralSettings(Dictionary<string, string> settings)
+    {
+        var adminIdStr = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        foreach (var (key, value) in settings)
+        {
+            var s = await _db.SystemSettings.FindAsync(key);
+            if (s != null)
+            {
+                var oldValue = s.Value;
+                s.Value = value;
+                await _auditLogService.LogActionAsync(adminId, "UpdateSetting", "SystemSetting", key, $"تغيير {key} من {oldValue} إلى {value}");
+            }
+            else
+            {
+                _db.SystemSettings.Add(new SystemSetting { Key = key, Value = value });
+                await _auditLogService.LogActionAsync(adminId, "CreateSetting", "SystemSetting", key, $"إنشاء إعداد جديد {key} بقيمة {value}");
+            }
+        }
+        await _db.SaveChangesAsync();
+        TempData["Success"] = "تم تحديث الإعدادات العامة بنجاح";
+        return RedirectToAction(nameof(GeneralSettings));
+    }
+
     [HttpGet("Wallet")]
     public async Task<IActionResult> WalletList(string searchTerm = "")
     {

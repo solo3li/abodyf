@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   menuItem: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   menuItemLeft: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
   },
   menuIcon: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginLeft: 16,
   },
   menuItemTitle: {
     fontSize: 16,
@@ -256,6 +256,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.primary,
-    marginRight: 12,
+    marginLeft: 12,
   },
 });

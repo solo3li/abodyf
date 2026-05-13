@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { useEffect } from 'react';
-import { fetchAvailableOrders } from '../../../store/slices/ordersSlice';
+import { fetchAvailableOrders, acceptOrder } from '../../../store/slices/ordersSlice';
 import LoadingState from '../../../components/LoadingState';
 import EmptyState from '../../../components/EmptyState';
 
@@ -19,12 +19,21 @@ export default function AvailableOrdersScreen() {
     dispatch(fetchAvailableOrders());
   }, [dispatch]);
 
+  const handleAccept = async (id: string) => {
+    try {
+      await dispatch(acceptOrder(id)).unwrap();
+      Alert.alert('نجاح', 'تم قبول الطلب بنجاح. يمكنك الآن البدء في تنفيذه.');
+    } catch (error: any) {
+      Alert.alert('خطأ', error || 'فشل قبول الطلب');
+    }
+  };
+
   const renderItem = ({ item, index }: any) => {
     return (
       <Animated.View entering={FadeInDown.delay(index * 100)}>
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.orderId}>#{item.id}</Text>
+            <Text style={styles.orderId}>#{item.id.substring(0, 8)}</Text>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{item.status}</Text>
             </View>
@@ -39,14 +48,25 @@ export default function AvailableOrdersScreen() {
             </View>
             <View style={styles.detail}>
               <Ionicons name="time-outline" size={16} color={Colors.textSecondary} />
-              <Text style={styles.detailText}>{item.deadline || item.createdAt}</Text>
+              <Text style={styles.detailText}>{new Date(item.createdAt).toLocaleDateString('ar-EG')}</Text>
             </View>
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.price}>{item.totalPrice || item.price} ج.م</Text>
-            <Pressable style={styles.acceptBtn} onPress={() => router.push(`/shared/order/${item.id}`)}>
-              <Text style={styles.acceptBtnText}>{item.status === 'متاح' || item.status === 'Available' ? 'قبول الطلب' : 'متابعة'}</Text>
+            <Pressable 
+              style={styles.acceptBtn} 
+              onPress={() => {
+                if (item.status === 'Pending' || item.status === 'متاح' || item.status === 'Available') {
+                  handleAccept(item.id);
+                } else {
+                  router.push(`/shared/order/${item.id}`);
+                }
+              }}
+            >
+              <Text style={styles.acceptBtnText}>
+                {item.status === 'Pending' || item.status === 'متاح' || item.status === 'Available' ? 'قبول الطلب' : 'متابعة'}
+              </Text>
             </Pressable>
           </View>
         </View>

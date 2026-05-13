@@ -143,8 +143,33 @@ public class UsersController : ControllerBase {
 [Route("api/[controller]")]
 public class ServicesController : ControllerBase {
     private readonly ApplicationDbContext _db; public ServicesController(ApplicationDbContext db) { _db = db; }
-    [HttpGet] public async Task<IActionResult> GetAll() {
-        var services = await _db.Services.Include(s => s.Category).Include(s => s.Executor).Where(s => s.IsActive).ToListAsync();
+    [HttpGet] public async Task<IActionResult> GetAll(string? search, Guid? categoryId, decimal? minPrice, decimal? maxPrice, string? sortBy = "newest") {
+        var query = _db.Services.Include(s => s.Category).Include(s => s.Executor).Where(s => s.IsActive).AsQueryable();
+
+        if (!string.IsNullOrEmpty(search)) {
+            query = query.Where(s => s.Title.Contains(search) || s.Description.Contains(search));
+        }
+
+        if (categoryId.HasValue && categoryId != Guid.Empty) {
+            query = query.Where(s => s.CategoryId == categoryId);
+        }
+
+        if (minPrice.HasValue) {
+            query = query.Where(s => s.BasePrice >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue) {
+            query = query.Where(s => s.BasePrice <= maxPrice.Value);
+        }
+
+        switch (sortBy?.ToLower()) {
+            case "price_low": query = query.OrderBy(s => s.BasePrice); break;
+            case "price_high": query = query.OrderByDescending(s => s.BasePrice); break;
+            case "rating": query = query.OrderByDescending(s => s.Rating); break;
+            default: query = query.OrderByDescending(s => s.Id); break;
+        }
+
+        var services = await query.ToListAsync();
         return Ok(services.Select(s => new {
             s.Id, s.Title, s.Description, s.BasePrice, CategoryName = s.Category.Name, s.CategoryId, s.ImageUrl,
             s.Rating, s.ReviewsCount, s.DeliveryTime,
@@ -230,6 +255,47 @@ public class OrdersController : ControllerBase {
             StudentName = o.Student.FullName,
             ExecutorName = o.Executor?.FullName
         });
+    }
+
+    [HttpPost("{id}/Accept")]
+    public async Task<IActionResult> Accept(Guid id) {
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(userIdStr == null) return Unauthorized();
+        var uid = Guid.Parse(userIdStr);
+
+        var order = await _db.Orders.Include(o => o.Service).FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null) return NotFound();
+        if (order.Status != "Pending") return BadRequest("Order is not available for acceptance.");
+
+        order.ExecutorId = uid;
+        order.Status = "InProgress";
+        await _db.SaveChangesAsync();
+
+        return Ok(new { Message = "Order accepted successfully." });
+    }
+
+    [HttpPost("{id}/Complete")]
+    public async Task<IActionResult> Complete(Guid id) {
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(userIdStr == null) return Unauthorized();
+        var uid = Guid.Parse(userIdStr);
+
+        var order = await _db.Orders.Include(o => o.Service).FirstOrDefaultAsync(o => o.Id == id);
+        if (order == null) return NotFound();
+        
+        if (order.ExecutorId != uid) return Forbid();
+        if (order.Status != "InProgress") return BadRequest("Order is not in progress.");
+
+        order.Status = "Completed";
+
+        // Release Escrow
+        var releaseResult = await _escrow.ReleaseEscrowAsync(order.Id);
+        if (!releaseResult.Success) {
+            return BadRequest(new { message = releaseResult.Message });
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok(new { Message = "Order completed and funds released." });
     }
 
     [HttpPost] public async Task<IActionResult> Create(CreateOrderDto dto) {

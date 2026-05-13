@@ -36,6 +36,27 @@ export const createOrder = createAsyncThunk('orders/create', async (data: { serv
   }
 });
 
+export const acceptOrder = createAsyncThunk('orders/accept', async (id: string, { rejectWithValue, dispatch }) => {
+  try {
+    const res = await apiFetch(`/Orders/${id}/Accept`, { method: 'POST' });
+    dispatch(fetchAvailableOrders());
+    dispatch(fetchMyOrders());
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const completeOrder = createAsyncThunk('orders/complete', async (id: string, { rejectWithValue, dispatch }) => {
+  try {
+    const res = await apiFetch(`/Orders/${id}/Complete`, { method: 'POST' });
+    dispatch(fetchMyOrders());
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {

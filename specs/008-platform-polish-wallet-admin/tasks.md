@@ -39,25 +39,25 @@
 - [x] T015 [US3] Create Wallet admin views in `msa3ed/server/Views/Admin/WalletList.cshtml` and `WalletDetails.cshtml`.
 - [x] T016 [US3] Implement Audit Log view action in `msa3ed/server/Controllers/AdminController.cs` and create `msa3ed/server/Views/Admin/AuditLogs.cshtml`.
 - [x] T017 [US3] Inject `IAuditLogService` into `AdminController` and log critical actions (User toggle, KYC approve, etc.) in `msa3ed/server/Controllers/AdminController.cs`.
-- [ ] T018 [US3] Update System Settings admin views to manage Commission Rate, Max Top Up, and Platform Name in `msa3ed/server/Controllers/AdminController.cs` and `Views/Admin/Settings.cshtml`.
+- [x] T018 [US3] Update System Settings admin views to manage Commission Rate, Max Top Up, and Platform Name in `msa3ed/server/Controllers/AdminController.cs` and `Views/Admin/Settings.cshtml`.
 
 ## Phase 5: Full Frontend-Backend Integration (US4)
 **Goal**: Wire up disconnected features (Search, Order Acceptance, Escrow Release).
 **Test**: Search filters properly. Executor can accept a pending order. Completing an order releases escrow to executor's wallet.
 
-- [ ] T019 [P] [US4] Implement `POST /api/Orders/{id}/Accept` and `POST /api/Orders/{id}/Complete` (triggering escrow release) in `msa3ed/server/Controllers/Api/OrdersController.cs`.
-- [ ] T020 [P] [US4] Update `ServicesController` to handle `search` and `categoryId` query parameters in `msa3ed/server/Controllers/Api/ApiControllers.cs`.
-- [ ] T021 [US4] Implement debounced search backend call on the Home screen search bar in `msa3ed/UIS/app/student/(tabs)/index.tsx`.
-- [ ] T022 [US4] Add frontend actions and UI buttons for Executors to Accept and Complete orders in `msa3ed/UIS/app/student/(tabs)/executor-orders.tsx` (or related order details view).
+- [x] T019 [P] [US4] Implement `POST /api/Orders/{id}/Accept` and `POST /api/Orders/{id}/Complete` (triggering escrow release) in `msa3ed/server/Controllers/Api/OrdersController.cs`.
+- [x] T020 [P] [US4] Update `ServicesController` to handle `search` and `categoryId` query parameters in `msa3ed/server/Controllers/Api/ApiControllers.cs`.
+- [x] T021 [US4] Implement debounced search backend call on the Home screen search bar in `msa3ed/UIS/app/student/(tabs)/index.tsx`.
+- [x] T022 [US4] Add frontend actions and UI buttons for Executors to Accept and Complete orders in `msa3ed/UIS/app/student/(tabs)/executor-orders.tsx` (or related order details view).
 
 ## Phase 6: Design Consistency & Cleanup (US5)
 **Goal**: Unify design tokens, apply RTL fixes, and remove dead pages.
 **Test**: Mobile app has no crashes, consistent radii, and no unreachable/wrongly-routed tabs.
 
-- [ ] T023 [P] [US5] Consolidate design tokens (wallet colors, card radius) in `msa3ed/UIS/constants/Colors.ts`.
-- [ ] T024 [P] [US5] Delete mobile `msa3ed/UIS/app/Admin/Notifications.tsx` completely.
-- [ ] T025 [US5] Remove `categories.tsx` from bottom tabs in `msa3ed/UIS/app/student/(tabs)/_layout.tsx` (if it was standalone).
-- [ ] T026 [US5] Final RTL visual pass: fix any misaligned text alignments or icons across Home and Profile views.
+- [x] T023 [P] [US5] Consolidate design tokens (wallet colors, card radius) in `msa3ed/UIS/constants/Colors.ts`.
+- [x] T024 [P] [US5] Delete mobile `msa3ed/UIS/app/Admin/Notifications.tsx` completely.
+- [x] T025 [US5] Remove `categories.tsx` from bottom tabs in `msa3ed/UIS/app/student/(tabs)/_layout.tsx` (if it was standalone).
+- [x] T026 [US5] Final RTL visual pass: fix any misaligned text alignments or icons across Home and Profile views.
 
 ---
 

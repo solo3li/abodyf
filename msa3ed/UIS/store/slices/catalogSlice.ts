@@ -9,9 +9,17 @@ export const fetchCategories = createAsyncThunk('catalog/fetchCategories', async
   }
 });
 
-export const fetchServices = createAsyncThunk('catalog/fetchServices', async (_, { rejectWithValue }) => {
+export const fetchServices = createAsyncThunk('catalog/fetchServices', async (params: { search?: string, categoryId?: string, minPrice?: number, maxPrice?: number, sortBy?: string } = {}, { rejectWithValue }) => {
   try {
-    return await apiFetch('/Services');
+    let queryParts = [];
+    if (params.search) queryParts.push(`search=${encodeURIComponent(params.search)}`);
+    if (params.categoryId) queryParts.push(`categoryId=${params.categoryId}`);
+    if (params.minPrice) queryParts.push(`minPrice=${params.minPrice}`);
+    if (params.maxPrice) queryParts.push(`maxPrice=${params.maxPrice}`);
+    if (params.sortBy) queryParts.push(`sortBy=${params.sortBy}`);
+    
+    const queryString = queryParts.length > 0 ? '?' + queryParts.join('&') : '';
+    return await apiFetch(`/Services${queryString}`);
   } catch (error: any) {
     return rejectWithValue(error.message);
   }

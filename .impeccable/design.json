@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-13T12:00:00Z",
+  "title": "Design System: UIS",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Trust Indigo" },
+      "secondary": { "role": "secondary", "displayName": "Creative Purple" },
+      "accent": { "role": "accent", "displayName": "Action Pink" },
+      "background": { "role": "neutral", "displayName": "Slate Background" },
+      "surface": { "role": "neutral", "displayName": "Surface White" },
+      "text": { "role": "neutral", "displayName": "Dark Slate Text" },
+      "textSecondary": { "role": "neutral", "displayName": "Medium Slate Text" },
+      "border": { "role": "neutral", "displayName": "Light Slate Border" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero sections or major empty state announcements." },
+      "headline": { "displayName": "Headline", "purpose": "Screen titles and major section headers." },
+      "title": { "displayName": "Title", "purpose": "Card titles and modal headers." },
+      "body": { "displayName": "Body", "purpose": "Primary content, descriptions, and chat messages." },
+      "label": { "displayName": "Label", "purpose": "Small UI elements, metadata, and timestamps." }
+    },
+    "shadows": [
+      { "name": "card-lift", "value": "0 2px 8px rgba(30, 41, 59, 0.08)", "purpose": "Used for service cards and order summaries." },
+      { "name": "action-lift", "value": "0 4px 12px rgba(99, 102, 241, 0.2)", "purpose": "Used on primary buttons to make them feel pressable." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Trust Indigo background with white text, generous touch targets.",
+      "html": "<button class=\"ds-btn-primary\">CONTINUE</button>",
+      "css": ".ds-btn-primary { background: #6366F1; color: #FFFFFF; padding: 16px 24px; font-weight: 600; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.1); } .ds-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }"
+    },
+    {
+      "name": "Service Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Solid Surface White with rounded corners and subtle depth.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Web Development</h3><p class=\"ds-card-body\">Full-stack application build.</p></div>",
+      "css": ".ds-card { background: #FFFFFF; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08); transition: transform 0.2s; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 41, 59, 0.12); } .ds-card-title { margin: 0 0 8px; font-size: 20px; font-weight: 600; color: #1E293B; } .ds-card-body { margin: 0; font-size: 16px; color: #64748B; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Slate Background when inactive, shifting border on focus.",
+      "html": "<input type=\"text\" class=\"ds-input\" placeholder=\"Enter your email\" />",
+      "css": ".ds-input { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px 16px; font-size: 16px; border-radius: 8px; color: #1E293B; outline: none; transition: border-color 0.2s; } .ds-input:focus { border-color: #6366F1; background: #FFFFFF; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trusted Marketplace",
+    "overview": "This system represents a professional, safe, trusted, and flexible environment connecting students with service executors. The aesthetic philosophy is rooted in efficiency and clear affordances. It feels like a serious tool for getting tasks done rather than a casual social space.",
+    "keyCharacteristics": [
+      "Tactile and Confident: Components have clear boundaries and obvious interactive areas.",
+      "Trust through transparency: Clear order statuses, upfront pricing, and accessible support.",
+      "Professional execution: Serious, utilitarian, and focused on the job to be done."
+    ],
+    "rules": [
+      {
+        "name": "The Semantic Meaning Rule",
+        "body": "Colors like error (#EF4444) and success (#10B981) are strictly reserved for system feedback and order statuses. Never use them decoratively.",
+        "section": "colors"
+      },
+      {
+        "name": "The Native Legibility Rule",
+        "body": "Stick to system fonts. Avoid custom display fonts that might compromise readability in a dense, task-oriented app.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. Shadows appear only as a response to interactive elements or to lift distinct modular content (like cards) off the background.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do ensure clear affordances so users always know their next possible action (e.g., waiting for executor, action required).",
+      "Do maintain a professional execution feel; the interface must feel like a serious tool for getting things done.",
+      "Do use Trust Indigo (#6366F1) for primary, trust-building actions.",
+      "Do ensure touch targets are at least 44x44pt for mobile accessibility."
+    ],
+    "donts": [
+      "Don't make the app look like a cluttered, untrustworthy, or overly complex generic freelance platform.",
+      "Don't design it to look like a social media app. It is a marketplace.",
+      "Don't use dark patterns or confusing navigation.",
+      "Don't use side-stripe borders (border-left/right > 1px) as colored accents on cards."
+    ]
+  }
+}

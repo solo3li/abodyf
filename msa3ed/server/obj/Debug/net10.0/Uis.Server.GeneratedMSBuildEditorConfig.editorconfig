@@ -19,141 +19,157 @@ build_property.TargetFrameworkIdentifier = .NETCoreApp
 build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = Uis.Server
 build_property.RootNamespace = Uis.Server
-build_property.ProjectDir = /workspace/msa3ed/server/
+build_property.ProjectDir = /msa3ed/server/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /workspace/msa3ed/server
+build_property.MSBuildProjectDirectory = /msa3ed/server
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[/workspace/msa3ed/server/Views/Admin/Categories.cshtml]
+[/msa3ed/server/Views/Admin/AuditLogs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQXVkaXRMb2dzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/msa3ed/server/Views/Admin/Categories.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQ2F0ZWdvcmllcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/ChatDetails.cshtml]
+[/msa3ed/server/Views/Admin/ChatDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQ2hhdERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Chats.cshtml]
+[/msa3ed/server/Views/Admin/Chats.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQ2hhdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/CreateService.cshtml]
+[/msa3ed/server/Views/Admin/CreateService.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQ3JlYXRlU2VydmljZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/CreateUser.cshtml]
+[/msa3ed/server/Views/Admin/CreateUser.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vQ3JlYXRlVXNlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/EditRole.cshtml]
+[/msa3ed/server/Views/Admin/EditRole.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRWRpdFJvbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/EditService.cshtml]
+[/msa3ed/server/Views/Admin/EditService.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRWRpdFNlcnZpY2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/EditUser.cshtml]
+[/msa3ed/server/Views/Admin/EditUser.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRWRpdFVzZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/EmailSettings.cshtml]
+[/msa3ed/server/Views/Admin/EmailSettings.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRW1haWxTZXR0aW5ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Index.cshtml]
+[/msa3ed/server/Views/Admin/GeneralSettings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vR2VuZXJhbFNldHRpbmdzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/msa3ed/server/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Kyc.cshtml]
+[/msa3ed/server/Views/Admin/Kyc.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vS3ljLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/KycDetails.cshtml]
+[/msa3ed/server/Views/Admin/KycDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vS3ljRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Notifications.cshtml]
+[/msa3ed/server/Views/Admin/Notifications.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vTm90aWZpY2F0aW9ucy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/OrderDetails.cshtml]
+[/msa3ed/server/Views/Admin/OrderDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vT3JkZXJEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Orders.cshtml]
+[/msa3ed/server/Views/Admin/Orders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vT3JkZXJzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/PaymentDetails.cshtml]
+[/msa3ed/server/Views/Admin/PaymentDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vUGF5bWVudERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Payments.cshtml]
+[/msa3ed/server/Views/Admin/Payments.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vUGF5bWVudHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Permissions.cshtml]
+[/msa3ed/server/Views/Admin/Permissions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vUGVybWlzc2lvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/RolePermissions.cshtml]
+[/msa3ed/server/Views/Admin/RolePermissions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vUm9sZVBlcm1pc3Npb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Roles.cshtml]
+[/msa3ed/server/Views/Admin/Roles.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vUm9sZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Services.cshtml]
+[/msa3ed/server/Views/Admin/Services.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vU2VydmljZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/TicketDetails.cshtml]
+[/msa3ed/server/Views/Admin/TicketDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vVGlja2V0RGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Tickets.cshtml]
+[/msa3ed/server/Views/Admin/Tickets.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vVGlja2V0cy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/UserDetails.cshtml]
+[/msa3ed/server/Views/Admin/UserDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vVXNlckRldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Admin/Users.cshtml]
+[/msa3ed/server/Views/Admin/Users.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Home/Index.cshtml]
+[/msa3ed/server/Views/Admin/WalletDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vV2FsbGV0RGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/msa3ed/server/Views/Admin/WalletList.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vV2FsbGV0TGlzdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/msa3ed/server/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Home/Privacy.cshtml]
+[/msa3ed/server/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Shared/Error.cshtml]
+[/msa3ed/server/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Shared/_ValidationScriptsPartial.cshtml]
+[/msa3ed/server/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/_ViewImports.cshtml]
+[/msa3ed/server/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/_ViewStart.cshtml]
+[/msa3ed/server/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/workspace/msa3ed/server/Views/Shared/_Layout.cshtml]
+[/msa3ed/server/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-kac436urij

@@ -23,7 +23,7 @@ npx expo start
 
 ## 3. Automated Test Suite
 ```bash
-cd msa3ed/server
+cd msa3ed/Uis.Tests
 dotnet test
 ```
 

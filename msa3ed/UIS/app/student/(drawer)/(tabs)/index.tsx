@@ -1,17 +1,18 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, Image, Dimensions, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
+import { DrawerActions } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { Colors } from '../../../constants/Colors';
+import { Colors } from '../../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
-import { fetchCategories, fetchServices } from '../../../store/slices/catalogSlice';
-import { useAuth } from '../../../context/AuthContext';
-import { API_BASE_URL } from '../../../services/api';
-import WalletCard from '../../../components/WalletCard';
-import { fetchWallet } from '../../../store/slices/walletSlice';
+import { AppDispatch, RootState } from '../../../../store';
+import { fetchCategories, fetchServices } from '../../../../store/slices/catalogSlice';
+import { useAuth } from '../../../../context/AuthContext';
+import { API_BASE_URL } from '../../../../services/api';
+import WalletCard from '../../../../components/WalletCard';
+import { fetchWallet } from '../../../../store/slices/walletSlice';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ const defaultColors = ['#EFF6FF', '#FEF2F2', '#F0FDF4', '#FFFBEB', '#EEF2FF'];
 
 export default function HomeScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const { categories, services, loading } = useSelector((state: RootState) => state.catalog);
   const { balance, currency } = useSelector((state: RootState) => state.wallet);
@@ -61,9 +63,14 @@ export default function HomeScreen() {
           style={styles.header}
         >
           <View style={styles.headerTop}>
-            <View>
-              <Text style={styles.greeting}>مرحباً، {user?.fullName?.split(' ')[0] || user?.name?.split(' ')[0] || 'أحمد'} 👋</Text>
-              <Text style={styles.subtitle}>ماذا تحتاج اليوم؟</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Pressable onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                <Ionicons name="menu" size={28} color={Colors.white} />
+              </Pressable>
+              <View>
+                <Text style={styles.greeting}>مرحباً، {user?.fullName?.split(' ')[0] || user?.name?.split(' ')[0] || 'أحمد'} 👋</Text>
+                <Text style={styles.subtitle}>ماذا تحتاج اليوم؟</Text>
+              </View>
             </View>
             <Pressable style={styles.notificationBtn} onPress={() => router.push('/Admin/Notifications' as any)}>
               <Ionicons name="notifications-outline" size={24} color={Colors.white} />
@@ -98,7 +105,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>التصنيفات</Text>
-            <Pressable onPress={() => router.push('/student/(tabs)/categories' as any)}>
+            <Pressable onPress={() => router.push('/student/(drawer)/categories' as any)}>
               <Text style={styles.seeAll}>الكل</Text>
             </Pressable>
           </View>

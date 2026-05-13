@@ -1,14 +1,10 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../../constants/Colors';
+import { Colors } from '../../../../constants/Colors';
 import { Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { useAuth } from '../../../context/AuthContext';
 
 export default function TabLayout() {
-  const { user } = useAuth();
-  const isExecutor = user?.isExecutor || false;
-
   return (
     <Tabs
       screenOptions={{
@@ -43,62 +39,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="favourites"
-        options={{
-          title: 'المفضلة',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? "heart" : "heart-outline"} size={size} color={color} />
-          ),
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="categories"
-        options={{
-          title: 'الأقسام',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? "grid" : "grid-outline"} size={size} color={color} />
-          ),
-          href: null,
-        }}
-      />
-      {/* EXECUTOR ONLY TABS */}
-      <Tabs.Screen
-        name="executor-orders"
-        options={{
-          title: 'متاح للعمل',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? "briefcase" : "briefcase-outline"} size={size} color={color} />
-          ),
-          href: isExecutor ? undefined : null,
-        }}
-      />
-      <Tabs.Screen
-        name="executor-earnings"
-        options={{
-          title: 'أرباحي',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? "cash" : "cash-outline"} size={size} color={color} />
-          ),
-          href: isExecutor ? undefined : null,
-        }}
-      />
-      {/* COMMON TABS */}
-      <Tabs.Screen
         name="orders"
         options={{
           title: 'طلباتي',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "document-text" : "document-text-outline"} size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="inbox"
-        options={{
-          title: 'الوارد',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? "mail" : "mail-outline"} size={size} color={color} />
           ),
         }}
       />
@@ -118,13 +63,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? "person" : "person-outline"} size={size} color={color} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="wallet/index"
-        options={{
-          href: null,
-          title: 'المحفظة',
         }}
       />
     </Tabs>

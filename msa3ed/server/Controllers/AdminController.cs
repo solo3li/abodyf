@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Uis.Server.Data;
 using Uis.Server.Models;
 using Uis.Server.Services;
+using System.Security.Claims;
 
 namespace Uis.Server.Controllers;
 
@@ -1251,7 +1252,7 @@ public class AdminController : Controller
 
         if (!string.IsNullOrEmpty(entityType))
         {
-            logsQuery = logsQuery.Where(a => a.EntityType == entityType);
+            logsQuery = logsQuery.Where(a => a.TargetEntityType == entityType);
         }
 
         var logs = await logsQuery

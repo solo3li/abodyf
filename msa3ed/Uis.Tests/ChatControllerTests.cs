@@ -42,7 +42,7 @@ namespace Uis.Tests
             var privateHubMock = new Mock<IHubContext<PrivateChatHub>>();
             var chatService = new ChatService(db);
 
-            var controller = new ChatController(db, fileServiceMock.Object, chatService, chatHubMock.Object, privateHubMock.Object);
+            var controller = new ChatController(db, fileServiceMock.Object, new Mock<IAudioService>().Object, chatService, chatHubMock.Object, privateHubMock.Object);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -55,7 +55,7 @@ namespace Uis.Tests
             };
 
             // Act
-            var result = await controller.GetPrivateChat(partnerId);
+            var result = await controller.InitiatePrivateChat(new Uis.Server.DTOs.InitiateChatDto { ExecutorId = partnerId });
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -87,7 +87,7 @@ namespace Uis.Tests
             privateHubMock.Setup(x => x.Clients).Returns(clientsMock.Object);
 
             var chatService = new ChatService(db);
-            var controller = new ChatController(db, fileServiceMock.Object, chatService, chatHubMock.Object, privateHubMock.Object);
+            var controller = new ChatController(db, fileServiceMock.Object, new Mock<IAudioService>().Object, chatService, chatHubMock.Object, privateHubMock.Object);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -130,7 +130,7 @@ namespace Uis.Tests
             var chatHubMock = new Mock<IHubContext<ChatHub>>();
             var privateHubMock = new Mock<IHubContext<PrivateChatHub>>();
             var chatService = new ChatService(db);
-            var controller = new ChatController(db, fileServiceMock.Object, chatService, chatHubMock.Object, privateHubMock.Object);
+            var controller = new ChatController(db, fileServiceMock.Object, new Mock<IAudioService>().Object, chatService, chatHubMock.Object, privateHubMock.Object);
 
             var formFileMock = new Mock<IFormFile>();
             formFileMock.Setup(f => f.Length).Returns(21 * 1024 * 1024); // 21MB

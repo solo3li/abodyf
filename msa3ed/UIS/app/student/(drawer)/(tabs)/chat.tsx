@@ -1,15 +1,15 @@
 import { View, Text, StyleSheet, FlatList, Image, Pressable } from 'react-native';
-import { Colors } from '../../../constants/Colors';
+import { Colors } from '../../../../constants/Colors';
 import Animated, { FadeInLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
+import { AppDispatch, RootState } from '../../../../store';
 import { useEffect } from 'react';
-import { fetchMyOrders } from '../../../store/slices/ordersSlice';
-import { API_BASE_URL } from '../../../services/api';
-import LoadingState from '../../../components/LoadingState';
-import EmptyState from '../../../components/EmptyState';
+import { fetchMyOrders } from '../../../../store/slices/ordersSlice';
+import { API_BASE_URL } from '../../../../services/api';
+import LoadingState from '../../../../components/LoadingState';
+import EmptyState from '../../../../components/EmptyState';
 
 const getApiUrl = (path: string) => path ? (path.startsWith('http') ? path : API_BASE_URL + path) : 'https://placehold.co/150';
 

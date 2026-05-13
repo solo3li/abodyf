@@ -85,11 +85,44 @@ public class PaymentService : IPaymentService {
     }
 }
 
-public interface IEscrowService { Task<bool> HoldFundsAsync(Guid orderId, decimal amount); }
+public interface IEscrowService { 
+    Task<bool> HoldFundsAsync(Guid orderId, decimal amount); 
+    Task<(bool Success, string Message)> ReleaseEscrowAsync(Guid orderId);
+}
 public class EscrowService : IEscrowService {
     private readonly ApplicationDbContext _db; public EscrowService(ApplicationDbContext db) { _db = db; }
     public async Task<bool> HoldFundsAsync(Guid orderId, decimal amount) {
         _db.Escrows.Add(new Escrow { OrderId = orderId, Amount = amount }); await _db.SaveChangesAsync(); return true;
+    }
+    public async Task<(bool Success, string Message)> ReleaseEscrowAsync(Guid orderId) {
+        var escrow = await _db.Escrows.FirstOrDefaultAsync(e => e.OrderId == orderId);
+        if (escrow == null || escrow.Status == "Released") return (false, "Escrow not found or already released");
+        
+        var order = await _db.Orders.Include(o => o.Executor).FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order == null || order.ExecutorId == null) return (false, "Order or Executor not found");
+        
+        var commissionSetting = await _db.SystemSettings.FindAsync("CommissionRate");
+        decimal commissionRate = commissionSetting != null ? decimal.Parse(commissionSetting.Value) : 10m;
+        
+        decimal commissionAmount = escrow.Amount * (commissionRate / 100m);
+        decimal executorAmount = escrow.Amount - commissionAmount;
+
+        var executor = await _db.Users.FindAsync(order.ExecutorId.Value);
+        if (executor != null) {
+            executor.WalletBalance += executorAmount;
+            _db.WalletTransactions.Add(new WalletTransaction {
+                UserId = executor.Id,
+                Amount = executorAmount,
+                Type = "EscrowRelease",
+                Description = $"مستحقات طلب #{orderId.ToString().Substring(0, 8)} بعد خصم عمولة المنصة {commissionRate}%",
+                RelatedOrderId = orderId
+            });
+            // We can also create a transaction for the admin/platform here if needed
+        }
+
+        escrow.Status = "Released";
+        await _db.SaveChangesAsync();
+        return (true, "Escrow released successfully");
     }
 }
 

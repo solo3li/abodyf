@@ -1,16 +1,16 @@
 import { View, Text, StyleSheet, FlatList, Pressable, Image, Alert } from 'react-native';
-import { Colors } from '../../../constants/Colors';
+import { Colors } from '../../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
+import { AppDispatch, RootState } from '../../../../store';
 import { useEffect } from 'react';
-import { fetchMyOrders, completeOrder } from '../../../store/slices/ordersSlice';
-import LoadingState from '../../../components/LoadingState';
-import EmptyState from '../../../components/EmptyState';
-import { API_BASE_URL } from '../../../services/api';
-import { useAuth } from '../../../context/AuthContext';
+import { fetchMyOrders, completeOrder } from '../../../../store/slices/ordersSlice';
+import LoadingState from '../../../../components/LoadingState';
+import EmptyState from '../../../../components/EmptyState';
+import { API_BASE_URL } from '../../../../services/api';
+import { useAuth } from '../../../../context/AuthContext';
 
 export default function OrdersScreen() {
   const router = useRouter();

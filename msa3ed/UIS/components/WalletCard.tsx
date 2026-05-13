@@ -16,7 +16,7 @@ export default function WalletCard({ balance, currency = 'ج.م', style }: Walle
     return (
         <Pressable 
             style={[styles.card, style]} 
-            onPress={() => router.push('/student/(tabs)/wallet' as any)}
+            onPress={() => router.push('/student/(drawer)/wallet' as any)}
         >
             <View style={styles.content}>
                 <View style={styles.iconContainer}>

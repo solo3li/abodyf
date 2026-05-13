@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Dimensions } from 'react-native';
-import { Colors } from '../../../constants/Colors';
+import { Colors } from '../../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../../context/AuthContext';
-import { API_BASE_URL } from '../../../services/api';
+import { useAuth } from '../../../../context/AuthContext';
+import { API_BASE_URL } from '../../../../services/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
-import { fetchWallet } from '../../../store/slices/walletSlice';
+import { AppDispatch, RootState } from '../../../../store';
+import { fetchWallet } from '../../../../store/slices/walletSlice';
 import { useEffect } from 'react';
 
 const { width } = Dimensions.get('window');
@@ -35,12 +35,12 @@ export default function ProfileScreen() {
 
   const menuItems = [
     { icon: 'person', title: 'تعديل الملف الشخصي', route: '/student/profile/edit-profile' },
-    { icon: 'wallet', title: 'المحفظة', value: `${balance.toFixed(2)} ${currency}`, route: '/student/(tabs)/wallet' },
-    { icon: 'heart', title: 'المفضلة', route: '/student/(tabs)/favourites' },
+    { icon: 'wallet', title: 'المحفظة', value: `${balance.toFixed(2)} ${currency}`, route: '/student/(drawer)/wallet' },
+    { icon: 'heart', title: 'المفضلة', route: '/student/(drawer)/favourites' },
     { icon: 'settings', title: 'الإعدادات', route: '/shared/settings' },
     { icon: 'help-buoy', title: 'الدعم والنزاعات', route: '/shared/support/tickets' },
     ...(user?.isExecutor 
-      ? [{ icon: 'briefcase', title: 'الطلبات المتاحة للتنفيذ', route: '/student/(tabs)/executor-orders', color: Colors.success }]
+      ? [{ icon: 'briefcase', title: 'الطلبات المتاحة للتنفيذ', route: '/student/(drawer)/executor-orders', color: Colors.success }]
       : [{ icon: 'briefcase', title: 'العمل كمنفذ (KYC)', route: '/executor/kyc-submit', color: Colors.warning }]),
     { icon: 'log-out', title: 'تسجيل الخروج', action: handleLogout, color: Colors.error },
   ];
@@ -256,6 +256,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.primary,
-    marginLeft: 12,
+    marginRight: 12,
   },
 });

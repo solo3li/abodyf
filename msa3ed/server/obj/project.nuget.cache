@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WR4JPiFwY00=",
+  "dgSpecHash": "t1ETKpqWAuw=",
   "success": true,
-  "projectFilePath": "/workspace/msa3ed/server/Uis.Server.csproj",
+  "projectFilePath": "/msa3ed/server/Uis.Server.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/bouncycastle.cryptography/2.6.2/bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "/root/.nuget/packages/ffmpegcore/5.1.0/ffmpegcore.5.1.0.nupkg.sha512",

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity, I18nManager } from 'react-native';
-import { apiFetch } from '../../../services/api';
+import { apiFetch } from '../../services/api';
 import { Ionicons } from '@expo/vector-icons';
-import EmptyState from '../../../components/EmptyState';
+import EmptyState from '../../components/EmptyState';
 
 // Feature 013 T049/T050: Admin Chat Moderation
 export default function AdminChatsScreen() {
@@ -30,7 +30,7 @@ export default function AdminChatsScreen() {
   const handleMute = async (userId: string, userName: string) => {
     Alert.prompt(`كتم المستخدم: ${userName}`, 'مدة الكتم (بالدقائق):', [
       { text: 'إلغاء', style: 'cancel' },
-      { text: 'كتم', style: 'destructive', onPress: async (duration) => {
+      { text: 'كتم', style: 'destructive', onPress: async (duration: string | undefined) => {
         const mins = parseInt(duration || '60');
         if (isNaN(mins) || mins <= 0) return Alert.alert('خطأ', 'يرجى إدخال مدة صحيحة');
         

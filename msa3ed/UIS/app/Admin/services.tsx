@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Alert, I18nManager } from 'react-native';
-import { apiFetch } from '../../../services/api';
+import { apiFetch } from '../../services/api';
 import { Ionicons } from '@expo/vector-icons';
-import EmptyState from '../../../components/EmptyState';
+import EmptyState from '../../components/EmptyState';
 
 // Feature 013 T039/T040: Admin Service Approval Queue
 export default function AdminServicesScreen() {
@@ -43,7 +43,7 @@ export default function AdminServicesScreen() {
   const handleReject = async (id: string) => {
     Alert.prompt('سبب الرفض', 'اكتب سبب رفض الخدمة (اختياري)', [
       { text: 'إلغاء', style: 'cancel' },
-      { text: 'رفض', style: 'destructive', onPress: async (reason) => {
+      { text: 'رفض', style: 'destructive', onPress: async (reason: string | undefined) => {
         setActionLoading(id);
         try {
           await apiFetch(`/Admin/Services/${id}/Reject`, { 

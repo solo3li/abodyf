@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator, I18nManager } from 'react-native';
-import { apiFetch } from '../../../services/api';
+import { apiFetch } from '../../services/api';
 import { Ionicons } from '@expo/vector-icons';
-import EmptyState from '../../../components/EmptyState';
-import SearchBar from '../../../components/SearchBar';
+import EmptyState from '../../components/EmptyState';
+import SearchBar from '../../components/SearchBar';
 
 // Feature 013 T066: Admin Executor Management with Search/Filter
 export default function AdminExecutorsScreen() {

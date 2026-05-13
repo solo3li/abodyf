@@ -1,75 +1,114 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Pressable, ActivityIndicator, I18nManager } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Colors } from '../../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { searchServices, setFilter, removeFilter, clearAllFilters, setPage } from '../../store/slices/searchSlice';
 import { apiFetch } from '../../services/api';
 import SearchBar from '../../components/SearchBar';
 import BottomSheet from '@gorhom/bottom-sheet';
 import AdvancedFilterSheet from '../../components/AdvancedFilterSheet';
+import FilterChipBar from '../../components/FilterChipBar';
+import { Ionicons } from '@expo/vector-icons';
+import EmptyState from '../../components/EmptyState';
+
+// Feature 013 T064: Advanced Search Screen with Redux state, FilterChipBar, and AdvancedFilterSheet
 
 export default function SearchScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const dispatch = useDispatch<AppDispatch>();
+  const isRTL = I18nManager.isRTL;
+
   const [activeTab, setActiveTab] = useState<'services' | 'executors'>(params.tab as any || 'services');
-  const [searchTerm, setSearchTerm] = useState(params.q as string || '');
-  const [results, setResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState<any>({});
   
-  const sheetRef = useRef<any>(null);
+  // Services use Redux
+  const { filters, results, loading, totalCount, page } = useSelector((state: RootState) => state.search);
+  
+  // Executors use local state (simple search)
+  const [executorSearch, setExecutorSearch] = useState('');
+  const [executors, setExecutors] = useState<any[]>([]);
+  const [loadingExecutors, setLoadingExecutors] = useState(false);
 
-  const fetchResults = async () => {
-    setLoading(true);
-    try {
-      const endpoint = activeTab === 'services' ? '/Services' : '/Executors';
-      let query = `?searchTerm=${encodeURIComponent(searchTerm)}`;
-      
-      if (filters.minPrice) query += `&minPrice=${filters.minPrice}`;
-      if (filters.maxPrice) query += `&maxPrice=${filters.maxPrice}`;
-      if (filters.minRating) query += `&minRating=${filters.minRating}`;
-      if (filters.maxDeliveryDays) query += `&maxDeliveryDays=${filters.maxDeliveryDays}`;
+  const sheetRef = useRef<BottomSheet>(null);
 
-      const data = await apiFetch(endpoint + query);
-      setResults(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+  // Initial mount sync from params
+  useEffect(() => {
+    if (params.q) {
+      if (activeTab === 'services') dispatch(setFilter({ keyword: params.q as string }));
+      else setExecutorSearch(params.q as string);
+    }
+  }, [params.q]);
+
+  // Trigger Services search
+  useEffect(() => {
+    if (activeTab === 'services') {
+      dispatch(searchServices({ filters, page }));
+    }
+  }, [filters, page, activeTab, dispatch]);
+
+  // Trigger Executors search
+  useEffect(() => {
+    if (activeTab === 'executors') {
+      setLoadingExecutors(true);
+      apiFetch(`/Admin/Executors?name=${encodeURIComponent(executorSearch)}`)
+        .then(data => setExecutors(data.items || []))
+        .catch(console.error)
+        .finally(() => setLoadingExecutors(false));
+    }
+  }, [executorSearch, activeTab]);
+
+  const handleApplyFilters = (newFilters: any) => {
+    dispatch(setFilter(newFilters));
+  };
+
+  const handleLoadMore = () => {
+    if (activeTab === 'services' && results.length < totalCount && !loading) {
+      dispatch(setPage(page + 1));
     }
   };
 
-  useEffect(() => {
-    fetchResults();
-  }, [activeTab, searchTerm, filters]);
-
-  const handleApplyFilters = (newFilters: any) => {
-    setFilters(newFilters);
-  };
-
-  const renderItem = ({ item }: { item: any }) => (
+  const renderServiceItem = ({ item }: { item: any }) => (
     <Pressable 
-      style={styles.resultItem}
-      onPress={() => router.push((activeTab === 'services' ? `/student/service/${item.id}` : `/student/profile/${item.id}`) as any)}
+      style={[styles.resultItem, isRTL && styles.rtlRow]}
+      onPress={() => router.push(`/student/service/${item.id}`)}
     >
       <Image 
-        source={{ uri: item.imageUrl || item.profilePicture || 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=600' }} 
+        source={{ uri: item.imageUrl || 'https://images.unsplash.com/photo-1542744094-3a31f272c490?q=80&w=600' }} 
         style={styles.itemImage} 
       />
-      <View style={styles.itemContent}>
-        <Text style={styles.itemTitle} numberOfLines={1}>{item.title || item.fullName}</Text>
-        <Text style={styles.itemSub}>{item.categoryName || item.major || 'خبير أكاديمي'}</Text>
-        <View style={styles.itemMeta}>
-          <View style={styles.rating}>
-            <Ionicons name="star" size={14} color={Colors.warning} />
-            <Text style={styles.ratingText}>{parseFloat(item.rating || '5.0').toFixed(1)}</Text>
+      <View style={[styles.itemContent, isRTL && styles.rtlContent]}>
+        <Text style={[styles.itemTitle, isRTL && styles.rtlText]} numberOfLines={1}>{item.title}</Text>
+        <Text style={[styles.itemSub, isRTL && styles.rtlText]}>{item.category?.name}</Text>
+        <View style={[styles.itemMeta, isRTL && styles.rtlRow]}>
+          <View style={[styles.rating, isRTL && styles.rtlRow]}>
+            <Ionicons name="star" size={14} color="#f1c40f" />
+            <Text style={styles.ratingText}>{parseFloat(item.rating || '0').toFixed(1)}</Text>
           </View>
-          {activeTab === 'executors' && (
-            <Text style={styles.ordersText}>{item.completedOrders} طلب</Text>
-          )}
-          {activeTab === 'services' && (
-            <Text style={styles.priceText}>{item.basePrice} ج.م</Text>
-          )}
+          <Text style={styles.priceText}>{item.basePrice} ر.س</Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+
+  const renderExecutorItem = ({ item }: { item: any }) => (
+    <Pressable 
+      style={[styles.resultItem, isRTL && styles.rtlRow]}
+      onPress={() => router.push(`/student/profile/${item.id}`)}
+    >
+      <Image 
+        source={{ uri: item.avatar || 'https://i.pravatar.cc/150' }} 
+        style={styles.itemImage} 
+      />
+      <View style={[styles.itemContent, isRTL && styles.rtlContent]}>
+        <Text style={[styles.itemTitle, isRTL && styles.rtlText]} numberOfLines={1}>{item.name}</Text>
+        <Text style={[styles.itemSub, isRTL && styles.rtlText]}>{item.specialty || 'خبير أكاديمي'}</Text>
+        <View style={[styles.itemMeta, isRTL && styles.rtlRow]}>
+          <View style={[styles.rating, isRTL && styles.rtlRow]}>
+            <Ionicons name="star" size={14} color="#f1c40f" />
+            <Text style={styles.ratingText}>{parseFloat(item.rating || '0').toFixed(1)}</Text>
+          </View>
+          <Text style={styles.ordersText}>{item.completedOrdersCount} طلب</Text>
         </View>
       </View>
     </Pressable>
@@ -77,23 +116,37 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, isRTL && styles.rtlRow]}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-forward" size={24} color={Colors.text} />
+          <Ionicons name={isRTL ? "arrow-forward" : "arrow-back"} size={24} color="#fff" />
         </Pressable>
         <Text style={styles.title}>البحث</Text>
+        <View style={styles.backBtn} />
       </View>
 
-      <View style={styles.searchRow}>
+      <View style={[styles.searchRow, isRTL && styles.rtlRow]}>
         <View style={{ flex: 1 }}>
-          <SearchBar onSearch={setSearchTerm} value={searchTerm} />
+          <SearchBar 
+            onSearch={(text) => activeTab === 'services' ? dispatch(setFilter({ keyword: text })) : setExecutorSearch(text)} 
+            value={activeTab === 'services' ? filters.keyword : executorSearch} 
+          />
         </View>
-        <Pressable style={styles.filterBtn} onPress={() => sheetRef.current?.expand()}>
-          <Ionicons name="options-outline" size={24} color={Colors.white} />
-        </Pressable>
+        {activeTab === 'services' && (
+          <Pressable style={styles.filterBtn} onPress={() => sheetRef.current?.expand()}>
+            <Ionicons name="options-outline" size={24} color="#fff" />
+          </Pressable>
+        )}
       </View>
 
-      <View style={styles.tabs}>
+      {activeTab === 'services' && (
+        <FilterChipBar 
+          filters={filters} 
+          onRemoveFilter={(k) => dispatch(removeFilter(k))} 
+          onClearAll={() => dispatch(clearAllFilters())} 
+        />
+      )}
+
+      <View style={[styles.tabs, isRTL && styles.rtlRow]}>
         <Pressable 
           style={[styles.tab, activeTab === 'services' && styles.activeTab]} 
           onPress={() => setActiveTab('services')}
@@ -108,25 +161,43 @@ export default function SearchScreen() {
         </Pressable>
       </View>
 
-      {loading ? (
-        <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />
-      ) : (
-        <FlatList
-          data={results}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <View style={styles.empty}>
-              <Ionicons name="search-outline" size={64} color={Colors.border} />
-              <Text style={styles.emptyText}>لم نجد نتائج تطابق بحثك</Text>
-            </View>
-          }
-        />
-      )}
+      <View style={{ flex: 1 }}>
+        {activeTab === 'services' ? (
+          loading && page === 1 ? (
+            <ActivityIndicator color="#6c63ff" style={{ marginTop: 40 }} />
+          ) : (
+            <FlatList
+              data={results}
+              renderItem={renderServiceItem}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.list}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.5}
+              ListEmptyComponent={
+                <EmptyState icon="search-outline" title="لم نجد نتائج" description="جرب تغيير خيارات التصفية" />
+              }
+            />
+          )
+        ) : (
+          loadingExecutors ? (
+            <ActivityIndicator color="#6c63ff" style={{ marginTop: 40 }} />
+          ) : (
+            <FlatList
+              data={executors}
+              renderItem={renderExecutorItem}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.list}
+              ListEmptyComponent={
+                <EmptyState icon="search-outline" title="لم نجد نتائج" description="جرب تغيير كلمة البحث" />
+              }
+            />
+          )
+        )}
+      </View>
 
       <AdvancedFilterSheet 
         sheetRef={sheetRef} 
+        initialFilters={filters}
         onApply={handleApplyFilters} 
         onClose={() => sheetRef.current?.close()} 
       />
@@ -135,28 +206,29 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
-  header: { flexDirection: 'row-reverse', alignItems: 'center', padding: 24, paddingTop: 60, gap: 16 },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.background, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: 'bold', color: Colors.text },
-  searchRow: { flexDirection: 'row-reverse', alignItems: 'center', paddingHorizontal: 24, marginBottom: 16 },
-  filterBtn: { width: 50, height: 50, borderRadius: 12, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center', marginLeft: 12 },
-  tabs: { flexDirection: 'row-reverse', marginHorizontal: 24, marginBottom: 16, backgroundColor: Colors.background, borderRadius: 12, padding: 4 },
+  container: { flex: 1, backgroundColor: '#0d0d1a' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 24, paddingTop: 60, backgroundColor: '#1a1a2e', borderBottomWidth: 1, borderBottomColor: '#2a2a4e' },
+  rtlRow: { flexDirection: 'row-reverse' },
+  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#2a2a4e', justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
+  searchRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, marginVertical: 16, gap: 12 },
+  filterBtn: { width: 48, height: 48, borderRadius: 12, backgroundColor: '#6c63ff', justifyContent: 'center', alignItems: 'center' },
+  tabs: { flexDirection: 'row', marginHorizontal: 24, marginBottom: 8, backgroundColor: '#1a1a2e', borderRadius: 12, padding: 4 },
   tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10 },
-  activeTab: { backgroundColor: Colors.white, elevation: 2 },
-  tabText: { fontSize: 14, fontWeight: '600', color: Colors.textSecondary },
-  activeTabText: { color: Colors.primary },
-  list: { padding: 24 },
-  resultItem: { flexDirection: 'row-reverse', backgroundColor: Colors.white, borderRadius: 16, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: Colors.border, alignItems: 'center', gap: 12 },
+  activeTab: { backgroundColor: '#6c63ff' },
+  tabText: { fontSize: 14, fontWeight: '600', color: '#6c6c90' },
+  activeTabText: { color: '#fff' },
+  list: { padding: 24, paddingBottom: 100 },
+  resultItem: { flexDirection: 'row', backgroundColor: '#1a1a2e', borderRadius: 16, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: '#2a2a4e', alignItems: 'center', gap: 12 },
   itemImage: { width: 70, height: 70, borderRadius: 12 },
   itemContent: { flex: 1 },
-  itemTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.text, textAlign: 'right' },
-  itemSub: { fontSize: 12, color: Colors.textSecondary, textAlign: 'right', marginTop: 2 },
-  itemMeta: { flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
-  rating: { flexDirection: 'row-reverse', alignItems: 'center', gap: 4 },
-  ratingText: { fontSize: 12, fontWeight: 'bold', color: Colors.text },
-  ordersText: { fontSize: 12, color: Colors.textSecondary },
-  priceText: { fontSize: 14, fontWeight: 'bold', color: Colors.primary },
-  empty: { alignItems: 'center', marginTop: 80, gap: 16 },
-  emptyText: { fontSize: 16, color: Colors.textSecondary, fontWeight: '600' },
+  rtlContent: { alignItems: 'flex-end' },
+  rtlText: { textAlign: 'right' },
+  itemTitle: { fontSize: 16, fontWeight: 'bold', color: '#fff' },
+  itemSub: { fontSize: 12, color: '#6c6c90', marginTop: 2 },
+  itemMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  rating: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  ratingText: { fontSize: 12, fontWeight: 'bold', color: '#fff' },
+  ordersText: { fontSize: 12, color: '#6c6c90' },
+  priceText: { fontSize: 14, fontWeight: 'bold', color: '#6c63ff' },
 });

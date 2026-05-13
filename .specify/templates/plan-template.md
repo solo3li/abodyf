@@ -33,8 +33,9 @@
 
 - [ ] **Principle I: Library-First** - Logic encapsulated in standalone modules?
 - [ ] **Principle II: Clean Architecture** - Explicit composition and idiomatic code?
-- [ ] **Principle III: Test-First & Full-Stack Verification** - Test tasks included for both FE and BE?
+- [ ] **Principle III: Test-First, Full-Stack Verification & Feature Completeness** - Test tasks included for both FE and BE? Feature implemented completely with no stubs?
 - [ ] **Principle IV: Integration Testing** - Contract tests for all new/modified endpoints?
+- [ ] **Principle V: Complete Delivery** - Auto-commit step included after both test suites pass?
 
 ## Project Structure
 

@@ -8,7 +8,10 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The tasks below MUST include test tasks for both frontend and backend as per Constitution Principle III. Tests MUST be written FIRST and ensure they FAIL before implementation.
+**Tests**: Per Constitution Principle III (v1.2.0), the tasks below MUST include test tasks for
+both frontend (Jest) and backend (xUnit). Tests MUST be written FIRST and confirmed FAILING before
+implementation begins. Features MUST be implemented **completely** — no stubs. A final auto-commit
+task MUST appear after both test suites pass.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 

@@ -7,7 +7,10 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-**Note**: Per Constitution Principle III, every user story MUST be verified with automated tests in both frontend and backend to ensure 100% functionality.
+**Note**: Per Constitution Principle III (v1.2.0), every user story MUST be verified with automated
+tests in **both** frontend (Jest) and backend (xUnit) to ensure 100% functionality. Features MUST
+be implemented completely — no stubs or unfinished paths — and committed only after both test
+suites pass.
 
 <!--
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.

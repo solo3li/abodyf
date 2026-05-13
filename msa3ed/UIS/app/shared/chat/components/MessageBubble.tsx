@@ -83,18 +83,38 @@ export default function MessageBubble({ message, isSender }: MessageBubbleProps)
 }
 
 const styles = StyleSheet.create({
-  messageBubble: { maxWidth: '85%', padding: 16, borderRadius: 20, marginBottom: 12, shadowColor: 'rgba(0, 0, 0, 0.03)', shadowOffset: { width: 0, height: 2 }, shadowRadius: 5, shadowOpacity: 1, elevation: 1 },
-  senderBubble: { alignSelf: 'flex-start', backgroundColor: Colors.primary, borderBottomLeftRadius: 4 },
-  receiverBubble: { alignSelf: 'flex-end', backgroundColor: Colors.white, borderBottomRightRadius: 4, borderWidth: 1, borderColor: Colors.border },
-  senderName: { fontSize: 12, fontWeight: 'bold', color: Colors.primary, marginBottom: 4, textAlign: 'left' },
+  messageBubble: { 
+    maxWidth: '80%', 
+    padding: 16, 
+    borderRadius: 16, 
+    marginBottom: 12, 
+    shadowColor: 'rgba(30, 41, 59, 0.08)', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowRadius: 8, 
+    shadowOpacity: 1, 
+    elevation: 2 
+  },
+  senderBubble: { 
+    alignSelf: 'flex-start', 
+    backgroundColor: Colors.primary, 
+    borderBottomLeftRadius: 4 
+  },
+  receiverBubble: { 
+    alignSelf: 'flex-end', 
+    backgroundColor: Colors.surface, 
+    borderBottomRightRadius: 4, 
+    borderWidth: 1, 
+    borderColor: Colors.border 
+  },
+  senderName: { fontSize: 13, fontWeight: '700', color: Colors.primary, marginBottom: 6, textAlign: 'left' },
   messageText: { fontSize: 16, lineHeight: 24, textAlign: 'left' },
-  senderText: { color: Colors.white },
+  senderText: { color: Colors.surface },
   receiverText: { color: Colors.text },
-  attachmentsContainer: { marginTop: 4 },
-  messageImage: { width: 220, height: 220, borderRadius: 12, marginTop: 8 },
-  fileContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8, padding: 10, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 10 },
-  fileText: { fontSize: 13, fontWeight: '600', flex: 1, textAlign: 'left' },
-  timeText: { fontSize: 10, marginTop: 8, alignSelf: 'flex-end', fontWeight: '600' },
-  senderTime: { color: 'rgba(255,255,255,0.7)' },
+  attachmentsContainer: { marginTop: 8 },
+  messageImage: { width: 220, height: 220, borderRadius: 12, marginTop: 8, backgroundColor: Colors.border },
+  fileContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 12, padding: 12, backgroundColor: 'rgba(0,0,0,0.06)', borderRadius: 12 },
+  fileText: { fontSize: 14, fontWeight: '600', flex: 1, textAlign: 'left' },
+  timeText: { fontSize: 11, marginTop: 10, alignSelf: 'flex-end', fontWeight: '500' },
+  senderTime: { color: 'rgba(255,255,255,0.8)' },
   receiverTime: { color: Colors.textSecondary },
 });

@@ -72,7 +72,7 @@ export default function HomeScreen() {
                 <Text style={styles.subtitle}>ماذا تحتاج اليوم؟</Text>
               </View>
             </View>
-            <Pressable style={styles.notificationBtn} onPress={() => router.push('/Admin/Notifications' as any)}>
+            <Pressable style={styles.notificationBtn} onPress={() => router.push('/shared/notifications' as any)}>
               <Ionicons name="notifications-outline" size={24} color={Colors.white} />
               <View style={styles.badge} />
             </Pressable>
@@ -88,7 +88,7 @@ export default function HomeScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-            <Pressable style={styles.filterBtn}>
+            <Pressable style={styles.filterBtn} onPress={() => router.push('/shared/advanced-search' as any)}>
               <Ionicons name="options-outline" size={20} color={Colors.white} />
             </Pressable>
           </View>

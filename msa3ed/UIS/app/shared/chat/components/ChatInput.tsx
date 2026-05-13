@@ -107,8 +107,20 @@ export default function ChatInput({ onSend, sending, extraButtons }: ChatInputPr
 }
 
 const styles = StyleSheet.create({
-  inputContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, paddingBottom: 32, backgroundColor: Colors.white, borderTopWidth: 1, borderTopColor: Colors.border, minHeight: 76 },
-  attachBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
-  input: { flex: 1, minHeight: 44, maxHeight: 100, backgroundColor: Colors.background, borderRadius: 22, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, fontSize: 16, color: Colors.text, textAlign: 'right', marginHorizontal: 8 },
-  sendBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center' },
+  inputContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 12, 
+    paddingBottom: 24, 
+    backgroundColor: Colors.surface, 
+    minHeight: 80,
+    shadowColor: 'rgba(30, 41, 59, 0.1)', 
+    shadowOffset: { width: 0, height: -4 }, 
+    shadowRadius: 12, 
+    shadowOpacity: 1, 
+    elevation: 10
+  },
+  attachBtn: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center', borderRadius: 22, backgroundColor: Colors.background, marginLeft: 8 },
+  input: { flex: 1, minHeight: 48, maxHeight: 120, backgroundColor: Colors.background, borderRadius: 24, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 14, fontSize: 16, color: Colors.text, textAlign: 'right', marginHorizontal: 8, borderWidth: 1, borderColor: Colors.border },
+  sendBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center', shadowColor: 'rgba(99, 102, 241, 0.3)', shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, shadowOpacity: 1, elevation: 4 },
 });

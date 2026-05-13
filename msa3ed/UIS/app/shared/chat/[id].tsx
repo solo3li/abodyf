@@ -65,15 +65,15 @@ export default function ChatDetailsScreen() {
     };
   }, [currentChat?.id, token, dispatch]);
 
-  const handleSend = async (content?: string, attachment?: any, type: string = 'file') => {
-    if (!content?.trim() && !attachment) return;
+  const handleSend = async (content?: string, attachments?: any[], audioFile?: any) => {
+    if (!content?.trim() && !attachments?.length && !audioFile) return;
     setSending(true);
     try {
       await dispatch(sendMessage({ 
         chatId: currentChat.id, 
         content: content || '', 
-        attachment, 
-        attachmentType: type 
+        attachments,
+        audioFile
       })).unwrap();
     } catch (err: any) {
       alert('فشل في إرسال الرسالة: ' + err.message);
@@ -130,9 +130,9 @@ export default function ChatDetailsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 24, paddingTop: 60, backgroundColor: Colors.white, boxShadow: [{ color: 'rgba(0, 0, 0, 0.05)', offsetX: 0, offsetY: 2, blurRadius: 10, spreadDistance: 0 }], elevation: 2, zIndex: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 24, paddingTop: 60, backgroundColor: Colors.surface, shadowColor: 'rgba(30, 41, 59, 0.05)', shadowOffset: { width: 0, height: 4 }, shadowRadius: 12, shadowOpacity: 1, elevation: 4, zIndex: 10, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
   backBtn: { width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.text },
-  headerStatus: { fontSize: 12, color: Colors.success, fontWeight: '500' },
-  chatList: { padding: 24, paddingBottom: 16 },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: Colors.text },
+  headerStatus: { fontSize: 12, color: Colors.success, fontWeight: '600' },
+  chatList: { padding: 16, paddingBottom: 16 },
 });

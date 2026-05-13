@@ -82,7 +82,7 @@ public class AdminServicesController : ControllerBase
         var service = await _db.Services.Include(s => s.Executor).FirstOrDefaultAsync(s => s.Id == id);
         if (service?.ExecutorId != null)
         {
-            await _notifications.CreateNotificationAsync(
+            await _notifications.SendNotificationAsync(
                 service.ExecutorId.Value,
                 $"تمت الموافقة على خدمتك: {service.Title}");
         }
@@ -113,7 +113,7 @@ public class AdminServicesController : ControllerBase
         if (service?.ExecutorId != null)
         {
             var reasonText = string.IsNullOrEmpty(dto.Reason) ? "" : $": {dto.Reason}";
-            await _notifications.CreateNotificationAsync(
+            await _notifications.SendNotificationAsync(
                 service.ExecutorId.Value,
                 $"تم رفض خدمتك \"{service.Title}\"{reasonText}");
         }

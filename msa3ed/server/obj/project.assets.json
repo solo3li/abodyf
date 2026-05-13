@@ -2879,11 +2879,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/app/Uis.Server.csproj",
+      "projectUniqueName": "/src/Uis.Server.csproj",
       "projectName": "Uis.Server",
-      "projectPath": "/app/Uis.Server.csproj",
+      "projectPath": "/src/Uis.Server.csproj",
       "packagesPath": "/root/.nuget/packages/",
-      "outputPath": "/app/obj/",
+      "outputPath": "/src/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/root/.nuget/NuGet/NuGet.Config"

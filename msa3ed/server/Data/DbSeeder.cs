@@ -228,6 +228,27 @@ public static class DbSeeder
             });
         }
 
+        // 12.5 Seed Deposits
+        if (!await context.Deposits.AnyAsync())
+        {
+            context.Deposits.Add(new DepositRequest {
+                UserId = student1.Id,
+                Amount = 1000,
+                Status = "Approved",
+                CreatedAt = DateTime.UtcNow.AddDays(-7),
+                ProcessedAt = DateTime.UtcNow.AddDays(-6),
+                ScreenshotUrl = "https://images.unsplash.com/photo-1554224155-111221a0675c?q=80&w=800",
+                AdminNotes = "تم قبول الإيداع"
+            });
+            context.Deposits.Add(new DepositRequest {
+                UserId = student2.Id,
+                Amount = 500,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow.AddHours(-2),
+                ScreenshotUrl = "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800"
+            });
+        }
+
         // 13. Seed Tickets
         if (!await context.Tickets.AnyAsync())
         {

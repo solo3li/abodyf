@@ -13,6 +13,13 @@ public interface IWithdrawalService
     Task<WithdrawalRequest> ResolveWithdrawalAsync(Guid id, string status, string? adminNotes, Guid adminId);
 }
 
+public interface IDepositService
+{
+    Task<DepositRequest> RequestDepositAsync(Guid userId, decimal amount, IFormFile screenshot);
+    Task<IEnumerable<DepositRequest>> GetDepositsAsync(string? status = null);
+    Task<DepositRequest> ResolveDepositAsync(Guid id, string status, string? adminNotes, Guid adminId);
+}
+
 public interface IReviewService
 {
     Task<Review> AddReviewAsync(Guid orderId, int rating, string comment, Guid studentId);

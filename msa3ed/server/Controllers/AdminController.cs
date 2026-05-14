@@ -20,8 +20,9 @@ public class AdminController : Controller
     private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> _hub;
     private readonly IWalletService _walletService;
     private readonly IAuditLogService _auditLogService;
+    private readonly IDepositService _depositService;
 
-    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IWalletService walletService, IAuditLogService auditLogService)
+    public AdminController(ApplicationDbContext db, INotificationService notificationService, IFileService fileService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.ChatHub> hub, IWalletService walletService, IAuditLogService auditLogService, IDepositService depositService)
     {
         _db = db;
         _notificationService = notificationService;
@@ -29,6 +30,7 @@ public class AdminController : Controller
         _hub = hub;
         _walletService = walletService;
         _auditLogService = auditLogService;
+        _depositService = depositService;
     }
 
     [HttpGet("")]
@@ -43,6 +45,7 @@ public class AdminController : Controller
             OpenTickets = await _db.Tickets.CountAsync(t => t.Status == "Open"),
             TotalRevenue = await _db.Payments.Where(p => p.Status == "Completed").SumAsync(p => p.Amount),
             PendingWithdrawals = await _db.WithdrawalRequests.CountAsync(w => w.Status == "Pending"),
+            PendingDeposits = await _db.Deposits.CountAsync(d => d.Status == "Pending"),
             ActiveDisputes = await _db.Disputes.CountAsync(d => d.Status == "Open")
         };
 
@@ -1517,5 +1520,37 @@ public class AdminController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Login");
+    }
+
+    [HttpGet("Deposits")]
+    public async Task<IActionResult> Deposits(string? status)
+    {
+        var requests = await _depositService.GetDepositsAsync(status);
+        ViewBag.Status = status;
+        return View(requests);
+    }
+
+    [HttpPost("Deposits/Resolve/{id}")]
+    public async Task<IActionResult> ResolveDeposit(Guid id, string resolution, string? adminNotes)
+    {
+        var adminIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        try
+        {
+            var request = await _depositService.ResolveDepositAsync(id, resolution, adminNotes, adminId);
+            TempData["Message"] = $"تم { (resolution == "Approved" ? "قبول" : "رفض") } طلب الإيداع بنجاح";
+            
+            // Send notification
+            await _notificationService.SendNotificationAsync(request.UserId, 
+                $"تم { (resolution == "Approved" ? "قبول" : "رفض") } طلب الإيداع الخاص بك بقيمة {request.Amount} ج.م", 
+                "تحديث محفظة");
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Deposits));
     }
 }

@@ -6,7 +6,7 @@ using Uis.Server.Models;
 
 namespace Uis.Server.Services;
 
-public class WalletService : IWalletService, IWithdrawalService
+public class WalletService : IWalletService, IWithdrawalService, IDepositService
 {
     private readonly ApplicationDbContext _db;
     private readonly IFileService _fileService;
@@ -20,6 +20,77 @@ public class WalletService : IWalletService, IWithdrawalService
         _auditLog = auditLog;
         _logger = logger;
     }
+
+    // IDepositService Implementation
+    public async Task<DepositRequest> RequestDepositAsync(Guid userId, decimal amount, IFormFile screenshot)
+    {
+        if (amount <= 0) throw new InvalidOperationException("المبلغ يجب أن يكون أكبر من 0");
+
+        var screenshotUrl = await _fileService.SaveFileAsync(screenshot, "deposits");
+
+        var request = new DepositRequest
+        {
+            UserId = userId,
+            Amount = amount,
+            ScreenshotUrl = screenshotUrl,
+            Status = "Pending"
+        };
+
+        _db.Deposits.Add(request);
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("User {UserId} requested deposit of {Amount}", userId, amount);
+        return request;
+    }
+
+    public async Task<IEnumerable<DepositRequest>> GetDepositsAsync(string? status = null)
+    {
+        var query = _db.Deposits.Include(d => d.User).AsQueryable();
+        if (!string.IsNullOrEmpty(status)) query = query.Where(d => d.Status == status);
+        return await query.OrderByDescending(d => d.CreatedAt).ToListAsync();
+    }
+
+    public async Task<DepositRequest> ResolveDepositAsync(Guid id, string status, string? adminNotes, Guid adminId)
+    {
+        await using var tx = await _db.Database.BeginTransactionAsync();
+        try
+        {
+            var request = await _db.Deposits.Include(d => d.User).FirstOrDefaultAsync(d => d.Id == id);
+            if (request == null) throw new InvalidOperationException("طلب الإيداع غير موجود");
+            if (request.Status != "Pending") throw new InvalidOperationException("هذا الطلب تمت معالجته مسبقاً");
+
+            request.Status = status;
+            request.AdminNotes = adminNotes;
+            request.ProcessedAt = DateTime.UtcNow;
+
+            if (status == "Approved")
+            {
+                request.User.WalletBalance += request.Amount;
+
+                _db.WalletTransactions.Add(new WalletTransaction
+                {
+                    UserId = request.UserId,
+                    Amount = request.Amount,
+                    Type = "TopUp",
+                    Description = $"إيداع رصيد (طلب #{id.ToString().Substring(0, 8)})"
+                });
+            }
+
+            await _auditLog.LogActionAsync(adminId, "ResolveDeposit", "DepositRequest", id.ToString(), $"Status changed to {status}. Notes: {adminNotes}");
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            _logger.LogInformation("Deposit request {RequestId} resolved as {Status} by admin {AdminId}", id, status, adminId);
+            return request;
+        }
+        catch
+        {
+            await tx.RollbackAsync();
+            throw;
+        }
+    }
+
 
     public async Task<(bool Success, decimal NewBalance, string Message)> TopUpAsync(Guid userId, decimal amount)
     {

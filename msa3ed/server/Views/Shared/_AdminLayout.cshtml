@@ -114,6 +114,10 @@
                 <i class="fas fa-money-bill-wave w-6 text-center"></i>
                 <span class="mx-3 font-semibold">طلبات السحب</span>
             </a>
+            <a href="/Admin/Deposits" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Deposits" ? "active" : "")">
+                <i class="fas fa-file-invoice w-6 text-center"></i>
+                <span class="mx-3 font-semibold">طلبات الإيداع</span>
+            </a>
             <a href="/Admin/Disputes" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Disputes" || ViewContext.RouteData.Values["action"]?.ToString() == "DisputeDetails" ? "active" : "")">
                 <i class="fas fa-exclamation-triangle w-6 text-center"></i>
                 <span class="mx-3 font-semibold">النزاعات</span>

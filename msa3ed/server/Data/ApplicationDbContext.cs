@@ -36,6 +36,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<WithdrawalRequest> WithdrawalRequests { get; set; } = null!;
     public DbSet<Review> Reviews { get; set; } = null!;
     public DbSet<Dispute> Disputes { get; set; } = null!;
+    public DbSet<DepositRequest> Deposits { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

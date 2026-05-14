@@ -336,3 +336,16 @@ public class Dispute
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? ResolvedAt { get; set; }
 }
+
+public class DepositRequest
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+    public decimal Amount { get; set; }
+    public string ScreenshotUrl { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected, Cancelled
+    public string? AdminNotes { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? ProcessedAt { get; set; }
+}

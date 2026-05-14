@@ -132,6 +132,7 @@ builder.Services.AddScoped<Uis.Server.Services.IAudioService, Uis.Server.Service
 builder.Services.AddScoped<Uis.Server.Services.IOfferService, Uis.Server.Services.OfferService>();
 builder.Services.AddScoped<Uis.Server.Services.IWalletService, Uis.Server.Services.WalletService>();
 builder.Services.AddScoped<Uis.Server.Services.IWithdrawalService, Uis.Server.Services.WalletService>();
+builder.Services.AddScoped<Uis.Server.Services.IDepositService, Uis.Server.Services.WalletService>();
 builder.Services.AddScoped<Uis.Server.Services.IReviewService, Uis.Server.Services.ReviewService>();
 builder.Services.AddScoped<Uis.Server.Services.IDisputeService, Uis.Server.Services.DisputeService>();
 builder.Services.AddScoped<Uis.Server.Services.IAdminService, Uis.Server.Services.AdminService>();

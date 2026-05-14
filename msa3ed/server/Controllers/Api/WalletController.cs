@@ -16,11 +16,29 @@ public class WalletController : ControllerBase
 {
     private readonly IWithdrawalService _withdrawalService;
     private readonly IWalletService _walletService;
+    private readonly IDepositService _depositService;
 
-    public WalletController(IWithdrawalService withdrawalService, IWalletService walletService)
+    public WalletController(IWithdrawalService withdrawalService, IWalletService walletService, IDepositService depositService)
     {
         _withdrawalService = withdrawalService;
         _walletService = walletService;
+        _depositService = depositService;
+    }
+
+    [HttpPost("Deposits")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> RequestDeposit([FromForm] DepositRequestDto dto)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            var request = await _depositService.RequestDepositAsync(userId, dto.Amount, dto.Screenshot);
+            return Ok(request);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 
     [HttpPost("Withdrawals")]
@@ -77,6 +95,12 @@ public class WalletController : ControllerBase
 public record ResolveWithdrawalRequest(string Status, string? AdminNotes);
 
 public class WithdrawalRequestDto
+{
+    public decimal Amount { get; set; }
+    public IFormFile Screenshot { get; set; } = null!;
+}
+
+public class DepositRequestDto
 {
     public decimal Amount { get; set; }
     public IFormFile Screenshot { get; set; } = null!;

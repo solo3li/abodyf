@@ -2024,3 +2024,684 @@ ORDER BY a0."CreatedAt" DESC
 2026-05-14 05:52:05.535 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server) in 74.0929ms
 2026-05-14 05:52:05.536 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server)'
 2026-05-14 05:52:05.536 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 200 null text/html; charset=utf-8 88.4617ms
+2026-05-14 05:58:53.434 +00:00 [INF] Application is shutting down...
+eters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:56:03.334 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 05:56:03.446 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 05:56:03.466 +00:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-05-14 05:56:03.469 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 05:56:03.473 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:56:03.493 +00:00 [INF] Applying migration '20260514055533_AddDepositRequests'.
+2026-05-14 05:56:03.604 +00:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Deposits" (
+    "Id" uuid NOT NULL,
+    "UserId" uuid NOT NULL,
+    "Amount" numeric NOT NULL,
+    "ScreenshotUrl" text NOT NULL,
+    "Status" text NOT NULL,
+    "AdminNotes" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    "ProcessedAt" timestamp with time zone,
+    CONSTRAINT "PK_Deposits" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Deposits_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2026-05-14 05:56:03.609 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Deposits_UserId" ON "Deposits" ("UserId");
+2026-05-14 05:56:03.611 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260514055533_AddDepositRequests', '10.0.7');
+2026-05-14 05:59:15.907 +00:00 [INF] Executed DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:59:16.764 +00:00 [INF] Executed DbCommand (16ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 05:59:16.865 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 05:59:16.898 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 05:59:16.904 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:59:16.920 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 05:59:17.506 +00:00 [INF] Executed DbCommand (16ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:59:17.606 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:59:17.611 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:59:17.685 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 05:59:17.934 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:59:18.142 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:59:18.157 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:59:18.170 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:59:18.181 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:59:18.210 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "KycRequests" AS k)
+2026-05-14 05:59:18.222 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 05:59:18.244 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 05:59:18.272 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 05:59:18.289 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title"
+FROM "Services" AS s
+2026-05-14 05:59:18.353 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Orders" AS o)
+2026-05-14 05:59:18.370 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Reviews" AS r)
+2026-05-14 05:59:18.381 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "WithdrawalRequests" AS w)
+2026-05-14 05:59:18.393 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Deposits" AS d)
+2026-05-14 05:59:18.474 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Tickets" AS t)
+2026-05-14 05:59:18.482 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "AuditLogs" AS a)
+2026-05-14 05:59:18.490 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 05:59:18.640 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Decimal), @p3='?' (DbType = DateTime), @p4='?' (DbType = DateTime), @p5='?', @p6='?', @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?', @p10='?' (DbType = Decimal), @p11='?' (DbType = DateTime), @p12='?' (DbType = DateTime), @p13='?', @p14='?', @p15='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Deposits" ("Id", "AdminNotes", "Amount", "CreatedAt", "ProcessedAt", "ScreenshotUrl", "Status", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INSERT INTO "Deposits" ("Id", "AdminNotes", "Amount", "CreatedAt", "ProcessedAt", "ScreenshotUrl", "Status", "UserId")
+VALUES (@p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15);
+2026-05-14 05:59:19.079 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 05:59:19.230 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 05:59:19.236 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 05:59:19.238 +00:00 [INF] Hosting environment: Development
+2026-05-14 05:59:19.241 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 06:00:15.348 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - null null
+2026-05-14 06:00:15.544 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server)'
+2026-05-14 06:00:15.574 +00:00 [INF] Route matched with {action = "MarketplaceSettings", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MarketplaceSettings() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:00:15.672 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Key", s."Description", s."Value"
+FROM "SystemSettings" AS s
+WHERE s."Key" IN ('MinWithdrawalAmount', 'CommissionRate')
+2026-05-14 06:00:15.782 +00:00 [INF] Executing ViewResult, running view MarketplaceSettings.
+2026-05-14 06:00:15.975 +00:00 [INF] Executed ViewResult - view MarketplaceSettings executed in 196.1157ms.
+2026-05-14 06:00:15.978 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server) in 401.9148ms
+2026-05-14 06:00:15.980 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server)'
+2026-05-14 06:00:16.020 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - 200 null text/html; charset=utf-8 674.9986ms
+2026-05-14 06:00:20.949 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - null null
+2026-05-14 06:00:20.977 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Services (Uis.Server)'
+2026-05-14 06:00:21.000 +00:00 [INF] Route matched with {action = "Services", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Services(System.String, System.Nullable`1[System.Guid], System.Nullable`1[System.Decimal], System.Nullable`1[System.Decimal], System.Nullable`1[System.Boolean]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:00:21.169 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title", c."Id", c."Name"
+FROM "Services" AS s
+INNER JOIN "Categories" AS c ON s."CategoryId" = c."Id"
+ORDER BY s."Id" DESC
+2026-05-14 06:00:21.178 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 06:00:21.211 +00:00 [INF] Executing ViewResult, running view Services.
+2026-05-14 06:00:21.369 +00:00 [INF] Executed ViewResult - view Services executed in 160.3833ms.
+2026-05-14 06:00:21.370 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Services (Uis.Server) in 368.7697ms
+2026-05-14 06:00:21.371 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Services (Uis.Server)'
+2026-05-14 06:00:21.373 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - 200 null text/html; charset=utf-8 423.1972ms
+2026-05-14 06:00:48.982 +00:00 [INF] Application is shutting down...
+2026-05-14 06:01:00.899 +00:00 [INF] Executed DbCommand (42ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 06:01:01.586 +00:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 06:01:01.734 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 06:01:01.777 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 06:01:01.791 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 06:01:01.804 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 06:01:02.499 +00:00 [INF] Executed DbCommand (20ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 06:01:02.605 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 06:01:02.611 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 06:01:02.741 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 06:01:03.099 +00:00 [INF] Executed DbCommand (17ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 06:01:03.299 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 06:01:03.312 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 06:01:03.320 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 06:01:03.328 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 06:01:03.344 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "KycRequests" AS k)
+2026-05-14 06:01:03.358 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 06:01:03.377 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 06:01:03.402 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 06:01:03.423 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title"
+FROM "Services" AS s
+2026-05-14 06:01:03.491 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Orders" AS o)
+2026-05-14 06:01:03.502 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Reviews" AS r)
+2026-05-14 06:01:03.516 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "WithdrawalRequests" AS w)
+2026-05-14 06:01:03.534 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Deposits" AS d)
+2026-05-14 06:01:03.545 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Tickets" AS t)
+2026-05-14 06:01:03.568 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "AuditLogs" AS a)
+2026-05-14 06:01:03.587 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 06:01:04.199 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 06:01:04.356 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 06:01:04.359 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 06:01:04.360 +00:00 [INF] Hosting environment: Development
+2026-05-14 06:01:04.361 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 06:04:35.465 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - null null
+2026-05-14 06:04:35.597 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 06:04:35.625 +00:00 [INF] Route matched with {action = "Kyc", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Kyc(System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:04:35.724 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT k."Id", k."Address", k."BirthDate", k."IdExpiryDate", k."NationalId", k."NationalIdBackUrl", k."NationalIdFrontUrl", k."Phone", k."RejectionReason", k."Status", k."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "KycRequests" AS k
+INNER JOIN "Users" AS u ON k."UserId" = u."Id"
+ORDER BY k."Status" = 'Pending' DESC, k."Id" DESC
+2026-05-14 06:04:35.843 +00:00 [INF] Executing ViewResult, running view Kyc.
+2026-05-14 06:04:36.045 +00:00 [INF] Executed ViewResult - view Kyc executed in 203.9778ms.
+2026-05-14 06:04:36.048 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Kyc (Uis.Server) in 420.8147ms
+2026-05-14 06:04:36.049 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 06:04:36.060 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - 200 null text/html; charset=utf-8 597.668ms
+2026-05-14 06:04:57.161 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Wallet - null null
+2026-05-14 06:04:57.185 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.WalletList (Uis.Server)'
+2026-05-14 06:04:57.199 +00:00 [INF] Route matched with {action = "WalletList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] WalletList(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:04:57.359 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Users" AS u
+ORDER BY u."WalletBalance" DESC
+LIMIT @p
+2026-05-14 06:04:57.369 +00:00 [INF] Executing ViewResult, running view WalletList.
+2026-05-14 06:04:57.392 +00:00 [INF] Executed ViewResult - view WalletList executed in 25.8639ms.
+2026-05-14 06:04:57.393 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.WalletList (Uis.Server) in 193.3704ms
+2026-05-14 06:04:57.394 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.WalletList (Uis.Server)'
+2026-05-14 06:04:57.395 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Wallet - 200 null text/html; charset=utf-8 234.4482ms
+2026-05-14 06:05:01.105 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/WalletDetails/dd10b6b6-5dc6-4e6d-8c6e-b6938be80ef6 - null null
+2026-05-14 06:05:01.116 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.WalletDetails (Uis.Server)'
+2026-05-14 06:05:01.130 +00:00 [INF] Route matched with {action = "WalletDetails", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] WalletDetails(System.Guid) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:05:01.177 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Users" AS u
+WHERE u."Id" = @p
+LIMIT 1
+2026-05-14 06:05:01.201 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[@id='?' (DbType = Guid), @p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT w."Id", w."Amount", w."CreatedAt", w."Description", w."OrderId", w."RelatedOrderId", w."Type", w."UserId"
+FROM "WalletTransactions" AS w
+WHERE w."UserId" = @id
+ORDER BY w."CreatedAt" DESC
+LIMIT @p
+2026-05-14 06:05:01.208 +00:00 [INF] Executing ViewResult, running view WalletDetails.
+2026-05-14 06:05:01.239 +00:00 [INF] Executed ViewResult - view WalletDetails executed in 32.2021ms.
+2026-05-14 06:05:01.239 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.WalletDetails (Uis.Server) in 107.6632ms
+2026-05-14 06:05:01.240 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.WalletDetails (Uis.Server)'
+2026-05-14 06:05:01.241 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/WalletDetails/dd10b6b6-5dc6-4e6d-8c6e-b6938be80ef6 - 200 null text/html; charset=utf-8 135.6813ms
+2026-05-14 06:05:50.854 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - null null
+2026-05-14 06:05:50.856 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:05:50.868 +00:00 [INF] Route matched with {action = "Deposits", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Deposits(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:05:50.894 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."AdminNotes", d."Amount", d."CreatedAt", d."ProcessedAt", d."ScreenshotUrl", d."Status", d."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Deposits" AS d
+INNER JOIN "Users" AS u ON d."UserId" = u."Id"
+ORDER BY d."CreatedAt" DESC
+2026-05-14 06:05:50.922 +00:00 [INF] Executing ViewResult, running view Deposits.
+2026-05-14 06:05:50.973 +00:00 [INF] Executed ViewResult - view Deposits executed in 52.6244ms.
+2026-05-14 06:05:50.975 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Deposits (Uis.Server) in 106.1081ms
+2026-05-14 06:05:50.975 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:05:50.976 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - 200 null text/html; charset=utf-8 122.584ms
+2026-05-14 06:05:51.104 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:05:51.108 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 3.6769ms
+2026-05-14 06:05:51.111 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404
+2026-05-14 06:05:51.234 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:05:51.237 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 3.2909ms
+2026-05-14 06:05:51.239 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404
+2026-05-14 06:06:44.469 +00:00 [INF] Request starting HTTP/1.1 POST http://209.38.238.175:5035/Admin/Deposits/Resolve/c412e687-4552-4609-bc68-ce0ea130e04b - application/x-www-form-urlencoded 31
+2026-05-14 06:06:44.471 +00:00 [INF] CORS policy execution successful.
+2026-05-14 06:06:44.474 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server)'
+2026-05-14 06:06:44.486 +00:00 [INF] Route matched with {action = "ResolveDeposit", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResolveDeposit(System.Guid, System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:06:44.566 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."AdminNotes", d."Amount", d."CreatedAt", d."ProcessedAt", d."ScreenshotUrl", d."Status", d."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Deposits" AS d
+INNER JOIN "Users" AS u ON d."UserId" = u."Id"
+WHERE d."Id" = @id
+LIMIT 1
+2026-05-14 06:06:44.789 +00:00 [ERR] Failed executing DbCommand (18ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?', @p9='?' (DbType = Guid), @p7='?' (DbType = DateTime), @p8='?', @p11='?' (DbType = Guid), @p10='?' (DbType = Decimal), @p12='?' (DbType = Guid), @p13='?' (DbType = Decimal), @p14='?' (DbType = DateTime), @p15='?', @p16='?' (DbType = Guid), @p17='?' (DbType = Guid), @p18='?', @p19='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AuditLogs" ("Id", "Action", "AdminId", "CreatedAt", "Details", "TargetEntityId", "TargetEntityType")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+UPDATE "Deposits" SET "ProcessedAt" = @p7, "Status" = @p8
+WHERE "Id" = @p9;
+UPDATE "Users" SET "WalletBalance" = @p10
+WHERE "Id" = @p11;
+INSERT INTO "WalletTransactions" ("Id", "Amount", "CreatedAt", "Description", "OrderId", "RelatedOrderId", "Type", "UserId")
+VALUES (@p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19);
+2026-05-14 06:06:44.833 +00:00 [ERR] An exception occurred in the database while saving changes for context type 'Uis.Server.Data.ApplicationDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23503
+    MessageText: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: AuditLogs
+    ConstraintName: FK_AuditLogs_Users_AdminId
+    File: ri_triggers.c
+    Line: 2596
+    Routine: ri_ReportViolation
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23503
+    MessageText: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: AuditLogs
+    ConstraintName: FK_AuditLogs_Users_AdminId
+    File: ri_triggers.c
+    Line: 2596
+    Routine: ri_ReportViolation
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-05-14 06:06:44.858 +00:00 [INF] Executing RedirectResult, redirecting to /Admin/Deposits.
+2026-05-14 06:06:44.861 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server) in 374.0377ms
+2026-05-14 06:06:44.862 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server)'
+2026-05-14 06:06:44.864 +00:00 [INF] Request finished HTTP/1.1 POST http://209.38.238.175:5035/Admin/Deposits/Resolve/c412e687-4552-4609-bc68-ce0ea130e04b - 302 0 null 395.0173ms
+2026-05-14 06:06:44.958 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - null null
+2026-05-14 06:06:44.961 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:06:44.961 +00:00 [INF] Route matched with {action = "Deposits", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Deposits(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:06:44.969 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."AdminNotes", d."Amount", d."CreatedAt", d."ProcessedAt", d."ScreenshotUrl", d."Status", d."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Deposits" AS d
+INNER JOIN "Users" AS u ON d."UserId" = u."Id"
+ORDER BY d."CreatedAt" DESC
+2026-05-14 06:06:44.972 +00:00 [INF] Executing ViewResult, running view Deposits.
+2026-05-14 06:06:44.977 +00:00 [INF] Executed ViewResult - view Deposits executed in 5.3367ms.
+2026-05-14 06:06:44.979 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Deposits (Uis.Server) in 17.7799ms
+2026-05-14 06:06:44.980 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:06:44.981 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - 200 null text/html; charset=utf-8 23.16ms
+2026-05-14 06:06:45.109 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:06:45.111 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 1.5005ms
+2026-05-14 06:06:45.112 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404
+2026-05-14 06:06:45.225 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:06:45.227 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 1.7348ms
+2026-05-14 06:06:45.228 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404
+2026-05-14 06:07:03.905 +00:00 [INF] Request starting HTTP/1.1 POST http://209.38.238.175:5035/Admin/Deposits/Resolve/c412e687-4552-4609-bc68-ce0ea130e04b - application/x-www-form-urlencoded 33
+2026-05-14 06:07:03.908 +00:00 [INF] CORS policy execution successful.
+2026-05-14 06:07:03.911 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server)'
+2026-05-14 06:07:03.912 +00:00 [INF] Route matched with {action = "ResolveDeposit", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ResolveDeposit(System.Guid, System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:07:03.955 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[@id='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."AdminNotes", d."Amount", d."CreatedAt", d."ProcessedAt", d."ScreenshotUrl", d."Status", d."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Deposits" AS d
+INNER JOIN "Users" AS u ON d."UserId" = u."Id"
+WHERE d."Id" = @id
+LIMIT 1
+2026-05-14 06:07:03.972 +00:00 [ERR] Failed executing DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?', @p10='?' (DbType = Guid), @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p12='?' (DbType = Guid), @p11='?' (DbType = Decimal), @p13='?' (DbType = Guid), @p14='?' (DbType = Decimal), @p15='?' (DbType = DateTime), @p16='?', @p17='?' (DbType = Guid), @p18='?' (DbType = Guid), @p19='?', @p20='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AuditLogs" ("Id", "Action", "AdminId", "CreatedAt", "Details", "TargetEntityId", "TargetEntityType")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+UPDATE "Deposits" SET "AdminNotes" = @p7, "ProcessedAt" = @p8, "Status" = @p9
+WHERE "Id" = @p10;
+UPDATE "Users" SET "WalletBalance" = @p11
+WHERE "Id" = @p12;
+INSERT INTO "WalletTransactions" ("Id", "Amount", "CreatedAt", "Description", "OrderId", "RelatedOrderId", "Type", "UserId")
+VALUES (@p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20);
+2026-05-14 06:07:03.983 +00:00 [ERR] An exception occurred in the database while saving changes for context type 'Uis.Server.Data.ApplicationDbContext'.
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23503
+    MessageText: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: AuditLogs
+    ConstraintName: FK_AuditLogs_Users_AdminId
+    File: ri_triggers.c
+    Line: 2596
+    Routine: ri_ReportViolation
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> Npgsql.PostgresException (0x80004005): 23503: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+
+DETAIL: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+  Exception data:
+    Severity: ERROR
+    SqlState: 23503
+    MessageText: insert or update on table "AuditLogs" violates foreign key constraint "FK_AuditLogs_Users_AdminId"
+    Detail: Detail redacted as it may contain sensitive data. Specify 'Include Error Detail' in the connection string to include this information.
+    SchemaName: public
+    TableName: AuditLogs
+    ConstraintName: FK_AuditLogs_Users_AdminId
+    File: ri_triggers.c
+    Line: 2596
+    Routine: ri_ReportViolation
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+2026-05-14 06:07:03.998 +00:00 [INF] Executing RedirectResult, redirecting to /Admin/Deposits.
+2026-05-14 06:07:04.000 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server) in 87.317ms
+2026-05-14 06:07:04.001 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.ResolveDeposit (Uis.Server)'
+2026-05-14 06:07:04.002 +00:00 [INF] Request finished HTTP/1.1 POST http://209.38.238.175:5035/Admin/Deposits/Resolve/c412e687-4552-4609-bc68-ce0ea130e04b - 302 0 null 96.0193ms
+2026-05-14 06:07:04.099 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - null null
+2026-05-14 06:07:04.101 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:07:04.103 +00:00 [INF] Route matched with {action = "Deposits", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Deposits(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 06:07:04.109 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT d."Id", d."AdminNotes", d."Amount", d."CreatedAt", d."ProcessedAt", d."ScreenshotUrl", d."Status", d."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Deposits" AS d
+INNER JOIN "Users" AS u ON d."UserId" = u."Id"
+ORDER BY d."CreatedAt" DESC
+2026-05-14 06:07:04.112 +00:00 [INF] Executing ViewResult, running view Deposits.
+2026-05-14 06:07:04.117 +00:00 [INF] Executed ViewResult - view Deposits executed in 5.8346ms.
+2026-05-14 06:07:04.118 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Deposits (Uis.Server) in 13.9719ms
+2026-05-14 06:07:04.119 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Deposits (Uis.Server)'
+2026-05-14 06:07:04.122 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Deposits - 200 null text/html; charset=utf-8 22.5941ms
+2026-05-14 06:07:04.242 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:07:04.244 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 1.9726ms
+2026-05-14 06:07:04.245 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404
+2026-05-14 06:07:04.363 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - null null
+2026-05-14 06:07:04.365 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/img/default-avatar.png - 404 0 null 2.4588ms
+2026-05-14 06:07:04.367 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://209.38.238.175:5035/img/default-avatar.png, Response status code: 404

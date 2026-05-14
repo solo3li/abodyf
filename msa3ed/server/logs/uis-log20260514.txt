@@ -1699,3 +1699,328 @@ ORDER BY p."CreatedAt" DESC
 2026-05-14 05:48:17.926 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Payments (Uis.Server) in 122.9583ms
 2026-05-14 05:48:17.926 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Payments (Uis.Server)'
 2026-05-14 05:48:17.927 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Payments - 200 null text/html; charset=utf-8 140.7773ms
+2026-05-14 05:49:59.696 +00:00 [INF] Application is shutting down...
+2026-05-14 05:50:45.194 +00:00 [INF] Executed DbCommand (39ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:50:45.899 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 05:50:46.012 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 05:50:46.049 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 05:50:46.062 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 05:50:46.079 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 05:50:46.611 +00:00 [INF] Executed DbCommand (21ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:50:46.719 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:50:46.724 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 05:50:46.808 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 05:50:47.067 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:50:47.267 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:50:47.739 +00:00 [INF] Executed DbCommand (47ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?' (DbType = Boolean), @p9='?' (DbType = Boolean), @p10='?', @p11='?', @p12='?', @p13='?' (DbType = Decimal), @p14='?' (DbType = Int32), @p15='?', @p16='?' (DbType = Decimal), @p17='?' (DbType = Guid), @p18='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "Bio", "CompletedOrdersCount", "CreatedAt", "Email", "FullName", "IsActive", "IsAdmin", "IsExecutor", "IsStaff", "Major", "PasswordHash", "ProfilePicture", "Rating", "ReviewsCount", "University", "WalletBalance")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p17, @p18);
+2026-05-14 05:50:47.813 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:50:47.828 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?' (DbType = Boolean), @p9='?' (DbType = Boolean), @p10='?', @p11='?', @p12='?', @p13='?' (DbType = Decimal), @p14='?' (DbType = Int32), @p15='?', @p16='?' (DbType = Decimal), @p17='?' (DbType = Guid), @p18='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "Bio", "CompletedOrdersCount", "CreatedAt", "Email", "FullName", "IsActive", "IsAdmin", "IsExecutor", "IsStaff", "Major", "PasswordHash", "ProfilePicture", "Rating", "ReviewsCount", "University", "WalletBalance")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p17, @p18);
+2026-05-14 05:50:47.841 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:50:47.859 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?' (DbType = Boolean), @p9='?' (DbType = Boolean), @p10='?', @p11='?', @p12='?', @p13='?' (DbType = Decimal), @p14='?' (DbType = Int32), @p15='?', @p16='?' (DbType = Decimal), @p17='?' (DbType = Guid), @p18='?' (DbType = Guid), @p19='?' (DbType = Guid), @p20='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "Bio", "CompletedOrdersCount", "CreatedAt", "Email", "FullName", "IsActive", "IsAdmin", "IsExecutor", "IsStaff", "Major", "PasswordHash", "ProfilePicture", "Rating", "ReviewsCount", "University", "WalletBalance")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p17, @p18);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p19, @p20);
+2026-05-14 05:50:47.871 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 05:50:47.894 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = Decimal), @p2='?' (DbType = Guid), @p3='?', @p4='?' (DbType = Int32), @p5='?' (DbType = DateTime), @p6='?', @p7='?', @p8='?' (DbType = Boolean), @p9='?' (DbType = Boolean), @p10='?' (DbType = Boolean), @p11='?' (DbType = Boolean), @p12='?', @p13='?', @p14='?', @p15='?' (DbType = Decimal), @p16='?' (DbType = Int32), @p17='?', @p18='?' (DbType = Decimal), @p19='?' (DbType = Guid), @p20='?' (DbType = Guid), @p21='?' (DbType = Guid), @p22='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Users" SET "WalletBalance" = @p0
+WHERE "Id" = @p1;
+INSERT INTO "Users" ("Id", "Bio", "CompletedOrdersCount", "CreatedAt", "Email", "FullName", "IsActive", "IsAdmin", "IsExecutor", "IsStaff", "Major", "PasswordHash", "ProfilePicture", "Rating", "ReviewsCount", "University", "WalletBalance")
+VALUES (@p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p19, @p20);
+INSERT INTO "UserRoles" ("RolesId", "UsersId")
+VALUES (@p21, @p22);
+2026-05-14 05:50:47.912 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "KycRequests" AS k)
+2026-05-14 05:50:47.971 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 05:50:47.991 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 05:50:48.018 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 05:50:48.036 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title"
+FROM "Services" AS s
+2026-05-14 05:50:48.097 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Orders" AS o)
+2026-05-14 05:50:48.226 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = DateTime), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?', @p9='?', @p10='?' (DbType = Guid), @p11='?' (DbType = Guid), @p12='?', @p13='?' (DbType = DateTime), @p14='?' (DbType = DateTime), @p15='?', @p16='?', @p17='?', @p18='?', @p19='?', @p20='?', @p21='?' (DbType = Guid), @p22='?' (DbType = Guid), @p23='?', @p24='?' (DbType = DateTime), @p25='?' (DbType = DateTime), @p26='?', @p27='?', @p28='?', @p29='?', @p30='?', @p31='?', @p32='?' (DbType = Guid), @p33='?' (DbType = Guid), @p34='?' (DbType = DateTime), @p35='?' (DbType = Guid), @p36='?' (DbType = Decimal), @p37='?' (DbType = Guid), @p38='?', @p39='?' (DbType = Guid), @p41='?' (DbType = Guid), @p40='?' (DbType = Decimal)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "KycRequests" ("Id", "Address", "BirthDate", "IdExpiryDate", "NationalId", "NationalIdBackUrl", "NationalIdFrontUrl", "Phone", "RejectionReason", "Status", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);
+INSERT INTO "KycRequests" ("Id", "Address", "BirthDate", "IdExpiryDate", "NationalId", "NationalIdBackUrl", "NationalIdFrontUrl", "Phone", "RejectionReason", "Status", "UserId")
+VALUES (@p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21);
+INSERT INTO "KycRequests" ("Id", "Address", "BirthDate", "IdExpiryDate", "NationalId", "NationalIdBackUrl", "NationalIdFrontUrl", "Phone", "RejectionReason", "Status", "UserId")
+VALUES (@p22, @p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32);
+INSERT INTO "Orders" ("Id", "CreatedAt", "ExecutorId", "Price", "ServiceId", "Status", "StudentId")
+VALUES (@p33, @p34, @p35, @p36, @p37, @p38, @p39);
+UPDATE "Users" SET "WalletBalance" = @p40
+WHERE "Id" = @p41;
+2026-05-14 05:50:48.328 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Decimal), @p2='?' (DbType = Guid), @p3='?', @p4='?' (DbType = Guid), @p5='?' (DbType = DateTime), @p6='?' (DbType = Guid), @p7='?' (DbType = Decimal), @p8='?' (DbType = Guid), @p9='?', @p10='?' (DbType = Guid), @p11='?' (DbType = Guid), @p12='?' (DbType = Decimal), @p13='?' (DbType = DateTime), @p14='?' (DbType = Guid), @p15='?', @p16='?'], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Escrows" ("Id", "Amount", "OrderId", "Status")
+VALUES (@p0, @p1, @p2, @p3);
+INSERT INTO "Orders" ("Id", "CreatedAt", "ExecutorId", "Price", "ServiceId", "Status", "StudentId")
+VALUES (@p4, @p5, @p6, @p7, @p8, @p9, @p10);
+INSERT INTO "Payments" ("Id", "Amount", "CreatedAt", "OrderId", "Status", "TransactionId")
+VALUES (@p11, @p12, @p13, @p14, @p15, @p16);
+2026-05-14 05:50:48.338 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Decimal), @p2='?' (DbType = Guid), @p3='?', @p4='?' (DbType = Guid), @p5='?' (DbType = DateTime), @p6='?' (DbType = Guid), @p7='?' (DbType = Decimal), @p8='?' (DbType = Guid), @p9='?', @p10='?' (DbType = Guid), @p11='?' (DbType = Guid), @p12='?' (DbType = Decimal), @p13='?' (DbType = DateTime), @p14='?' (DbType = Guid), @p15='?', @p16='?'], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Escrows" ("Id", "Amount", "OrderId", "Status")
+VALUES (@p0, @p1, @p2, @p3);
+INSERT INTO "Orders" ("Id", "CreatedAt", "ExecutorId", "Price", "ServiceId", "Status", "StudentId")
+VALUES (@p4, @p5, @p6, @p7, @p8, @p9, @p10);
+INSERT INTO "Payments" ("Id", "Amount", "CreatedAt", "OrderId", "Status", "TransactionId")
+VALUES (@p11, @p12, @p13, @p14, @p15, @p16);
+2026-05-14 05:50:48.393 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Reviews" AS r)
+2026-05-14 05:50:48.417 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."CreatedAt", o."ExecutorId", o."Price", o."ServiceId", o."Status", o."StudentId"
+FROM "Orders" AS o
+WHERE o."Status" = 'Completed'
+LIMIT 1
+2026-05-14 05:50:48.479 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "WithdrawalRequests" AS w)
+2026-05-14 05:50:48.556 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Tickets" AS t)
+2026-05-14 05:50:48.621 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = DateTime), @p3='?', @p4='?', @p5='?' (DbType = Guid), @p6='?' (DbType = Guid), @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?' (DbType = DateTime), @p13='?' (DbType = Guid), @p14='?' (DbType = Guid), @p15='?' (DbType = Int32), @p16='?' (DbType = DateTime), @p17='?', @p18='?' (DbType = Guid), @p19='?' (DbType = Guid), @p20='?' (DbType = Guid), @p21='?' (DbType = DateTime), @p22='?' (DbType = Guid), @p23='?', @p24='?', @p25='?' (DbType = Guid), @p26='?' (DbType = Guid), @p27='?', @p28='?' (DbType = Decimal), @p29='?' (DbType = DateTime), @p30='?' (DbType = Guid), @p31='?' (DbType = DateTime), @p32='?', @p33='?', @p34='?' (DbType = Guid), @p35='?', @p36='?' (DbType = Decimal), @p37='?' (DbType = DateTime), @p38='?' (DbType = Guid), @p39='?' (DbType = DateTime), @p40='?', @p41='?'], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Disputes" ("Id", "AdminNotes", "CreatedAt", "Description", "EvidenceUrl", "OpenedByUserId", "OrderId", "ResolutionType", "ResolvedAt", "Status")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+INSERT INTO "Reviews" ("Id", "Comment", "CreatedAt", "FromUserId", "OrderId", "Rating", "RespondedAt", "ResponseContent", "ServiceId", "ToUserId")
+VALUES (@p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19);
+INSERT INTO "Tickets" ("Id", "CreatedAt", "OrderId", "Status", "Subject", "UserId")
+VALUES (@p20, @p21, @p22, @p23, @p24, @p25);
+INSERT INTO "WithdrawalRequests" ("Id", "AdminNotes", "Amount", "CreatedAt", "ExecutorId", "ProcessedAt", "ScreenshotUrl", "Status")
+VALUES (@p26, @p27, @p28, @p29, @p30, @p31, @p32, @p33);
+INSERT INTO "WithdrawalRequests" ("Id", "AdminNotes", "Amount", "CreatedAt", "ExecutorId", "ProcessedAt", "ScreenshotUrl", "Status")
+VALUES (@p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41);
+2026-05-14 05:50:48.667 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "AuditLogs" AS a)
+2026-05-14 05:50:48.702 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 05:50:48.725 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?', @p7='?' (DbType = Guid), @p8='?', @p9='?' (DbType = Guid), @p10='?' (DbType = DateTime), @p11='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "AuditLogs" ("Id", "Action", "AdminId", "CreatedAt", "Details", "TargetEntityId", "TargetEntityType")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+INSERT INTO "TicketMessages" ("Id", "Content", "SenderId", "SentAt", "TicketId")
+VALUES (@p7, @p8, @p9, @p10, @p11);
+2026-05-14 05:50:49.087 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 05:50:49.233 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 05:50:49.244 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 05:50:49.246 +00:00 [INF] Hosting environment: Development
+2026-05-14 05:50:49.248 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 05:51:18.875 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - null null
+2026-05-14 05:51:19.034 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Users (Uis.Server)'
+2026-05-14 05:51:19.077 +00:00 [INF] Route matched with {action = "Users", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Users(System.String, System.String, System.Nullable`1[System.Boolean], System.Nullable`1[System.DateTime], System.Nullable`1[System.DateTime]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:19.198 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM "Users" AS u
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u."Id" = s."UsersId"
+ORDER BY u."CreatedAt" DESC, u."Id", s."RolesId", s."UsersId"
+2026-05-14 05:51:19.311 +00:00 [INF] Executing ViewResult, running view Users.
+2026-05-14 05:51:19.589 +00:00 [INF] Executed ViewResult - view Users executed in 282.736ms.
+2026-05-14 05:51:19.592 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Users (Uis.Server) in 512.4795ms
+2026-05-14 05:51:19.593 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Users (Uis.Server)'
+2026-05-14 05:51:19.607 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - 200 null text/html; charset=utf-8 734.553ms
+2026-05-14 05:51:23.982 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Roles - null null
+2026-05-14 05:51:24.005 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Roles (Uis.Server)'
+2026-05-14 05:51:24.020 +00:00 [INF] Route matched with {action = "Roles", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Roles(System.String, System.Nullable`1[System.Boolean]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:24.140 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+ORDER BY r."IsSystemRole" DESC
+2026-05-14 05:51:24.154 +00:00 [INF] Executing ViewResult, running view Roles.
+2026-05-14 05:51:24.211 +00:00 [INF] Executed ViewResult - view Roles executed in 63.643ms.
+2026-05-14 05:51:24.213 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Roles (Uis.Server) in 191.3337ms
+2026-05-14 05:51:24.213 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Roles (Uis.Server)'
+2026-05-14 05:51:24.215 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Roles - 200 null text/html; charset=utf-8 233.1046ms
+2026-05-14 05:51:26.292 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - null null
+2026-05-14 05:51:26.301 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 05:51:26.311 +00:00 [INF] Route matched with {action = "Kyc", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Kyc(System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:26.349 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT k."Id", k."Address", k."BirthDate", k."IdExpiryDate", k."NationalId", k."NationalIdBackUrl", k."NationalIdFrontUrl", k."Phone", k."RejectionReason", k."Status", k."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "KycRequests" AS k
+INNER JOIN "Users" AS u ON k."UserId" = u."Id"
+ORDER BY k."Status" = 'Pending' DESC, k."Id" DESC
+2026-05-14 05:51:26.358 +00:00 [INF] Executing ViewResult, running view Kyc.
+2026-05-14 05:51:26.403 +00:00 [INF] Executed ViewResult - view Kyc executed in 46.0592ms.
+2026-05-14 05:51:26.404 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Kyc (Uis.Server) in 92.1066ms
+2026-05-14 05:51:26.404 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 05:51:26.405 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - 200 null text/html; charset=utf-8 112.9034ms
+2026-05-14 05:51:33.384 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Settings/Email - null null
+2026-05-14 05:51:33.386 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.EmailSettings (Uis.Server)'
+2026-05-14 05:51:33.395 +00:00 [INF] Route matched with {action = "EmailSettings", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] EmailSettings() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:33.414 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Key", s."Description", s."Value"
+FROM "SystemSettings" AS s
+WHERE s."Key" LIKE 'Email%'
+2026-05-14 05:51:33.428 +00:00 [INF] Executing ViewResult, running view EmailSettings.
+2026-05-14 05:51:33.448 +00:00 [INF] Executed ViewResult - view EmailSettings executed in 20.7148ms.
+2026-05-14 05:51:33.449 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.EmailSettings (Uis.Server) in 53.4174ms
+2026-05-14 05:51:33.449 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.EmailSettings (Uis.Server)'
+2026-05-14 05:51:33.450 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Settings/Email - 200 null text/html; charset=utf-8 65.6391ms
+2026-05-14 05:51:45.381 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Settings/General - null null
+2026-05-14 05:51:45.384 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.GeneralSettings (Uis.Server)'
+2026-05-14 05:51:45.393 +00:00 [INF] Route matched with {action = "GeneralSettings", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GeneralSettings() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:45.540 +00:00 [INF] Executed DbCommand (88ms) [Parameters=[@keys='?' (DbType = Object)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Key", s."Description", s."Value"
+FROM "SystemSettings" AS s
+WHERE s."Key" = ANY (@keys)
+2026-05-14 05:51:45.542 +00:00 [INF] Executing ViewResult, running view GeneralSettings.
+2026-05-14 05:51:45.559 +00:00 [INF] Executed ViewResult - view GeneralSettings executed in 17.2896ms.
+2026-05-14 05:51:45.559 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.GeneralSettings (Uis.Server) in 165.5562ms
+2026-05-14 05:51:45.560 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.GeneralSettings (Uis.Server)'
+2026-05-14 05:51:45.560 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Settings/General - 200 null text/html; charset=utf-8 178.7905ms
+2026-05-14 05:51:54.384 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Wallet - null null
+2026-05-14 05:51:54.386 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.WalletList (Uis.Server)'
+2026-05-14 05:51:54.398 +00:00 [INF] Route matched with {action = "WalletList", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] WalletList(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:51:54.421 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Users" AS u
+ORDER BY u."WalletBalance" DESC
+LIMIT @p
+2026-05-14 05:51:54.428 +00:00 [INF] Executing ViewResult, running view WalletList.
+2026-05-14 05:51:54.448 +00:00 [INF] Executed ViewResult - view WalletList executed in 22.9121ms.
+2026-05-14 05:51:54.450 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.WalletList (Uis.Server) in 50.7402ms
+2026-05-14 05:51:54.451 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.WalletList (Uis.Server)'
+2026-05-14 05:51:54.452 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Wallet - 200 null text/html; charset=utf-8 67.7175ms
+2026-05-14 05:52:05.447 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - null null
+2026-05-14 05:52:05.449 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server)'
+2026-05-14 05:52:05.461 +00:00 [INF] Route matched with {action = "AuditLogs", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AuditLogs(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:52:05.491 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Id", a0."Action", a0."AdminId", a0."CreatedAt", a0."Details", a0."TargetEntityId", a0."TargetEntityType", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM (
+    SELECT a."Id", a."Action", a."AdminId", a."CreatedAt", a."Details", a."TargetEntityId", a."TargetEntityType"
+    FROM "AuditLogs" AS a
+    ORDER BY a."CreatedAt" DESC
+    LIMIT @p
+) AS a0
+INNER JOIN "Users" AS u ON a0."AdminId" = u."Id"
+ORDER BY a0."CreatedAt" DESC
+2026-05-14 05:52:05.500 +00:00 [INF] Executing ViewResult, running view AuditLogs.
+2026-05-14 05:52:05.535 +00:00 [INF] Executed ViewResult - view AuditLogs executed in 36.1804ms.
+2026-05-14 05:52:05.535 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server) in 74.0929ms
+2026-05-14 05:52:05.536 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server)'
+2026-05-14 05:52:05.536 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 200 null text/html; charset=utf-8 88.4617ms

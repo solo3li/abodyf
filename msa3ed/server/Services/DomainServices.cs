@@ -3,6 +3,7 @@ using System.IO;
 using Uis.Server.Data;
 using Uis.Server.Models;
 using Uis.Server.DTOs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Uis.Server.Services;
 
@@ -291,12 +292,26 @@ public class NotificationService : INotificationService
 {
     private readonly ApplicationDbContext _db;
     private readonly IEmailService _emailService;
-    public NotificationService(ApplicationDbContext db, IEmailService emailService) { _db = db; _emailService = emailService; }
+    private readonly Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.NotificationHub> _hubContext;
+    public NotificationService(ApplicationDbContext db, IEmailService emailService, Microsoft.AspNetCore.SignalR.IHubContext<Uis.Server.Hubs.NotificationHub> hubContext) 
+    { 
+        _db = db; 
+        _emailService = emailService; 
+        _hubContext = hubContext;
+    }
 
     public async Task SendNotificationAsync(Guid userId, string message, string? title = null)
     {
         _db.Notifications.Add(new Notification { UserId = userId, Message = message });
         await _db.SaveChangesAsync();
+
+        // Real-time SignalR push
+        await _hubContext.Clients.Group($"User_{userId}").SendAsync("ReceiveNotification", new 
+        {
+            Title = title ?? "تنبيه جديد",
+            Message = message,
+            CreatedAt = DateTime.UtcNow
+        });
 
         // Also send email notification
         var user = await _db.Users.FindAsync(userId);

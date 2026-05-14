@@ -1,0 +1,53 @@
+@model dynamic
+
+<div class="modal fade" id="@Model.ModalId" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="@Model.Action" asp-controller="Admin" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="text-center mb-3">
+                        <h6>إثبات الدفع (صورة الشاشة)</h6>
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <a href="@Model.ImageUrl" target="_blank">
+                                <img src="@Model.ImageUrl" class="img-fluid border rounded shadow-sm" style="max-height: 400px;" alt="Screenshot Proof" />
+                            </a>
+                            <p class="text-muted small mt-2">انقر على الصورة لفتحها في حجمها الكامل</p>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">لا توجد صورة إثبات مرفقة</div>
+                        }
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">القرار</label>
+                            <select name="resolution" class="form-select" required>
+                                <option value="">اختر القرار...</option>
+                                @foreach (var option in Model.Options)
+                                {
+                                    <option value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">ملاحظات المدير (اختياري)</label>
+                            <textarea name="adminNotes" class="form-control" rows="3" placeholder="أضف ملاحظات توضح سبب الرفض أو تأكيد القبول..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="submit" class="btn btn-primary">حفظ القرار</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

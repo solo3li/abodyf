@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../store';
-import { fetchWallet, topUpWallet, clearWalletError } from '../../../../store/slices/walletSlice';
+import { fetchWallet, requestDeposit, requestWithdrawal, clearWalletError } from '../../../../store/slices/walletSlice';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function WalletScreen() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
     const { balance, currency, transactions, loading, error } = useSelector((state: RootState) => state.wallet);
+    const { user } = useSelector((state: RootState) => state.auth);
     
     const [amount, setAmount] = useState('');
-    const [isToppingUp, setIsToppingUp] = useState(false);
+    const [mode, setMode] = useState<'Deposit' | 'Withdraw'>('Deposit');
+    const [screenshot, setScreenshot] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         dispatch(fetchWallet());
@@ -27,20 +31,44 @@ export default function WalletScreen() {
         }
     }, [error, dispatch]);
 
-    const handleTopUp = async () => {
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            setScreenshot(result.assets[0].uri);
+        }
+    };
+
+    const handleSubmit = async () => {
         const val = parseFloat(amount);
         if (isNaN(val) || val <= 0) {
             Alert.alert('خطأ', 'الرجاء إدخال مبلغ صحيح');
             return;
         }
 
-        setIsToppingUp(true);
-        const result = await dispatch(topUpWallet(val));
-        setIsToppingUp(false);
+        if (!screenshot) {
+            Alert.alert('تنبيه', mode === 'Deposit' ? 'الرجاء إرفاق صورة إثبات الدفع' : 'الرجاء إرفاق صورة توضح رقم المحفظة أو الطلب');
+            return;
+        }
 
-        if (topUpWallet.fulfilled.match(result)) {
-            Alert.alert('نجاح', 'تم الشحن بنجاح');
+        setIsSubmitting(true);
+        let result;
+        if (mode === 'Deposit') {
+            result = await dispatch(requestDeposit({ amount: val, screenshot }));
+        } else {
+            result = await dispatch(requestWithdrawal({ amount: val, screenshot }));
+        }
+        setIsSubmitting(false);
+
+        if (requestDeposit.fulfilled.match(result) || requestWithdrawal.fulfilled.match(result)) {
+            Alert.alert('نجاح', 'تم إرسال طلبك بنجاح وهو قيد المراجعة حالياً');
             setAmount('');
+            setScreenshot(null);
         }
     };
 
@@ -64,32 +92,62 @@ export default function WalletScreen() {
                             <Text style={styles.balanceValue}>{balance.toFixed(2)} {currency}</Text>
                         </View>
 
-                        <View style={styles.topUpSection}>
-                            <Text style={styles.sectionTitle}>شحن المحفظة</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={styles.input}
-                                    keyboardType="numeric"
-                                    placeholder="أدخل المبلغ..."
-                                    value={amount}
-                                    onChangeText={setAmount}
-                                />
+                        <View style={styles.modeTabs}>
+                            <TouchableOpacity 
+                                style={[styles.modeTab, mode === 'Deposit' && styles.activeModeTab]} 
+                                onPress={() => { setMode('Deposit'); setScreenshot(null); }}
+                            >
+                                <Text style={[styles.modeTabText, mode === 'Deposit' && styles.activeModeTabText]}>شحن رصيد</Text>
+                            </TouchableOpacity>
+                            {user?.isExecutor && (
                                 <TouchableOpacity 
-                                    style={[styles.topUpButton, (!amount || isToppingUp) && styles.topUpButtonDisabled]}
-                                    onPress={handleTopUp}
-                                    disabled={!amount || isToppingUp}
+                                    style={[styles.modeTab, mode === 'Withdraw' && styles.activeModeTab]} 
+                                    onPress={() => { setMode('Withdraw'); setScreenshot(null); }}
                                 >
-                                    {isToppingUp ? (
-                                        <ActivityIndicator color="#fff" size="small" />
-                                    ) : (
-                                        <Text style={styles.topUpButtonText}>شحن</Text>
-                                    )}
+                                    <Text style={[styles.modeTabText, mode === 'Withdraw' && styles.activeModeTabText]}>سحب أرباح</Text>
                                 </TouchableOpacity>
-                            </View>
+                            )}
+                        </View>
+
+                        <View style={styles.requestSection}>
+                            <Text style={styles.sectionTitle}>{mode === 'Deposit' ? 'طلب شحن محفظة' : 'طلب سحب رصيد'}</Text>
+                            
+                            <TextInput
+                                style={styles.input}
+                                keyboardType="numeric"
+                                placeholder="المبلغ..."
+                                value={amount}
+                                onChangeText={setAmount}
+                            />
+
+                            <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                                {screenshot ? (
+                                    <Image source={{ uri: screenshot }} style={styles.previewImage} />
+                                ) : (
+                                    <View style={styles.pickerPlaceholder}>
+                                        <Ionicons name="camera-outline" size={32} color={Colors.textSecondary} />
+                                        <Text style={styles.pickerText}>
+                                            {mode === 'Deposit' ? 'ارفق صورة إثبات الدفع' : 'ارفق صورة رقم المحفظة'}
+                                        </Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+
+                            <TouchableOpacity 
+                                style={[styles.submitButton, (!amount || !screenshot || isSubmitting) && styles.submitButtonDisabled]}
+                                onPress={handleSubmit}
+                                disabled={!amount || !screenshot || isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <ActivityIndicator color="#fff" size="small" />
+                                ) : (
+                                    <Text style={styles.submitButtonText}>إرسال الطلب</Text>
+                                )}
+                            </TouchableOpacity>
                         </View>
 
                         <View style={styles.transactionsSection}>
-                            <Text style={styles.sectionTitle}>سجل المعاملات</Text>
+                            <Text style={styles.sectionTitle}>آخر المعاملات</Text>
                             {transactions.length === 0 ? (
                                 <View style={styles.emptyState}>
                                     <Ionicons name="receipt-outline" size={48} color={Colors.textSecondary} />
@@ -141,42 +199,72 @@ const styles = StyleSheet.create({
     balanceCard: {
         backgroundColor: Colors.primary,
         borderRadius: 20,
-        padding: 30,
+        padding: 25,
         alignItems: 'center',
-        marginBottom: 25,
+        marginBottom: 20,
         shadowColor: Colors.primary,
-        shadowOffset: { width: 0, height: 10 },
+        shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.2,
-        shadowRadius: 15,
-        elevation: 8,
+        shadowRadius: 10,
+        elevation: 6,
     },
-    balanceLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 16, marginBottom: 10, fontFamily: 'Tajawal-Medium' },
-    balanceValue: { color: '#fff', fontSize: 36, fontWeight: 'bold', fontFamily: 'Tajawal-Bold' },
+    balanceLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginBottom: 5, fontFamily: 'Tajawal-Medium' },
+    balanceValue: { color: '#fff', fontSize: 32, fontWeight: 'bold', fontFamily: 'Tajawal-Bold' },
+    modeTabs: {
+        flexDirection: 'row',
+        backgroundColor: Colors.surface,
+        borderRadius: 12,
+        padding: 5,
+        marginBottom: 25,
+        borderWidth: 1,
+        borderColor: Colors.border
+    },
+    modeTab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
+    activeModeTab: { backgroundColor: Colors.primary },
+    modeTabText: { fontSize: 14, color: Colors.textSecondary, fontFamily: 'Tajawal-Bold' },
+    activeModeTabText: { color: '#fff' },
     sectionTitle: { fontSize: 18, fontWeight: '700', color: Colors.text, marginBottom: 15, fontFamily: 'Tajawal-Bold', textAlign: 'left' },
-    topUpSection: { marginBottom: 30 },
-    inputContainer: { flexDirection: 'row', alignItems: 'center' },
+    requestSection: { marginBottom: 35 },
     input: {
-        flex: 1,
         backgroundColor: Colors.surface,
         borderWidth: 1,
         borderColor: Colors.border,
         borderRadius: 12,
         padding: 15,
         fontSize: 16,
-        marginRight: 10,
+        marginBottom: 15,
         fontFamily: 'Tajawal-Medium',
         textAlign: 'right'
     },
-    topUpButton: {
-        backgroundColor: Colors.primary,
-        borderRadius: 12,
-        paddingVertical: 15,
-        paddingHorizontal: 25,
+    imagePicker: {
+        height: 180,
+        backgroundColor: Colors.surface,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderStyle: 'dashed',
+        borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 20,
+        overflow: 'hidden'
     },
-    topUpButtonDisabled: { backgroundColor: Colors.border },
-    topUpButtonText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Tajawal-Bold' },
+    previewImage: { width: '100%', height: '100%', resizeMode: 'cover' },
+    pickerPlaceholder: { alignItems: 'center' },
+    pickerText: { color: Colors.textSecondary, fontSize: 14, marginTop: 10, fontFamily: 'Tajawal-Medium' },
+    submitButton: {
+        backgroundColor: Colors.primary,
+        borderRadius: 12,
+        paddingVertical: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 4,
+    },
+    submitButtonDisabled: { backgroundColor: Colors.border },
+    submitButtonText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Tajawal-Bold' },
     transactionsSection: { flex: 1 },
     transactionCard: {
         flexDirection: 'row',

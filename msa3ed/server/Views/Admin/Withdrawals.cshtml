@@ -81,7 +81,7 @@
                                                             <h5 class="modal-title text-white">تفاصيل طلب السحب</h5>
                                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                         </div>
-                                                        <form action="@Url.Action("ResolveWithdrawal", new { id = item.Id })" method="post">
+                                                        <form action="@Url.Action("ResolveWithdrawal", new { id = item.Id })" method="post" enctype="multipart/form-data">
                                                             <div class="modal-body p-4">
                                                                 <div class="text-center mb-4">
                                                                     <p class="text-secondary mb-1">المبلغ المطلوب</p>
@@ -90,16 +90,29 @@
                                                                 </div>
                                                                 
                                                                 <div class="mb-3">
-                                                                    <label class="form-label text-sm fw-bold">إثبات التحويل (سكرين شوت)</label>
+                                                                    <label class="form-label text-sm fw-bold">المرفق من المنفذ (رقم المحفظة/الطلب)</label>
                                                                     <div class="border rounded p-2 text-center bg-light">
-                                                                        <a href="@item.ScreenshotUrl" target="_blank">
-                                                                            <img src="@item.ScreenshotUrl" class="img-fluid rounded shadow-sm" style="max-height: 300px;" alt="Screenshot">
-                                                                        </a>
+                                                                        @if (!string.IsNullOrEmpty(item.ScreenshotUrl))
+                                                                        {
+                                                                            <a href="@item.ScreenshotUrl" target="_blank">
+                                                                                <img src="@item.ScreenshotUrl" class="img-fluid rounded shadow-sm" style="max-height: 200px;" alt="Screenshot">
+                                                                            </a>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span class="text-muted text-xs">لا يوجد مرفق</span>
+                                                                        }
                                                                     </div>
                                                                 </div>
 
                                                                 @if (item.Status == "Pending")
                                                                 {
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label text-sm fw-bold">إرفاق إثبات التحويل (سكرين شوت التحويل)</label>
+                                                                        <input type="file" name="proof" class="form-control" accept="image/*" />
+                                                                        <p class="text-xs text-muted mt-1">يجب إرفاق صورة التحويل عند قبول الطلب</p>
+                                                                    </div>
+
                                                                     <div class="mb-3">
                                                                         <label class="form-label text-sm fw-bold">ملاحظات الإدارة</label>
                                                                         <textarea name="adminNotes" class="form-control" rows="2" placeholder="اكتب ملاحظاتك هنا..."></textarea>
@@ -107,6 +120,18 @@
                                                                 }
                                                                 else
                                                                 {
+                                                                    @if (!string.IsNullOrEmpty(item.AdminProofUrl))
+                                                                    {
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label text-sm fw-bold">إثبات التحويل من الإدارة</label>
+                                                                            <div class="border rounded p-2 text-center bg-light">
+                                                                                <a href="@item.AdminProofUrl" target="_blank">
+                                                                                    <img src="@item.AdminProofUrl" class="img-fluid rounded shadow-sm" style="max-height: 200px;" alt="Admin Proof">
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+
                                                                     <div class="alert alert-light border">
                                                                         <p class="text-xs mb-1 fw-bold">ملاحظات الإدارة:</p>
                                                                         <p class="text-sm mb-0">@(string.IsNullOrEmpty(item.AdminNotes) ? "لا توجد ملاحظات" : item.AdminNotes)</p>

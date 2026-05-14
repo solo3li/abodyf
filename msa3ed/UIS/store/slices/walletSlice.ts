@@ -53,6 +53,58 @@ export const topUpWallet = createAsyncThunk(
     }
 );
 
+export const requestDeposit = createAsyncThunk(
+    'wallet/requestDeposit',
+    async ({ amount, screenshot }: { amount: number, screenshot: any }, { rejectWithValue, dispatch }) => {
+        try {
+            const formData = new FormData();
+            formData.append('amount', amount.toString());
+            
+            if (screenshot) {
+                const filename = screenshot.split('/').pop();
+                const match = /\.(\w+)$/.exec(filename);
+                const type = match ? `image/${match[1]}` : `image`;
+                formData.append('screenshot', { uri: screenshot, name: filename, type } as any);
+            }
+
+            const response = await apiFetch('/Wallet/Deposit', {
+                method: 'POST',
+                body: formData,
+            });
+            dispatch(fetchWallet());
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to request deposit');
+        }
+    }
+);
+
+export const requestWithdrawal = createAsyncThunk(
+    'wallet/requestWithdrawal',
+    async ({ amount, screenshot }: { amount: number, screenshot: any }, { rejectWithValue, dispatch }) => {
+        try {
+            const formData = new FormData();
+            formData.append('amount', amount.toString());
+            
+            if (screenshot) {
+                const filename = screenshot.split('/').pop();
+                const match = /\.(\w+)$/.exec(filename);
+                const type = match ? `image/${match[1]}` : `image`;
+                formData.append('screenshot', { uri: screenshot, name: filename, type } as any);
+            }
+
+            const response = await apiFetch('/Wallet/Withdraw', {
+                method: 'POST',
+                body: formData,
+            });
+            dispatch(fetchWallet());
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Failed to request withdrawal');
+        }
+    }
+);
+
 const walletSlice = createSlice({
     name: 'wallet',
     initialState,

@@ -1,183 +1,31 @@
 Using launch settings from /root/UIS/abodyf/msa3ed/server/Properties/launchSettings.json...
 Building...
-/root/UIS/abodyf/msa3ed/server/Program.cs(12,7): warning CS0105: The using directive for 'Serilog' appeared previously in this namespace [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Services/OfferService.cs(27,58): warning CS8629: Nullable value type may be null. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Services/OfferService.cs(27,82): warning CS8629: Nullable value type may be null. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Program.cs(107,23): warning CS8600: Converting null literal or possible null value to non-nullable type. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Services/DomainServices.cs(195,58): warning CS8629: Nullable value type may be null. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Services/DomainServices.cs(195,82): warning CS8629: Nullable value type may be null. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Controllers/AdminController.cs(414,65): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Controllers/AdminController.cs(954,38): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Controllers/AdminController.cs(955,38): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Controllers/AdminController.cs(956,38): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Controllers/AdminController.cs(1488,13): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/WalletDetails.cshtml(13,76): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/UserDetails.cshtml(93,54): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/UserDetails.cshtml(184,30): warning CS8604: Possible null reference argument for parameter 'source' in 'bool Enumerable.Any<Order>(IEnumerable<Order> source)'. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/Services.cshtml(26,33): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/RolePermissions.cshtml(31,40): warning CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<IGrouping<string?, Permission>> Enumerable.GroupBy<Permission, string?>(IEnumerable<Permission> source, Func<Permission, string?> keySelector)'. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/Index.cshtml(79,35): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/EditUser.cshtml(49,43): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/EditService.cshtml(33,45): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/CreateUser.cshtml(46,43): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-/root/UIS/abodyf/msa3ed/server/Views/Admin/CreateService.cshtml(31,45): warning CS8602: Dereference of a possibly null reference. [/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj]
-[06:12:56 INF] Executed DbCommand (36ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT "MigrationId", "ProductVersion"
-FROM "__EFMigrationsHistory"
-ORDER BY "MigrationId";
-[06:12:57 INF] Executed DbCommand (15ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT 1
-[06:12:57 INF] Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
-    "MigrationId" character varying(150) NOT NULL,
-    "ProductVersion" character varying(32) NOT NULL,
-    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
-);
-[06:12:57 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
-[06:12:57 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT "MigrationId", "ProductVersion"
-FROM "__EFMigrationsHistory"
-ORDER BY "MigrationId";
-[06:12:57 INF] No migrations were applied. The database is already up to date.
-[06:12:58 INF] Executed DbCommand (21ms) [Parameters=[@name='?'], CommandType='Text', CommandTimeout='30']
-SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
-FROM "Roles" AS r
-WHERE r."Name" = @name
-LIMIT 1
-[06:12:58 INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='Text', CommandTimeout='30']
-SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
-FROM "Roles" AS r
-WHERE r."Name" = @name
-LIMIT 1
-[06:12:58 INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='Text', CommandTimeout='30']
-SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
-FROM "Roles" AS r
-WHERE r."Name" = @name
-LIMIT 1
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Permissions" AS p)
-[06:12:58 INF] Executed DbCommand (8ms) [Parameters=[@email='?'], CommandType='Text', CommandTimeout='30']
-SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
-FROM (
-    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
-    FROM "Users" AS u
-    WHERE u."Email" = @email
-    LIMIT 1
-) AS u1
-LEFT JOIN (
-    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
-    FROM "UserRoles" AS u0
-    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
-) AS s ON u1."Id" = s."UsersId"
-ORDER BY u1."Id", s."RolesId", s."UsersId"
-[06:12:58 INF] Executed DbCommand (5ms) [Parameters=[@email='?'], CommandType='Text', CommandTimeout='30']
-SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
-FROM (
-    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
-    FROM "Users" AS u
-    WHERE u."Email" = @email
-    LIMIT 1
-) AS u1
-LEFT JOIN (
-    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
-    FROM "UserRoles" AS u0
-    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
-) AS s ON u1."Id" = s."UsersId"
-ORDER BY u1."Id", s."RolesId", s."UsersId"
-[06:12:58 INF] Executed DbCommand (2ms) [Parameters=[@email='?'], CommandType='Text', CommandTimeout='30']
-SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
-FROM (
-    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
-    FROM "Users" AS u
-    WHERE u."Email" = @email
-    LIMIT 1
-) AS u1
-LEFT JOIN (
-    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
-    FROM "UserRoles" AS u0
-    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
-) AS s ON u1."Id" = s."UsersId"
-ORDER BY u1."Id", s."RolesId", s."UsersId"
-[06:12:58 INF] Executed DbCommand (2ms) [Parameters=[@email='?'], CommandType='Text', CommandTimeout='30']
-SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
-FROM (
-    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
-    FROM "Users" AS u
-    WHERE u."Email" = @email
-    LIMIT 1
-) AS u1
-LEFT JOIN (
-    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
-    FROM "UserRoles" AS u0
-    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
-) AS s ON u1."Id" = s."UsersId"
-ORDER BY u1."Id", s."RolesId", s."UsersId"
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[@email='?'], CommandType='Text', CommandTimeout='30']
-SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
-FROM (
-    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
-    FROM "Users" AS u
-    WHERE u."Email" = @email
-    LIMIT 1
-) AS u1
-LEFT JOIN (
-    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
-    FROM "UserRoles" AS u0
-    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
-) AS s ON u1."Id" = s."UsersId"
-ORDER BY u1."Id", s."RolesId", s."UsersId"
-[06:12:58 INF] Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "KycRequests" AS k)
-[06:12:58 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Categories" AS c)
-[06:12:58 INF] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT c."Id", c."Name"
-FROM "Categories" AS c
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Services" AS s)
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title"
-FROM "Services" AS s
-[06:12:58 INF] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Orders" AS o)
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Reviews" AS r)
-[06:12:58 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "WithdrawalRequests" AS w)
-[06:12:58 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Deposits" AS d)
-[06:12:59 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "Tickets" AS t)
-[06:12:59 INF] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "AuditLogs" AS a)
-[06:12:59 INF] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
-SELECT EXISTS (
-    SELECT 1
-    FROM "SystemSettings" AS s)
-[06:12:59 INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
-[06:12:59 INF] Now listening on: http://0.0.0.0:5035
-[06:12:59 INF] Application started. Press Ctrl+C to shut down.
-[06:12:59 INF] Hosting environment: Development
-[06:12:59 INF] Content root path: /root/UIS/abodyf/msa3ed/server
-[06:13:06 INF] Application is shutting down...
+[08:14:28 ERR] An error occurred using the connection to database 'uis_db' on server 'tcp://localhost:5432'.
+Unhandled exception. Npgsql.PostgresException (0x80004005): 28P01: password authentication failed for user "postgres"
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.Internal.NpgsqlConnector.AuthenticateSASL(List`1 mechanisms, String username, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Authenticate(String username, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.<Open>g__OpenCore|209_0(NpgsqlConnector conn, String username, SslMode sslMode, GssEncryptionMode gssEncMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.PoolingDataSource.<Get>g__RentAsync|33_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlConnection.<Open>g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Migrations.HistoryRepository.GetAppliedMigrationsAsync(CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlHistoryRepository.GetAppliedMigrationsAsync(CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+   at Uis.Server.Data.DbSeeder.SeedAsync(IServiceProvider serviceProvider) in /root/UIS/abodyf/msa3ed/server/Data/DbSeeder.cs:line 19
+   at Program.<Main>$(String[] args) in /root/UIS/abodyf/msa3ed/server/Program.cs:line 165
+   at Program.<Main>(String[] args)
+  Exception data:
+    Severity: FATAL
+    SqlState: 28P01
+    MessageText: password authentication failed for user "postgres"
+    File: auth.c
+    Line: 334
+    Routine: auth_failed

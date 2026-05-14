@@ -297,6 +297,7 @@ public class WithdrawalRequest
     public User Executor { get; set; } = null!;
     public decimal Amount { get; set; }
     public string ScreenshotUrl { get; set; } = string.Empty;
+    public string? AdminProofUrl { get; set; }
     public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected, Cancelled
     public string? AdminNotes { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -223,6 +223,7 @@ app.UseRateLimiter();
 // Map SignalR Hubs
 app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<PrivateChatHub>("/hubs/private-chat");
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 // Map Web API Controllers
 app.MapControllers();

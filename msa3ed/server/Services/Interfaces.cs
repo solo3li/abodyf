@@ -10,7 +10,7 @@ public interface IWithdrawalService
 {
     Task<WithdrawalRequest> RequestWithdrawalAsync(Guid executorId, decimal amount, IFormFile screenshot);
     Task<IEnumerable<WithdrawalRequest>> GetWithdrawalsAsync(string? status = null);
-    Task<WithdrawalRequest> ResolveWithdrawalAsync(Guid id, string status, string? adminNotes, Guid adminId);
+    Task<WithdrawalRequest> ResolveWithdrawalAsync(Guid id, string status, string? adminNotes, Guid adminId, IFormFile? proof = null);
 }
 
 public interface IDepositService

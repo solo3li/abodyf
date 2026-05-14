@@ -301,7 +301,7 @@ public class WalletService : IWalletService, IWithdrawalService, IDepositService
         return await query.OrderByDescending(w => w.CreatedAt).ToListAsync();
     }
 
-    public async Task<WithdrawalRequest> ResolveWithdrawalAsync(Guid id, string status, string? adminNotes, Guid adminId)
+    public async Task<WithdrawalRequest> ResolveWithdrawalAsync(Guid id, string status, string? adminNotes, Guid adminId, IFormFile? proof = null)
     {
         await using var tx = await _db.Database.BeginTransactionAsync();
         try
@@ -309,6 +309,11 @@ public class WalletService : IWalletService, IWithdrawalService, IDepositService
             var request = await _db.WithdrawalRequests.Include(w => w.Executor).FirstOrDefaultAsync(w => w.Id == id);
             if (request == null) throw new InvalidOperationException("طلب السحب غير موجود");
             if (request.Status != "Pending") throw new InvalidOperationException("هذا الطلب تمت معالجته مسبقاً");
+
+            if (proof != null)
+            {
+                request.AdminProofUrl = await _fileService.SaveFileAsync(proof, "withdrawals/proofs");
+            }
 
             request.Status = status;
             request.AdminNotes = adminNotes;

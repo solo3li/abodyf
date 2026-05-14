@@ -282,7 +282,16 @@ public static class DbSeeder
         }
 
         await SeedSystemSettings(context);
-        await context.SaveChangesAsync();
+        try 
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            var inner = ex.InnerException?.Message ?? "No inner exception";
+            Console.WriteLine($"[SEEDER ERROR] {ex.Message}. Inner: {inner}");
+            throw;
+        }
     }
 
 

@@ -1494,14 +1494,16 @@ public class AdminController : Controller
     [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<IActionResult> Login(string email, string password)
     {
-        // Simple admin check for demo, should use AuthService
-        if (email == "admin@uis.com" && password == "admin123")
+        var adminUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == email && u.PasswordHash == password && u.IsAdmin);
+        
+        if (adminUser != null)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, email),
+                new Claim(ClaimTypes.Name, adminUser.FullName),
+                new Claim(ClaimTypes.Email, adminUser.Email),
                 new Claim(ClaimTypes.Role, "Admin"),
-                new Claim(ClaimTypes.NameIdentifier, Guid.Empty.ToString()) // System Admin ID
+                new Claim(ClaimTypes.NameIdentifier, adminUser.Id.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -1511,7 +1513,7 @@ public class AdminController : Controller
             return RedirectToAction("Index");
         }
 
-        ViewBag.Error = "بيانات الدخول غير صحيحة";
+        ViewBag.Error = "بيانات الدخول غير صحيحة أو ليس لديك صلاحية مسؤول";
         return View();
     }
 

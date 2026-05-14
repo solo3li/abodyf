@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - لوحة تحكم UIS</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    
+    <!-- Bootstrap 5 (For compatibility with legacy admin views) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: { primary: '#6366F1', secondary: '#A855F7', dark: '#1E293B', light: '#F8FAFC' }
+                }
+            },
+            corePlugins: {
+                preflight: false, // Disable Tailwind preflight to prevent conflicts with Bootstrap
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #F8FAFC; margin: 0; }
+        .sidebar { min-height: 100vh; }
+        .nav-link.active { background-color: rgba(255, 255, 255, 0.1); border-right: 4px solid #fff; }
+        .nav-link:hover { background-color: rgba(255, 255, 255, 0.05); }
+        
+        /* Reset some Bootstrap styles that might conflict with the Tailwind sidebar */
+        aside .nav-link { color: white !important; border-radius: 0.5rem; margin-bottom: 0.5rem; }
+        aside .nav-link:hover { color: white !important; }
+        
+        /* Ensure main content takes full height */
+        main { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .content-area { flex: 1; overflow-x: hidden; overflow-y: auto; background-color: #F8FAFC; padding: 1.5rem; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex h-screen overflow-hidden">
+    
+    <!-- Sidebar (Tailwind based) -->
+    <aside class="w-64 bg-indigo-600 text-white flex flex-col shadow-xl sidebar shrink-0">
+        <div class="p-6 text-center border-b border-indigo-500/50">
+            <h1 class="text-3xl font-extrabold tracking-wider">UIS<span class="text-indigo-200">Admin</span></h1>
+            <p class="text-indigo-200 text-sm mt-1">لوحة تحكم النظام</p>
+        </div>
+        <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+            <a href="/Admin" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                <i class="fas fa-home w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الرئيسية</span>
+            </a>
+            <a href="/Admin/Users" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")">
+                <i class="fas fa-users w-6 text-center"></i>
+                <span class="mx-3 font-semibold">المستخدمين</span>
+            </a>
+            <a href="/Admin/Roles" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ? "active" : "")">
+                <i class="fas fa-user-tag w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الأدوار والصلاحيات</span>
+            </a>
+            <a href="/Admin/Kyc" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Kyc" ? "active" : "")">
+                <i class="fas fa-id-card w-6 text-center"></i>
+                <span class="mx-3 font-semibold">طلبات KYC</span>
+            </a>
+            <a href="/Admin/Services" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Services" ? "active" : "")">
+                <i class="fas fa-briefcase w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الخدمات</span>
+            </a>
+            <a href="/Admin/Orders" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Orders" ? "active" : "")">
+                <i class="fas fa-shopping-cart w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الطلبات</span>
+            </a>
+            <a href="/Admin/Chats" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Chats" ? "active" : "")">
+                <i class="fas fa-comments w-6 text-center"></i>
+                <span class="mx-3 font-semibold">المحادثات</span>
+            </a>
+            <a href="/Admin/Payments" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Payments" ? "active" : "")">
+                <i class="fas fa-file-invoice-dollar w-6 text-center"></i>
+                <span class="mx-3 font-semibold">المدفوعات</span>
+            </a>
+            <a href="/Admin/Categories" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Categories" ? "active" : "")">
+                <i class="fas fa-tags w-6 text-center"></i>
+                <span class="mx-3 font-semibold">التصنيفات</span>
+            </a>
+            <a href="/Admin/Tickets" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Tickets" ? "active" : "")">
+                <i class="fas fa-headset w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الدعم الفني</span>
+            </a>
+            <a href="/Admin/Notifications" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Notifications" ? "active" : "")">
+                <i class="fas fa-bell w-6 text-center"></i>
+                <span class="mx-3 font-semibold">مركز التنبيهات</span>
+            </a>
+            <a href="/Admin/Settings/Email" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "EmailSettings" ? "active" : "")">
+                <i class="fas fa-envelope-open-text w-6 text-center"></i>
+                <span class="mx-3 font-semibold">إعدادات البريد</span>
+            </a>
+            <a href="/Admin/Settings/General" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "GeneralSettings" ? "active" : "")">
+                <i class="fas fa-cog w-6 text-center"></i>
+                <span class="mx-3 font-semibold">الإعدادات العامة</span>
+            </a>
+            <a href="/Admin/Wallet" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "WalletList" || ViewContext.RouteData.Values["action"]?.ToString() == "WalletDetails" ? "active" : "")">
+                <i class="fas fa-wallet w-6 text-center"></i>
+                <span class="mx-3 font-semibold">إدارة المحافظ</span>
+            </a>
+            <a href="/Admin/Withdrawals" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Withdrawals" ? "active" : "")">
+                <i class="fas fa-money-bill-wave w-6 text-center"></i>
+                <span class="mx-3 font-semibold">طلبات السحب</span>
+            </a>
+            <a href="/Admin/Disputes" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Disputes" || ViewContext.RouteData.Values["action"]?.ToString() == "DisputeDetails" ? "active" : "")">
+                <i class="fas fa-exclamation-triangle w-6 text-center"></i>
+                <span class="mx-3 font-semibold">النزاعات</span>
+            </a>
+            <a href="/Admin/MarketplaceSettings" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "MarketplaceSettings" ? "active" : "")">
+                <i class="fas fa-store-slash w-6 text-center"></i>
+                <span class="mx-3 font-semibold">إعدادات السوق</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-indigo-500/50">
+            <a href="/Admin/Logout" class="flex items-center px-4 py-2 text-indigo-100 hover:text-white transition-colors">
+                <i class="fas fa-sign-out-alt w-6 text-center"></i>
+                <span class="mx-3">تسجيل الخروج</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+        <!-- Top Header (Tailwind based) -->
+        <header class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
+            <div class="flex items-center">
+                <h2 class="text-2xl font-bold text-gray-800 ml-4">@ViewData["Title"]</h2>
+            </div>
+            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <div class="flex items-center">
+                    <img class="w-10 h-10 rounded-full border-2 border-indigo-200" src="https://ui-avatars.com/api/?name=Admin&background=6366F1&color=fff" alt="Admin Avatar">
+                    <span class="mx-2 font-medium text-gray-700">مدير النظام</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

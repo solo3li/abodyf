@@ -498,3 +498,683 @@ RolesAuthorizationRequirement:User.IsInRole must be true for one of the followin
 RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
 2026-05-14 03:54:37.498 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
 2026-05-14 03:54:37.499 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 401 0 null 4.1385ms
+2026-05-14 03:55:39.554 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger - null null
+2026-05-14 03:55:39.556 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger - 301 0 null 2.0286ms
+2026-05-14 03:55:39.645 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.html - null null
+2026-05-14 03:55:39.744 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.html - 200 null text/html;charset=utf-8 99.4588ms
+2026-05-14 03:55:39.870 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui.css - null null
+2026-05-14 03:55:39.873 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.css - null null
+2026-05-14 03:55:39.883 +00:00 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2026-05-14 03:55:39.884 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.css - 200 202 text/css 10.8692ms
+2026-05-14 03:55:39.956 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui-bundle.js - null null
+2026-05-14 03:55:39.957 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui-standalone-preset.js - null null
+2026-05-14 03:55:39.963 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.js - null null
+2026-05-14 03:55:39.964 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.js - 200 null application/javascript;charset=utf-8 1.1815ms
+2026-05-14 03:55:40.061 +00:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-05-14 03:55:40.064 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui.css - 200 152035 text/css 193.6813ms
+2026-05-14 03:55:40.224 +00:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-05-14 03:55:40.229 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui-standalone-preset.js - 200 230007 text/javascript 271.6437ms
+2026-05-14 03:55:40.526 +00:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-05-14 03:55:40.527 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/swagger-ui-bundle.js - 200 1426001 text/javascript 571.2849ms
+2026-05-14 03:55:41.071 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/swagger/v1/swagger.json - null null
+2026-05-14 03:55:41.093 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/favicon-32x32.png - null null
+2026-05-14 03:55:41.094 +00:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-05-14 03:55:41.094 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/favicon-32x32.png - 200 628 image/png 1.1681ms
+2026-05-14 03:55:41.288 +00:00 [ERR] An unhandled exception has occurred while executing the request.
+Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Failed to generate Operation for action - Uis.Server.Controllers.Api.ChatController.SendMessage (Uis.Server). See inner exception
+ ---> Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Error reading parameter(s) for action Uis.Server.Controllers.Api.ChatController.SendMessage (Uis.Server) as [FromForm] attribute used with IFormFile. Please refer to https://github.com/domaindrivendev/Swashbuckle.AspNetCore#handle-forms-and-file-uploads for more information
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository, Func`3 parameterGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   --- End of inner exception stack trace ---
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository, Func`3 operationsGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GetSwaggerAsync(String documentName, String host, String basePath)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-05-14 03:55:41.314 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/swagger/v1/swagger.json - 500 null text/plain; charset=utf-8 242.4526ms
+2026-05-14 03:57:04.631 +00:00 [INF] Application is shutting down...
+2026-05-14 03:57:16.396 +00:00 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:57:17.220 +00:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:57:17.454 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:57:17.513 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:57:17.526 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:57:17.552 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 03:57:18.141 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 03:57:18.544 +00:00 [INF] Executed DbCommand (28ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:57:18.739 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:57:18.742 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:57:18.844 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 03:57:19.210 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 03:57:19.375 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 03:57:19.397 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 03:57:19.422 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 03:57:19.434 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 03:57:19.918 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 03:57:20.209 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 03:57:20.214 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 03:57:20.216 +00:00 [INF] Hosting environment: Development
+2026-05-14 03:57:20.218 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 03:57:30.169 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/Admin - null null
+2026-05-14 03:57:30.329 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:57:30.343 +00:00 [INF] AuthenticationScheme: Cookies was challenged.
+2026-05-14 03:57:30.353 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/Admin - 302 0 null 185.8247ms
+2026-05-14 03:57:30.360 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/Admin/Login?ReturnUrl=%2FAdmin - null null
+2026-05-14 03:57:30.397 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 03:57:30.415 +00:00 [INF] Route matched with {action = "Login", controller = "Admin"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 03:57:30.448 +00:00 [INF] Executing ViewResult, running view Login.
+2026-05-14 03:57:30.623 +00:00 [INF] Executed ViewResult - view Login executed in 178.4915ms.
+2026-05-14 03:57:30.625 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Login (Uis.Server) in 206.4359ms
+2026-05-14 03:57:30.626 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 03:57:30.629 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/Admin/Login?ReturnUrl=%2FAdmin - 200 null text/html; charset=utf-8 268.7447ms
+2026-05-14 04:40:18.084 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.html - null null
+2026-05-14 04:40:18.175 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.html - 200 null text/html;charset=utf-8 90.9092ms
+2026-05-14 04:40:18.293 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.js - null null
+2026-05-14 04:40:18.297 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Swagger/index.js - 200 null application/javascript;charset=utf-8 3.1307ms
+2026-05-14 04:40:18.439 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/swagger/v1/swagger.json - null null
+2026-05-14 04:40:18.677 +00:00 [ERR] An unhandled exception has occurred while executing the request.
+Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Failed to generate Operation for action - Uis.Server.Controllers.Api.ChatController.SendMessage (Uis.Server). See inner exception
+ ---> Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Error reading parameter(s) for action Uis.Server.Controllers.Api.ChatController.SendMessage (Uis.Server) as [FromForm] attribute used with IFormFile. Please refer to https://github.com/domaindrivendev/Swashbuckle.AspNetCore#handle-forms-and-file-uploads for more information
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository, Func`3 parameterGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   --- End of inner exception stack trace ---
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository, Func`3 operationsGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GetSwaggerAsync(String documentName, String host, String basePath)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-05-14 04:40:18.695 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/swagger/v1/swagger.json - 500 null text/plain; charset=utf-8 256.2514ms
+2026-05-14 04:40:41.595 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - null null
+2026-05-14 04:40:41.613 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 04:40:41.616 +00:00 [INF] AuthenticationScheme: Cookies was challenged.
+2026-05-14 04:40:41.617 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 302 0 null 22.7587ms
+2026-05-14 04:40:41.709 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - null null
+2026-05-14 04:40:41.714 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 04:40:41.715 +00:00 [INF] Route matched with {action = "Login", controller = "Admin"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 04:40:41.743 +00:00 [INF] Executing ViewResult, running view Login.
+2026-05-14 04:40:41.767 +00:00 [INF] Executed ViewResult - view Login executed in 31.6609ms.
+2026-05-14 04:40:41.768 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Login (Uis.Server) in 50.5286ms
+2026-05-14 04:40:41.769 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 04:40:41.771 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - 200 null text/html; charset=utf-8 62.1761ms
+2026-05-14 04:42:28.234 +00:00 [INF] Request starting HTTP/1.1 POST http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - application/x-www-form-urlencoded 222
+2026-05-14 04:42:28.251 +00:00 [INF] CORS policy execution successful.
+2026-05-14 04:42:28.274 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 04:42:28.470 +00:00 [INF] Route matched with {action = "Login", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 04:42:28.733 +00:00 [INF] Executing ViewResult, running view Login.
+2026-05-14 04:42:28.884 +00:00 [INF] Executed ViewResult - view Login executed in 151.9266ms.
+2026-05-14 04:42:28.893 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Login (Uis.Server) in 418.056ms
+2026-05-14 04:42:28.894 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 04:42:28.896 +00:00 [INF] Request finished HTTP/1.1 POST http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - 200 null text/html; charset=utf-8 661.7955ms
+2026-05-14 04:43:44.330 +00:00 [INF] Application is shutting down...
+", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 04:40:54.100 +00:00 [INF] Executed DbCommand (19ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:40:54.184 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:40:54.187 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:40:54.234 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 04:40:54.403 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 04:40:54.557 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 04:40:54.575 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 04:40:54.594 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 04:40:54.606 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 04:40:55.008 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 04:40:55.146 +00:00 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://0.0.0.0:5035: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__14_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2026-05-14 04:43:54.161 +00:00 [INF] Executed DbCommand (32ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 04:43:54.765 +00:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 04:43:54.869 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 04:43:54.908 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 04:43:54.913 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 04:43:54.932 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 04:43:55.540 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 04:43:55.701 +00:00 [INF] Executed DbCommand (14ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:43:55.783 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:43:55.787 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:43:55.837 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 04:43:56.020 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 04:43:56.166 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 04:43:56.183 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 04:43:56.205 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 04:43:56.214 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 04:43:56.633 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 04:43:56.761 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 04:43:56.770 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 04:43:56.772 +00:00 [INF] Hosting environment: Development
+2026-05-14 04:43:56.772 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 04:44:05.977 +00:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5035/swagger/v1/swagger.json - null null
+2026-05-14 04:44:06.103 +00:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5035/swagger/v1/swagger.json - 404 null null 128.1466ms
+2026-05-14 04:44:06.109 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: HEAD http://localhost:5035/swagger/v1/swagger.json, Response status code: 404
+2026-05-14 04:44:12.433 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/swagger/v1/swagger.json - null null
+2026-05-14 04:44:12.688 +00:00 [ERR] An unhandled exception has occurred while executing the request.
+Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Failed to generate Operation for action - Uis.Server.Controllers.Api.WalletController.RequestWithdrawal (Uis.Server). See inner exception
+ ---> Swashbuckle.AspNetCore.SwaggerGen.SwaggerGeneratorException: Error reading parameter(s) for action Uis.Server.Controllers.Api.WalletController.RequestWithdrawal (Uis.Server) as [FromForm] attribute used with IFormFile. Please refer to https://github.com/domaindrivendev/Swashbuckle.AspNetCore#handle-forms-and-file-uploads for more information
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository, Func`3 parameterGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateParametersAsync(ApiDescription apiDescription, SchemaRepository schemaRespository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   --- End of inner exception stack trace ---
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository, Func`3 parametersGenerator, Func`3 bodyGenerator, Func`3 applyFilters)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationAsync(ApiDescription apiDescription, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GenerateOperationsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository, Func`3 operationsGenerator)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GeneratePathsAsync(IEnumerable`1 apiDescriptions, SchemaRepository schemaRepository)
+   at Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator.GetSwaggerAsync(String documentName, String host, String basePath)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-05-14 04:44:12.710 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/swagger/v1/swagger.json - 500 null text/plain; charset=utf-8 277.2864ms
+2026-05-14 04:45:36.041 +00:00 [INF] Application is shutting down...
+2026-05-14 04:45:45.722 +00:00 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 04:45:46.317 +00:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 04:45:46.425 +00:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 04:45:46.496 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 04:45:46.502 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 04:45:46.525 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 04:45:46.859 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 04:45:47.048 +00:00 [INF] Executed DbCommand (14ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:45:47.137 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:45:47.141 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 04:45:47.192 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 04:45:47.455 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 04:45:47.628 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 04:45:47.649 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 04:45:47.671 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 04:45:47.682 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 04:45:48.140 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 04:45:48.275 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 04:45:48.279 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 04:45:48.281 +00:00 [INF] Hosting environment: Development
+2026-05-14 04:45:48.282 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 04:45:57.608 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/swagger/v1/swagger.json - null null
+2026-05-14 04:45:57.973 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 362.4518ms
+2026-05-14 05:34:02.646 +00:00 [INF] Request starting HTTP/1.1 POST http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - application/x-www-form-urlencoded 222
+2026-05-14 05:34:02.660 +00:00 [INF] CORS policy execution successful.
+2026-05-14 05:34:02.812 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 05:34:02.854 +00:00 [INF] Route matched with {action = "Login", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:02.921 +00:00 [INF] AuthenticationScheme: Cookies signed in.
+2026-05-14 05:34:02.960 +00:00 [INF] Executing RedirectResult, redirecting to /Admin/Index.
+2026-05-14 05:34:02.980 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Login (Uis.Server) in 117.9464ms
+2026-05-14 05:34:02.982 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Login (Uis.Server)'
+2026-05-14 05:34:02.989 +00:00 [INF] Request finished HTTP/1.1 POST http://209.38.238.175:5035/Admin/Login?ReturnUrl=%2FAdmin%2FAuditLogs - 302 0 null 342.7883ms
+2026-05-14 05:34:03.082 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Index - null null
+2026-05-14 05:34:03.113 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Index (Uis.Server)'
+2026-05-14 05:34:03.129 +00:00 [INF] Route matched with {action = "Index", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Index() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:03.285 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Users" AS u
+2026-05-14 05:34:03.305 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Orders" AS o
+2026-05-14 05:34:03.325 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "KycRequests" AS k
+WHERE k."Status" = 'Pending'
+2026-05-14 05:34:03.343 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Tickets" AS t
+WHERE t."Status" = 'Open'
+2026-05-14 05:34:03.384 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COALESCE(sum(p."Amount"), 0.0)
+FROM "Payments" AS p
+WHERE p."Status" = 'Completed'
+2026-05-14 05:34:03.402 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "WithdrawalRequests" AS w
+WHERE w."Status" = 'Pending'
+2026-05-14 05:34:03.415 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT count(*)::int
+FROM "Disputes" AS d
+WHERE d."Status" = 'Open'
+2026-05-14 05:34:03.574 +00:00 [INF] Executed DbCommand (13ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT o0."Id", o0."CreatedAt", o0."ExecutorId", o0."Price", o0."ServiceId", o0."Status", o0."StudentId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance", s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title"
+FROM (
+    SELECT o."Id", o."CreatedAt", o."ExecutorId", o."Price", o."ServiceId", o."Status", o."StudentId"
+    FROM "Orders" AS o
+    ORDER BY o."CreatedAt" DESC
+    LIMIT @p
+) AS o0
+INNER JOIN "Users" AS u ON o0."StudentId" = u."Id"
+INNER JOIN "Services" AS s ON o0."ServiceId" = s."Id"
+ORDER BY o0."CreatedAt" DESC
+2026-05-14 05:34:03.612 +00:00 [INF] Executing ViewResult, running view Index.
+2026-05-14 05:34:03.818 +00:00 [INF] Executed ViewResult - view Index executed in 214.0474ms.
+2026-05-14 05:34:03.820 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Index (Uis.Server) in 688.2631ms
+2026-05-14 05:34:03.822 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Index (Uis.Server)'
+2026-05-14 05:34:03.833 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Index - 200 null text/html; charset=utf-8 751.6638ms
+2026-05-14 05:34:04.392 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/GetDashboardStats - null null
+2026-05-14 05:34:04.403 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.GetDashboardStats (Uis.Server)'
+2026-05-14 05:34:04.416 +00:00 [INF] Route matched with {action = "GetDashboardStats", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetDashboardStats() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:04.609 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT o0."Key" AS "Date", count(*)::int AS "Count"
+FROM (
+    SELECT date_trunc('day', o."CreatedAt", 'UTC') AS "Key"
+    FROM "Orders" AS o
+    WHERE o."CreatedAt" >= date_trunc('day', now(), 'UTC') + INTERVAL '-7 days'
+) AS o0
+GROUP BY o0."Key"
+2026-05-14 05:34:04.627 +00:00 [INF] Executing JsonResult, writing value of type '<>f__AnonymousType6`2[[System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.List`1[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-05-14 05:34:04.655 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.GetDashboardStats (Uis.Server) in 237.8216ms
+2026-05-14 05:34:04.656 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.GetDashboardStats (Uis.Server)'
+2026-05-14 05:34:04.657 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/GetDashboardStats - 200 null application/json; charset=utf-8 264.8942ms
+2026-05-14 05:34:12.366 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - null null
+2026-05-14 05:34:12.370 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Users (Uis.Server)'
+2026-05-14 05:34:12.383 +00:00 [INF] Route matched with {action = "Users", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Users(System.String, System.String, System.Nullable`1[System.Boolean], System.Nullable`1[System.DateTime], System.Nullable`1[System.DateTime]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:12.446 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM "Users" AS u
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u."Id" = s."UsersId"
+ORDER BY u."CreatedAt" DESC, u."Id", s."RolesId", s."UsersId"
+2026-05-14 05:34:12.479 +00:00 [INF] Executing ViewResult, running view Users.
+2026-05-14 05:34:12.608 +00:00 [INF] Executed ViewResult - view Users executed in 130.543ms.
+2026-05-14 05:34:12.609 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Users (Uis.Server) in 224.4947ms
+2026-05-14 05:34:12.609 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Users (Uis.Server)'
+2026-05-14 05:34:12.610 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - 200 null text/html; charset=utf-8 244.2875ms
+2026-05-14 05:34:14.699 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Roles - null null
+2026-05-14 05:34:14.703 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Roles (Uis.Server)'
+2026-05-14 05:34:14.721 +00:00 [INF] Route matched with {action = "Roles", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Roles(System.String, System.Nullable`1[System.Boolean]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:14.748 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+ORDER BY r."IsSystemRole" DESC
+2026-05-14 05:34:14.754 +00:00 [INF] Executing ViewResult, running view Roles.
+2026-05-14 05:34:14.795 +00:00 [INF] Executed ViewResult - view Roles executed in 41.8916ms.
+2026-05-14 05:34:14.796 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Roles (Uis.Server) in 71.4294ms
+2026-05-14 05:34:14.796 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Roles (Uis.Server)'
+2026-05-14 05:34:14.797 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Roles - 200 null text/html; charset=utf-8 97.8705ms
+2026-05-14 05:34:16.735 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - null null
+2026-05-14 05:34:16.737 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 05:34:16.750 +00:00 [INF] Route matched with {action = "Kyc", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Kyc(System.String, System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:16.786 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT k."Id", k."Address", k."BirthDate", k."IdExpiryDate", k."NationalId", k."NationalIdBackUrl", k."NationalIdFrontUrl", k."Phone", k."RejectionReason", k."Status", k."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "KycRequests" AS k
+INNER JOIN "Users" AS u ON k."UserId" = u."Id"
+ORDER BY k."Status" = 'Pending' DESC, k."Id" DESC
+2026-05-14 05:34:16.792 +00:00 [INF] Executing ViewResult, running view Kyc.
+2026-05-14 05:34:16.844 +00:00 [INF] Executed ViewResult - view Kyc executed in 53.4768ms.
+2026-05-14 05:34:16.845 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Kyc (Uis.Server) in 94.1602ms
+2026-05-14 05:34:16.846 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Kyc (Uis.Server)'
+2026-05-14 05:34:16.846 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Kyc - 200 null text/html; charset=utf-8 111.4821ms
+2026-05-14 05:34:18.375 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - null null
+2026-05-14 05:34:18.376 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Services (Uis.Server)'
+2026-05-14 05:34:18.390 +00:00 [INF] Route matched with {action = "Services", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Services(System.String, System.Nullable`1[System.Guid], System.Nullable`1[System.Decimal], System.Nullable`1[System.Decimal], System.Nullable`1[System.Boolean]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:18.430 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title", c."Id", c."Name"
+FROM "Services" AS s
+INNER JOIN "Categories" AS c ON s."CategoryId" = c."Id"
+ORDER BY s."Id" DESC
+2026-05-14 05:34:18.500 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 05:34:18.517 +00:00 [INF] Executing ViewResult, running view Services.
+2026-05-14 05:34:18.595 +00:00 [INF] Executed ViewResult - view Services executed in 78.8355ms.
+2026-05-14 05:34:18.596 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Services (Uis.Server) in 196.4973ms
+2026-05-14 05:34:18.596 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Services (Uis.Server)'
+2026-05-14 05:34:18.597 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - 200 null text/html; charset=utf-8 221.8314ms
+2026-05-14 05:34:20.836 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Orders - null null
+2026-05-14 05:34:20.838 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Orders (Uis.Server)'
+2026-05-14 05:34:20.854 +00:00 [INF] Route matched with {action = "Orders", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Orders(System.String, System.String, System.Nullable`1[System.Decimal], System.Nullable`1[System.Decimal], System.Nullable`1[System.DateTime], System.Nullable`1[System.DateTime], System.Nullable`1[System.Guid]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:20.901 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT o."Id", o."CreatedAt", o."ExecutorId", o."Price", o."ServiceId", o."Status", o."StudentId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance", s."Id", s."BasePrice", s."CategoryId", s."DeliveryTime", s."Description", s."ExecutorId", s."ImageUrl", s."IsActive", s."Rating", s."ReviewsCount", s."Title", u0."Id", u0."Bio", u0."CompletedOrdersCount", u0."CreatedAt", u0."Email", u0."FullName", u0."IsActive", u0."IsAdmin", u0."IsExecutor", u0."IsStaff", u0."Major", u0."PasswordHash", u0."ProfilePicture", u0."Rating", u0."ReviewsCount", u0."University", u0."WalletBalance"
+FROM "Orders" AS o
+INNER JOIN "Users" AS u ON o."StudentId" = u."Id"
+INNER JOIN "Services" AS s ON o."ServiceId" = s."Id"
+LEFT JOIN "Users" AS u0 ON o."ExecutorId" = u0."Id"
+ORDER BY o."CreatedAt" DESC
+2026-05-14 05:34:20.920 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Users" AS u
+WHERE u."IsExecutor"
+ORDER BY u."FullName"
+2026-05-14 05:34:20.925 +00:00 [INF] Executing ViewResult, running view Orders.
+2026-05-14 05:34:20.994 +00:00 [INF] Executed ViewResult - view Orders executed in 70.6278ms.
+2026-05-14 05:34:20.995 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Orders (Uis.Server) in 139.2126ms
+2026-05-14 05:34:20.995 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Orders (Uis.Server)'
+2026-05-14 05:34:20.996 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Orders - 200 null text/html; charset=utf-8 160.1281ms
+2026-05-14 05:34:24.836 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Notifications - null null
+2026-05-14 05:34:24.838 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.Notifications (Uis.Server)'
+2026-05-14 05:34:24.852 +00:00 [INF] Route matched with {action = "Notifications", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Notifications(System.String, System.Nullable`1[System.Guid], System.Nullable`1[System.DateTime]) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:24.882 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT n0."Id", n0."CreatedAt", n0."IsRead", n0."Message", n0."UserId", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM (
+    SELECT n."Id", n."CreatedAt", n."IsRead", n."Message", n."UserId"
+    FROM "Notifications" AS n
+    ORDER BY n."CreatedAt" DESC
+    LIMIT @p
+) AS n0
+INNER JOIN "Users" AS u ON n0."UserId" = u."Id"
+ORDER BY n0."CreatedAt" DESC
+2026-05-14 05:34:24.896 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM "Users" AS u
+ORDER BY u."FullName"
+2026-05-14 05:34:24.905 +00:00 [INF] Executing ViewResult, running view Notifications.
+2026-05-14 05:34:24.949 +00:00 [INF] Executed ViewResult - view Notifications executed in 45.0177ms.
+2026-05-14 05:34:24.950 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.Notifications (Uis.Server) in 96.8978ms
+2026-05-14 05:34:24.950 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.Notifications (Uis.Server)'
+2026-05-14 05:34:24.950 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Notifications - 200 null text/html; charset=utf-8 114.2213ms
+2026-05-14 05:34:27.286 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - null null
+2026-05-14 05:34:27.288 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server)'
+2026-05-14 05:34:27.299 +00:00 [INF] Route matched with {action = "MarketplaceSettings", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] MarketplaceSettings() on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:27.343 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Key", s."Description", s."Value"
+FROM "SystemSettings" AS s
+WHERE s."Key" IN ('MinWithdrawalAmount', 'CommissionRate')
+2026-05-14 05:34:27.363 +00:00 [INF] Executing ViewResult, running view MarketplaceSettings.
+2026-05-14 05:34:27.390 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server) in 89.8509ms
+2026-05-14 05:34:27.391 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.MarketplaceSettings (Uis.Server)'
+2026-05-14 05:34:27.393 +00:00 [ERR] An unhandled exception occurred during GET /Admin/MarketplaceSettings
+System.InvalidOperationException: The layout view '_AdminLayout' could not be located. The following locations were searched:
+/Views/Admin/_AdminLayout.cshtml
+/Views/Shared/_AdminLayout.cshtml
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.GetLayoutPage(ViewContext context, String executingFilePath, String layoutPath)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderLayoutAsync(ViewContext context, ViewBufferTextWriter bodyWriter)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.RateLimiting.RateLimitingMiddleware.InvokeInternal(HttpContext context, EnableRateLimitingAttribute enableRateLimitingAttribute)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Program.<>c__DisplayClass0_0.<<<Main>$>b__10>d.MoveNext() in /root/UIS/abodyf/msa3ed/server/Program.cs:line 186
+2026-05-14 05:34:27.421 +00:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The layout view '_AdminLayout' could not be located. The following locations were searched:
+/Views/Admin/_AdminLayout.cshtml
+/Views/Shared/_AdminLayout.cshtml
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.GetLayoutPage(ViewContext context, String executingFilePath, String layoutPath)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderLayoutAsync(ViewContext context, ViewBufferTextWriter bodyWriter)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.RateLimiting.RateLimitingMiddleware.InvokeInternal(HttpContext context, EnableRateLimitingAttribute enableRateLimitingAttribute)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Program.<>c__DisplayClass0_0.<<<Main>$>b__10>d.MoveNext() in /root/UIS/abodyf/msa3ed/server/Program.cs:line 186
+--- End of stack trace from previous location ---
+   at Program.<>c__DisplayClass0_0.<<<Main>$>b__10>d.MoveNext() in /root/UIS/abodyf/msa3ed/server/Program.cs:line 205
+--- End of stack trace from previous location ---
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-05-14 05:34:27.465 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - 500 null text/html; charset=utf-8 178.54ms
+2026-05-14 05:34:38.455 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - null null
+2026-05-14 05:34:38.457 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server)'
+2026-05-14 05:34:38.486 +00:00 [INF] Route matched with {action = "AuditLogs", controller = "Admin"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] AuditLogs(System.String) on controller Uis.Server.Controllers.AdminController (Uis.Server).
+2026-05-14 05:34:38.541 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT a0."Id", a0."Action", a0."AdminId", a0."CreatedAt", a0."Details", a0."TargetEntityId", a0."TargetEntityType", u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+FROM (
+    SELECT a."Id", a."Action", a."AdminId", a."CreatedAt", a."Details", a."TargetEntityId", a."TargetEntityType"
+    FROM "AuditLogs" AS a
+    ORDER BY a."CreatedAt" DESC
+    LIMIT @p
+) AS a0
+INNER JOIN "Users" AS u ON a0."AdminId" = u."Id"
+ORDER BY a0."CreatedAt" DESC
+2026-05-14 05:34:38.548 +00:00 [INF] Executing ViewResult, running view AuditLogs.
+2026-05-14 05:34:38.589 +00:00 [INF] Executed ViewResult - view AuditLogs executed in 42.9447ms.
+2026-05-14 05:34:38.590 +00:00 [INF] Executed action Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server) in 103.4002ms
+2026-05-14 05:34:38.591 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.AdminController.AuditLogs (Uis.Server)'
+2026-05-14 05:34:38.591 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 200 null text/html; charset=utf-8 136.579ms

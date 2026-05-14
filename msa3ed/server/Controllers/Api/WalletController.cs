@@ -25,12 +25,13 @@ public class WalletController : ControllerBase
 
     [HttpPost("Withdrawals")]
     [Authorize(Roles = "Executor")]
-    public async Task<IActionResult> RequestWithdrawal([FromForm] decimal amount, [FromForm] IFormFile screenshot)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> RequestWithdrawal([FromForm] WithdrawalRequestDto dto)
     {
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         try
         {
-            var request = await _withdrawalService.RequestWithdrawalAsync(userId, amount, screenshot);
+            var request = await _withdrawalService.RequestWithdrawalAsync(userId, dto.Amount, dto.Screenshot);
             return Ok(request);
         }
         catch (Exception ex)
@@ -74,3 +75,9 @@ public class WalletController : ControllerBase
 }
 
 public record ResolveWithdrawalRequest(string Status, string? AdminNotes);
+
+public class WithdrawalRequestDto
+{
+    public decimal Amount { get; set; }
+    public IFormFile Screenshot { get; set; } = null!;
+}

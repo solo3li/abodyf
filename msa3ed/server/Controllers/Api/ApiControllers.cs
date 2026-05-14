@@ -421,12 +421,13 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id}/Dispute")]
-    public async Task<IActionResult> OpenDispute(Guid id, [FromForm] string description, [FromForm] IFormFile evidence)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> OpenDispute(Guid id, [FromForm] DisputeRequest dto)
     {
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         try
         {
-            var dispute = await _disputeService.OpenDisputeAsync(id, description, evidence, userId);
+            var dispute = await _disputeService.OpenDisputeAsync(id, dto.Description, dto.Evidence, userId);
             return Ok(dispute);
         }
         catch (Exception ex)
@@ -461,6 +462,11 @@ public class OrdersController : ControllerBase
 }
 
 public record ResolveDisputeRequest(string Resolution, string? AdminNotes);
+public class DisputeRequest
+{
+    public string Description { get; set; } = string.Empty;
+    public IFormFile Evidence { get; set; } = null!;
+}
 
 [ApiController]
 [Route("api/[controller]")]
@@ -649,7 +655,8 @@ public class ChatController : ControllerBase
     }
 
     [HttpPost("{chatId}/Message")]
-    public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] string? content, [FromForm] List<IFormFile>? attachments, [FromForm] IFormFile? audioFile)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> SendMessage(Guid chatId, [FromForm] ChatMessageRequest dto)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdStr == null) return Unauthorized();
@@ -658,26 +665,26 @@ public class ChatController : ControllerBase
         var chat = await _db.Chats.FindAsync(chatId);
         if (chat == null) return NotFound("Chat not found.");
 
-        var msg = new Message { ChatId = chatId, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
+        var msg = new Message { ChatId = chatId, SenderId = uid, Content = dto.Content ?? "", SentAt = DateTime.UtcNow };
 
-        if (audioFile != null && audioFile.Length > 0)
+        if (dto.AudioFile != null && dto.AudioFile.Length > 0)
         {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
-            var url = await _fileService.UploadFileAsync(audioFile.OpenReadStream(), fileName);
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.AudioFile.FileName);
+            var url = await _fileService.UploadFileAsync(dto.AudioFile.OpenReadStream(), fileName);
             msg.Attachments.Add(new MessageAttachment
             {
                 Url = url,
-                FileName = audioFile.FileName,
+                FileName = dto.AudioFile.FileName,
                 FileType = "Audio",
-                FileSize = audioFile.Length
+                FileSize = dto.AudioFile.Length
             });
             // T031: Process waveform
             msg.WaveformData = await _audioService.ExtractWaveformDataAsync(Path.Combine("wwwroot", "uploads", fileName));
         }
 
-        if (attachments != null)
+        if (dto.Attachments != null)
         {
-            foreach (var file in attachments)
+            foreach (var file in dto.Attachments)
             {
                 if (file.Length > 20 * 1024 * 1024) continue;
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -696,7 +703,7 @@ public class ChatController : ControllerBase
         _db.Messages.Add(msg);
         await _db.SaveChangesAsync();
 
-        var dto = new MessageDto
+        var messageDto = new MessageDto
         {
             Id = msg.Id,
             ChatId = msg.ChatId,
@@ -709,14 +716,14 @@ public class ChatController : ControllerBase
 
         if (chat.Type == ChatType.PrivateChat)
         {
-            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
+            await _privateHub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
         else
         {
-            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", dto);
+            await _hub.Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
         }
 
-        return Ok(dto);
+        return Ok(messageDto);
     }
 
     [HttpPost("Attachments")]
@@ -789,6 +796,13 @@ public class ChatController : ControllerBase
     }
 }
 
+public class ChatMessageRequest
+{
+    public string? Content { get; set; }
+    public List<IFormFile>? Attachments { get; set; }
+    public IFormFile? AudioFile { get; set; }
+}
+
 public class CustomOfferRequest
 {
     public Guid ChatId { get; set; }
@@ -856,18 +870,19 @@ public class TicketController : ControllerBase
     }
 
     [HttpPost("{id}/Reply")]
-    public async Task<IActionResult> Reply(Guid id, [FromForm] string? content, [FromForm] List<IFormFile>? attachments)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Reply(Guid id, [FromForm] TicketReplyRequest dto)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdStr == null) return Unauthorized();
         var uid = Guid.Parse(userIdStr);
         var sender = await _db.Users.FindAsync(uid);
 
-        var msg = new TicketMessage { TicketId = id, SenderId = uid, Content = content ?? "", SentAt = DateTime.UtcNow };
+        var msg = new TicketMessage { TicketId = id, SenderId = uid, Content = dto.Content ?? "", SentAt = DateTime.UtcNow };
 
-        if (attachments != null)
+        if (dto.Attachments != null)
         {
-            foreach (var file in attachments)
+            foreach (var file in dto.Attachments)
             {
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 var url = await _fileService.UploadFileAsync(file.OpenReadStream(), fileName);
@@ -986,4 +1001,9 @@ public class NotificationsController : ControllerBase
         await _notificationService.DeleteNotificationAsync(id);
         return Ok(new { success = true });
     }
+}
+public class TicketReplyRequest
+{
+    public string? Content { get; set; }
+    public List<IFormFile>? Attachments { get; set; }
 }

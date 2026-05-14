@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
@@ -1474,5 +1476,46 @@ public class AdminController : Controller
         await _db.SaveChangesAsync();
         TempData["Message"] = "تم حفظ الإعدادات بنجاح";
         return RedirectToAction(nameof(MarketplaceSettings));
+    }
+
+    [HttpGet("Login")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+    public IActionResult Login()
+    {
+        if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            return RedirectToAction("Index");
+        return View();
+    }
+
+    [HttpPost("Login")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        // Simple admin check for demo, should use AuthService
+        if (email == "admin@uis.com" && password == "admin123")
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, email),
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.NameIdentifier, Guid.Empty.ToString()) // System Admin ID
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new Microsoft.AspNetCore.Authentication.AuthenticationProperties { IsPersistent = true };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            return RedirectToAction("Index");
+        }
+
+        ViewBag.Error = "بيانات الدخول غير صحيحة";
+        return View();
+    }
+
+    [HttpGet("Logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login");
     }
 }

@@ -1,0 +1,500 @@
+2026-05-14 03:24:24.733 +00:00 [ERR] An error occurred using the connection to database 'uis_db' on server 'tcp://db:5432'.
+2026-05-14 03:24:52.439 +00:00 [ERR] An error occurred using the connection to database 'uis_db' on server 'tcp://db:5432'.
+2026-05-14 03:25:17.992 +00:00 [ERR] An error occurred using the connection to database 'uis_db' on server 'tcp://localhost:5432'.
+2026-05-14 03:25:44.971 +00:00 [INF] Executed DbCommand (32ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:25:45.392 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:25:45.461 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:25:45.473 +00:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-05-14 03:25:45.475 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:25:45.477 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:25:45.487 +00:00 [INF] Applying migration '20260514032405_CompleteMarketplaceFeatures'.
+2026-05-14 03:25:45.599 +00:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE "Users" ADD "ReviewsCount" integer NOT NULL DEFAULT 0;
+2026-05-14 03:25:45.630 +00:00 [INF] Executed DbCommand (30ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Disputes" (
+    "Id" uuid NOT NULL,
+    "OrderId" uuid NOT NULL,
+    "OpenedByUserId" uuid NOT NULL,
+    "EvidenceUrl" text NOT NULL,
+    "Description" text NOT NULL,
+    "Status" text NOT NULL,
+    "ResolutionType" text NOT NULL,
+    "AdminNotes" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    "ResolvedAt" timestamp with time zone,
+    CONSTRAINT "PK_Disputes" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Disputes_Orders_OrderId" FOREIGN KEY ("OrderId") REFERENCES "Orders" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Disputes_Users_OpenedByUserId" FOREIGN KEY ("OpenedByUserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2026-05-14 03:25:45.650 +00:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Reviews" (
+    "Id" uuid NOT NULL,
+    "OrderId" uuid NOT NULL,
+    "ServiceId" uuid NOT NULL,
+    "FromUserId" uuid NOT NULL,
+    "ToUserId" uuid NOT NULL,
+    "Rating" integer NOT NULL,
+    "Comment" text NOT NULL,
+    "ResponseContent" text,
+    "RespondedAt" timestamp with time zone,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    CONSTRAINT "PK_Reviews" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Reviews_Orders_OrderId" FOREIGN KEY ("OrderId") REFERENCES "Orders" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Reviews_Services_ServiceId" FOREIGN KEY ("ServiceId") REFERENCES "Services" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Reviews_Users_FromUserId" FOREIGN KEY ("FromUserId") REFERENCES "Users" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Reviews_Users_ToUserId" FOREIGN KEY ("ToUserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2026-05-14 03:25:45.661 +00:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "WithdrawalRequests" (
+    "Id" uuid NOT NULL,
+    "ExecutorId" uuid NOT NULL,
+    "Amount" numeric NOT NULL,
+    "ScreenshotUrl" text NOT NULL,
+    "Status" text NOT NULL,
+    "AdminNotes" text,
+    "CreatedAt" timestamp with time zone NOT NULL,
+    "ProcessedAt" timestamp with time zone,
+    CONSTRAINT "PK_WithdrawalRequests" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_WithdrawalRequests_Users_ExecutorId" FOREIGN KEY ("ExecutorId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+2026-05-14 03:25:45.671 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "SystemSettings" ("Key", "Description", "Value")
+VALUES ('CommissionRate', 'Platform commission percentage', '10');
+INSERT INTO "SystemSettings" ("Key", "Description", "Value")
+VALUES ('MinWithdrawalAmount', 'Minimum balance required to request a withdrawal', '100');
+2026-05-14 03:25:45.678 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Disputes_OpenedByUserId" ON "Disputes" ("OpenedByUserId");
+2026-05-14 03:25:45.682 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Disputes_OrderId" ON "Disputes" ("OrderId");
+2026-05-14 03:25:45.687 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Reviews_FromUserId" ON "Reviews" ("FromUserId");
+2026-05-14 03:25:45.691 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Reviews_OrderId" ON "Reviews" ("OrderId");
+2026-05-14 03:25:45.697 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Reviews_ServiceId" ON "Reviews" ("ServiceId");
+2026-05-14 03:25:45.702 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Reviews_ToUserId" ON "Reviews" ("ToUserId");
+2026-05-14 03:25:45.709 +00:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_WithdrawalRequests_ExecutorId" ON "WithdrawalRequests" ("ExecutorId");
+2026-05-14 03:25:45.711 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260514032405_CompleteMarketplaceFeatures', '10.0.7');
+2026-05-14 03:25:58.412 +00:00 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:25:59.025 +00:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:25:59.137 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:25:59.167 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:25:59.180 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:25:59.191 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 03:25:59.478 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 03:25:59.634 +00:00 [INF] Executed DbCommand (15ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:25:59.715 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:25:59.720 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:25:59.793 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 03:26:00.031 +00:00 [INF] Executed DbCommand (17ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 03:26:00.233 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 03:26:00.259 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 03:26:00.290 +00:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 03:26:00.306 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 03:26:00.729 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 03:26:00.756 +00:00 [INF] Creating key {185bbcfe-d1ad-4b31-bcda-a36acd3e21c8} with creation date 2026-05-14 03:26:00Z, activation date 2026-05-14 03:26:00Z, and expiration date 2026-08-12 03:26:00Z.
+2026-05-14 03:26:00.767 +00:00 [WRN] No XML encryptor configured. Key {185bbcfe-d1ad-4b31-bcda-a36acd3e21c8} may be persisted to storage in unencrypted form.
+2026-05-14 03:26:00.772 +00:00 [INF] Writing data to file '/root/.aspnet/DataProtection-Keys/key-185bbcfe-d1ad-4b31-bcda-a36acd3e21c8.xml'.
+2026-05-14 03:26:00.884 +00:00 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5035: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__14_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2026-05-14 03:26:16.456 +00:00 [INF] Executed DbCommand (34ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:26:17.131 +00:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:26:17.233 +00:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:26:17.268 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:26:17.272 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:26:17.291 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 03:26:17.713 +00:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 03:26:17.928 +00:00 [INF] Executed DbCommand (22ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:18.031 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:18.034 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:18.089 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 03:26:18.317 +00:00 [INF] Executed DbCommand (11ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 03:26:18.487 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 03:26:18.504 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 03:26:18.526 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 03:26:18.535 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 03:26:18.904 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 03:26:19.094 +00:00 [ERR] Hosting failed to start
+System.IO.IOException: Failed to bind to address http://127.0.0.1:5035: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, Boolean disconnectOnFailure, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportOptions.CreateDefaultBoundListenSocket(EndPoint endpoint)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.TransportManager.BindAsync(EndPoint endPoint, ConnectionDelegate connectionDelegate, EndpointConfig endpointConfig, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.<>c__DisplayClass28_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.LocalhostListenOptions.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.<StartAsync>b__14_1(IHostedService service, CancellationToken token)
+   at Microsoft.Extensions.Hosting.Internal.Host.ForeachService[T](IEnumerable`1 services, CancellationToken token, Boolean concurrent, Boolean abortOnFirstException, List`1 exceptions, Func`3 operation)
+2026-05-14 03:26:38.589 +00:00 [INF] Executed DbCommand (40ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:26:39.154 +00:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:26:39.250 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:26:39.278 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:26:39.286 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:26:39.296 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 03:26:39.570 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 03:26:39.744 +00:00 [INF] Executed DbCommand (21ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:39.836 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:39.840 +00:00 [INF] Executed DbCommand (1ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:26:39.888 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 03:26:40.117 +00:00 [INF] Executed DbCommand (7ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 03:26:40.265 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 03:26:40.283 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 03:26:40.308 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 03:26:40.320 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 03:26:40.657 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 03:26:40.766 +00:00 [INF] Now listening on: http://localhost:5035
+2026-05-14 03:26:40.769 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 03:26:40.770 +00:00 [INF] Hosting environment: Development
+2026-05-14 03:26:40.771 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 03:29:33.251 +00:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5035/Admin - null null
+2026-05-14 03:29:33.375 +00:00 [INF] Executing endpoint '405 HTTP Method Not Supported'
+2026-05-14 03:29:33.376 +00:00 [INF] Executed endpoint '405 HTTP Method Not Supported'
+2026-05-14 03:29:33.385 +00:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5035/Admin - 405 null null 133.9684ms
+2026-05-14 03:29:40.034 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/Admin - null null
+2026-05-14 03:29:40.052 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:29:40.059 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:29:40.060 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/Admin - 401 0 null 25.7948ms
+2026-05-14 03:51:32.041 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/ - null null
+2026-05-14 03:51:32.063 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.HomeController.Index (Uis.Server)'
+2026-05-14 03:51:32.107 +00:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Uis.Server.Controllers.HomeController (Uis.Server).
+2026-05-14 03:51:32.142 +00:00 [INF] Executing ViewResult, running view Index.
+2026-05-14 03:51:32.255 +00:00 [INF] Executed ViewResult - view Index executed in 114.2674ms.
+2026-05-14 03:51:32.260 +00:00 [INF] Executed action Uis.Server.Controllers.HomeController.Index (Uis.Server) in 146.4246ms
+2026-05-14 03:51:32.261 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.HomeController.Index (Uis.Server)'
+2026-05-14 03:51:32.267 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/ - 200 null text/html; charset=utf-8 223.5177ms
+2026-05-14 03:51:38.515 +00:00 [INF] Request starting HTTP/1.1 HEAD http://localhost:5035/swagger/index.html - null null
+2026-05-14 03:51:38.525 +00:00 [INF] Request finished HTTP/1.1 HEAD http://localhost:5035/swagger/index.html - 404 null null 10.3593ms
+2026-05-14 03:51:38.527 +00:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: HEAD http://localhost:5035/swagger/index.html, Response status code: 404
+2026-05-14 03:51:50.546 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/swagger - null null
+2026-05-14 03:51:50.550 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/swagger - 301 0 null 3.6799ms
+2026-05-14 03:51:50.553 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost:5035/swagger/index.html - null null
+2026-05-14 03:51:50.655 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost:5035/swagger/index.html - 200 null text/html;charset=utf-8 101.3531ms
+2026-05-14 03:52:04.328 +00:00 [INF] Application is shutting down...
+2026-05-14 03:52:17.912 +00:00 [INF] Executed DbCommand (45ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:52:18.694 +00:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-05-14 03:52:18.817 +00:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+2026-05-14 03:52:18.871 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+2026-05-14 03:52:18.879 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-05-14 03:52:18.891 +00:00 [INF] No migrations were applied. The database is already up to date.
+2026-05-14 03:52:19.240 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT e."Id", e."Code", e."Email", e."ExpiryDate", e."IsUsed"
+FROM "EmailOtps" AS e
+2026-05-14 03:52:19.427 +00:00 [INF] Executed DbCommand (17ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:52:19.519 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:52:19.525 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@name='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."Description", r."IsSystemRole", r."Name"
+FROM "Roles" AS r
+WHERE r."Name" = @name
+LIMIT 1
+2026-05-14 03:52:19.585 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Permissions" AS p)
+2026-05-14 03:52:19.809 +00:00 [INF] Executed DbCommand (9ms) [Parameters=[@email='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u1."Id", u1."Bio", u1."CompletedOrdersCount", u1."CreatedAt", u1."Email", u1."FullName", u1."IsActive", u1."IsAdmin", u1."IsExecutor", u1."IsStaff", u1."Major", u1."PasswordHash", u1."ProfilePicture", u1."Rating", u1."ReviewsCount", u1."University", u1."WalletBalance", s."RolesId", s."UsersId", s."Id", s."Description", s."IsSystemRole", s."Name"
+FROM (
+    SELECT u."Id", u."Bio", u."CompletedOrdersCount", u."CreatedAt", u."Email", u."FullName", u."IsActive", u."IsAdmin", u."IsExecutor", u."IsStaff", u."Major", u."PasswordHash", u."ProfilePicture", u."Rating", u."ReviewsCount", u."University", u."WalletBalance"
+    FROM "Users" AS u
+    WHERE u."Email" = @email
+    LIMIT 1
+) AS u1
+LEFT JOIN (
+    SELECT u0."RolesId", u0."UsersId", r."Id", r."Description", r."IsSystemRole", r."Name"
+    FROM "UserRoles" AS u0
+    INNER JOIN "Roles" AS r ON u0."RolesId" = r."Id"
+) AS s ON u1."Id" = s."UsersId"
+ORDER BY u1."Id", s."RolesId", s."UsersId"
+2026-05-14 03:52:19.978 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Categories" AS c)
+2026-05-14 03:52:20.000 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT c."Id", c."Name"
+FROM "Categories" AS c
+2026-05-14 03:52:20.023 +00:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Services" AS s)
+2026-05-14 03:52:20.036 +00:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "SystemSettings" AS s)
+2026-05-14 03:52:20.447 +00:00 [INF] User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+2026-05-14 03:52:20.570 +00:00 [INF] Now listening on: http://0.0.0.0:5035
+2026-05-14 03:52:20.576 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-05-14 03:52:20.577 +00:00 [INF] Hosting environment: Development
+2026-05-14 03:52:20.579 +00:00 [INF] Content root path: /root/UIS/abodyf/msa3ed/server
+2026-05-14 03:53:19.076 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - null null
+2026-05-14 03:53:19.222 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:53:19.228 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:53:19.233 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - 401 0 null 160.1797ms
+2026-05-14 03:53:20.635 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - null null
+2026-05-14 03:53:20.656 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:53:20.657 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:53:20.658 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Services - 401 0 null 23.5835ms
+2026-05-14 03:53:58.445 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/ - null null
+2026-05-14 03:53:58.462 +00:00 [INF] Executing endpoint 'Uis.Server.Controllers.HomeController.Index (Uis.Server)'
+2026-05-14 03:53:58.478 +00:00 [INF] Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller Uis.Server.Controllers.HomeController (Uis.Server).
+2026-05-14 03:53:58.502 +00:00 [INF] Executing ViewResult, running view Index.
+2026-05-14 03:53:58.584 +00:00 [INF] Executed ViewResult - view Index executed in 86.5645ms.
+2026-05-14 03:53:58.585 +00:00 [INF] Executed action Uis.Server.Controllers.HomeController.Index (Uis.Server) in 104.9287ms
+2026-05-14 03:53:58.586 +00:00 [INF] Executed endpoint 'Uis.Server.Controllers.HomeController.Index (Uis.Server)'
+2026-05-14 03:53:58.588 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/ - 200 null text/html; charset=utf-8 143.2023ms
+2026-05-14 03:53:58.953 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/favicon.ico - null null
+2026-05-14 03:53:58.960 +00:00 [INF] The file /favicon.ico was not modified
+2026-05-14 03:53:58.963 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/favicon.ico - 304 null image/x-icon 9.4234ms
+2026-05-14 03:54:01.344 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - null null
+2026-05-14 03:54:01.348 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:54:01.350 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:54:01.351 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/Users - 401 0 null 7.4884ms
+2026-05-14 03:54:09.789 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - null null
+2026-05-14 03:54:09.790 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:54:09.791 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:54:09.791 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/MarketplaceSettings - 401 0 null 1.3872ms
+2026-05-14 03:54:37.495 +00:00 [INF] Request starting HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - null null
+2026-05-14 03:54:37.498 +00:00 [INF] Authorization failed. These requirements were not met:
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Admin)
+2026-05-14 03:54:37.498 +00:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-05-14 03:54:37.499 +00:00 [INF] Request finished HTTP/1.1 GET http://209.38.238.175:5035/Admin/AuditLogs - 401 0 null 4.1385ms

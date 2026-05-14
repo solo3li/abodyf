@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
-using Uis.Server.Data;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Uis.Server.Models;
 using Uis.Server.Services;
 
 namespace Uis.Server.Controllers.Api;
@@ -12,71 +14,63 @@ namespace Uis.Server.Controllers.Api;
 [Authorize]
 public class WalletController : ControllerBase
 {
-    private readonly ApplicationDbContext _db;
+    private readonly IWithdrawalService _withdrawalService;
     private readonly IWalletService _walletService;
 
-    public WalletController(ApplicationDbContext db, IWalletService walletService)
+    public WalletController(IWithdrawalService withdrawalService, IWalletService walletService)
     {
-        _db = db;
+        _withdrawalService = withdrawalService;
         _walletService = walletService;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetWallet()
+    [HttpPost("Withdrawals")]
+    [Authorize(Roles = "Executor")]
+    public async Task<IActionResult> RequestWithdrawal([FromForm] decimal amount, [FromForm] IFormFile screenshot)
     {
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdStr == null) return Unauthorized();
-        var uid = Guid.Parse(userIdStr);
-
-        var user = await _db.Users.FindAsync(uid);
-        if (user == null) return NotFound("المستخدم غير موجود");
-
-        var transactions = await _db.WalletTransactions
-            .Where(t => t.UserId == uid)
-            .OrderByDescending(t => t.CreatedAt)
-            .Take(50)
-            .Select(t => new
-            {
-                t.Id,
-                t.Amount,
-                t.Type,
-                t.Description,
-                t.CreatedAt
-            })
-            .ToListAsync();
-
-        return Ok(new
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
         {
-            Balance = user.WalletBalance,
-            Currency = "ج.م",
-            Transactions = transactions
-        });
+            var request = await _withdrawalService.RequestWithdrawalAsync(userId, amount, screenshot);
+            return Ok(request);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("Withdrawals/Admin")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetWithdrawals([FromQuery] string? status)
+    {
+        var requests = await _withdrawalService.GetWithdrawalsAsync(status);
+        return Ok(requests);
+    }
+
+    [HttpPost("Withdrawals/Admin/{id}/Resolve")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ResolveWithdrawal(Guid id, [FromBody] ResolveWithdrawalRequest request)
+    {
+        var adminId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            var resolved = await _withdrawalService.ResolveWithdrawalAsync(id, request.Status, request.AdminNotes, adminId);
+            return Ok(resolved);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 
     [HttpPost("TopUp")]
-    public async Task<IActionResult> TopUp([FromBody] TopUpRequest request)
+    public async Task<IActionResult> TopUp([FromBody] decimal amount)
     {
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdStr == null) return Unauthorized();
-        var uid = Guid.Parse(userIdStr);
-
-        var result = await _walletService.TopUpAsync(uid, request.Amount);
-
-        if (!result.Success)
-        {
-            return BadRequest(new { message = result.Message });
-        }
-
-        return Ok(new
-        {
-            success = true,
-            newBalance = result.NewBalance,
-            message = result.Message
-        });
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await _walletService.TopUpAsync(userId, amount);
+        if (!result.Success) return BadRequest(new { Message = result.Message });
+        return Ok(new { NewBalance = result.NewBalance });
     }
 }
 
-public class TopUpRequest
-{
-    public decimal Amount { get; set; }
-}
+public record ResolveWithdrawalRequest(string Status, string? AdminNotes);

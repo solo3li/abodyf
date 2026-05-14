@@ -158,6 +158,52 @@ namespace Uis.Server.Migrations
                     b.ToTable("CustomOffers");
                 });
 
+            modelBuilder.Entity("Uis.Server.Models.Dispute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EvidenceUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OpenedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ResolutionType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OpenedByUserId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Disputes");
+                });
+
             modelBuilder.Entity("Uis.Server.Models.EmailOtp", b =>
                 {
                     b.Property<Guid>("Id")
@@ -489,6 +535,53 @@ namespace Uis.Server.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("Uis.Server.Models.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FromUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ResponseContent")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ToUserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Uis.Server.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -594,6 +687,20 @@ namespace Uis.Server.Migrations
                     b.HasKey("Key");
 
                     b.ToTable("SystemSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "MinWithdrawalAmount",
+                            Description = "Minimum balance required to request a withdrawal",
+                            Value = "100"
+                        },
+                        new
+                        {
+                            Key = "CommissionRate",
+                            Description = "Platform commission percentage",
+                            Value = "10"
+                        });
                 });
 
             modelBuilder.Entity("Uis.Server.Models.Ticket", b =>
@@ -702,6 +809,9 @@ namespace Uis.Server.Migrations
                     b.Property<decimal>("Rating")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("ReviewsCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("University")
                         .HasColumnType("text");
 
@@ -749,6 +859,42 @@ namespace Uis.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("WalletTransactions");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.WithdrawalRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ExecutorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ScreenshotUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExecutorId");
+
+                    b.ToTable("WithdrawalRequests");
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -815,6 +961,25 @@ namespace Uis.Server.Migrations
                     b.Navigation("Executor");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.Dispute", b =>
+                {
+                    b.HasOne("Uis.Server.Models.User", "OpenedByUser")
+                        .WithMany()
+                        .HasForeignKey("OpenedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OpenedByUser");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.Escrow", b =>
@@ -945,6 +1110,41 @@ namespace Uis.Server.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Uis.Server.Models.Review", b =>
+                {
+                    b.HasOne("Uis.Server.Models.User", "FromUser")
+                        .WithMany()
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Uis.Server.Models.User", "ToUser")
+                        .WithMany()
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("Uis.Server.Models.RolePermission", b =>
                 {
                     b.HasOne("Uis.Server.Models.Permission", "Permission")
@@ -1026,6 +1226,17 @@ namespace Uis.Server.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Uis.Server.Models.WithdrawalRequest", b =>
+                {
+                    b.HasOne("Uis.Server.Models.User", "Executor")
+                        .WithMany()
+                        .HasForeignKey("ExecutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Executor");
                 });
 
             modelBuilder.Entity("Uis.Server.Models.Chat", b =>

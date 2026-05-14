@@ -59,7 +59,7 @@ public class AuthController : ControllerBase
         if (user == null) return NotFound("User not found.");
 
         await _otp.GenerateOtpAsync(email);
-        return Ok(new { Message = "OTP sent to your email." });
+        return Ok(new { Message = "Bypass Mode: Use any 4 digits to reset password." });
     }
 
     [HttpPost("reset-password")]
@@ -148,15 +148,15 @@ public class UsersController : ControllerBase
         using var stream = file.OpenReadStream();
         var imageUrl = await _fileService.UploadFileAsync(stream, $"profiles/{fileName}");
         await _userService.UpdateProfilePictureAsync(userId, imageUrl);
-        return Ok(new { imageUrl });
+        return Ok(new { ImageUrl = imageUrl });
     }
 
     [HttpDelete("ProfilePicture")]
     public async Task<IActionResult> DeleteProfilePicture()
     {
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        await _userService.UpdateProfilePictureAsync(userId, null!);
-        return NoContent();
+        await _userService.UpdateProfilePictureAsync(userId, "");
+        return Ok(new { Message = "Profile picture deleted" });
     }
 }
 
@@ -257,12 +257,14 @@ public class OrdersController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly IWalletService _walletService;
     private readonly IEscrowService _escrow;
+    private readonly IDisputeService _disputeService;
 
-    public OrdersController(ApplicationDbContext db, IWalletService walletService, IEscrowService escrow)
+    public OrdersController(ApplicationDbContext db, IWalletService walletService, IEscrowService escrow, IDisputeService disputeService)
     {
         _db = db;
         _walletService = walletService;
         _escrow = escrow;
+        _disputeService = disputeService;
     }
 
     [HttpGet]
@@ -415,10 +417,50 @@ public class OrdersController : ControllerBase
 
         // Save the updated status and escrow
         await _db.SaveChangesAsync();
-
         return Ok(order);
     }
+
+    [HttpPost("{id}/Dispute")]
+    public async Task<IActionResult> OpenDispute(Guid id, [FromForm] string description, [FromForm] IFormFile evidence)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            var dispute = await _disputeService.OpenDisputeAsync(id, description, evidence, userId);
+            return Ok(dispute);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("Disputes/Admin")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetDisputes([FromQuery] string? status)
+    {
+        var disputes = await _disputeService.GetDisputesAsync(status);
+        return Ok(disputes);
+    }
+
+    [HttpPost("Disputes/Admin/{id}/Resolve")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ResolveDispute(Guid id, [FromBody] ResolveDisputeRequest request)
+    {
+        var adminId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            var dispute = await _disputeService.ResolveDisputeAsync(id, request.Resolution, request.AdminNotes, adminId);
+            return Ok(dispute);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }
+
+public record ResolveDisputeRequest(string Resolution, string? AdminNotes);
 
 [ApiController]
 [Route("api/[controller]")]

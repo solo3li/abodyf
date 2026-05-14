@@ -6,8 +6,20 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Uis.Server.Data;
 using Uis.Server.Hubs;
+using Uis.Server.Middleware;
+using Serilog;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/uis-log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Increase multipart body size limit for image uploads (100MB)
 builder.WebHost.ConfigureKestrel(options =>
@@ -102,6 +114,10 @@ builder.Services.AddScoped<Uis.Server.Services.INotificationService, Uis.Server.
 builder.Services.AddScoped<Uis.Server.Services.IAudioService, Uis.Server.Services.AudioService>();
 builder.Services.AddScoped<Uis.Server.Services.IOfferService, Uis.Server.Services.OfferService>();
 builder.Services.AddScoped<Uis.Server.Services.IWalletService, Uis.Server.Services.WalletService>();
+builder.Services.AddScoped<Uis.Server.Services.IWithdrawalService, Uis.Server.Services.WalletService>();
+builder.Services.AddScoped<Uis.Server.Services.IReviewService, Uis.Server.Services.ReviewService>();
+builder.Services.AddScoped<Uis.Server.Services.IDisputeService, Uis.Server.Services.DisputeService>();
+builder.Services.AddScoped<Uis.Server.Services.IAdminService, Uis.Server.Services.AdminService>();
 builder.Services.AddScoped<Uis.Server.Services.IAuditLogService, Uis.Server.Services.AuditLogService>();
 
 // Configure SignalR
@@ -109,6 +125,9 @@ builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
 });
+
+// Configure Rate Limiting
+builder.Services.AddIPRateLimiting();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -180,6 +199,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 // Map SignalR Hubs
 app.MapHub<ChatHub>("/hubs/chat");

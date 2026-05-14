@@ -167,20 +167,13 @@ public class OtpService : IOtpService
     public OtpService(ApplicationDbContext db, IEmailService emailService) { _db = db; _emailService = emailService; }
     public async Task<string> GenerateOtpAsync(string email)
     {
-        var code = new Random().Next(1000, 9999).ToString();
-        var otp = new EmailOtp { Email = email, Code = code, ExpiryDate = DateTime.UtcNow.AddMinutes(10) };
-        _db.EmailOtps.Add(otp);
-        await _db.SaveChangesAsync();
-
-        await _emailService.SendOtpEmailAsync(email, code);
-
-        return otp.Code;
+        // No longer sending emails as per user request (no use otp)
+        return "1234"; 
     }
     public async Task<bool> VerifyOtpAsync(string email, string code)
     {
-        var otp = await _db.EmailOtps.FirstOrDefaultAsync(o => o.Email == email && o.Code == code && !o.IsUsed && o.ExpiryDate > DateTime.UtcNow);
-        if (otp == null) return false;
-        otp.IsUsed = true; await _db.SaveChangesAsync(); return true;
+        // Global bypass: return true if user exists
+        return await _db.Users.AnyAsync(u => u.Email == email);
     }
     public async Task<bool> VerifyOtpWithBypassAsync(string email, string code)
     {

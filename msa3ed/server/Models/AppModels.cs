@@ -30,6 +30,7 @@ public class User
 
     // Stats
     public decimal Rating { get; set; } = 5.0m;
+    public int ReviewsCount { get; set; } = 0;
     public int CompletedOrdersCount { get; set; } = 0;
 }
 
@@ -287,4 +288,51 @@ public class AuditLog
     public string TargetEntityId { get; set; } = string.Empty;
     public string Details { get; set; } = string.Empty; // JSON string
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class WithdrawalRequest
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid ExecutorId { get; set; }
+    public User Executor { get; set; } = null!;
+    public decimal Amount { get; set; }
+    public string ScreenshotUrl { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected, Cancelled
+    public string? AdminNotes { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? ProcessedAt { get; set; }
+}
+
+public class Review
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid OrderId { get; set; }
+    public Order Order { get; set; } = null!;
+    public Guid ServiceId { get; set; }
+    public Service Service { get; set; } = null!;
+    public Guid FromUserId { get; set; }
+    public User FromUser { get; set; } = null!;
+    public Guid ToUserId { get; set; }
+    public User ToUser { get; set; } = null!;
+    public int Rating { get; set; }
+    public string Comment { get; set; } = string.Empty;
+    public string? ResponseContent { get; set; }
+    public DateTime? RespondedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public class Dispute
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid OrderId { get; set; }
+    public Order Order { get; set; } = null!;
+    public Guid OpenedByUserId { get; set; }
+    public User OpenedByUser { get; set; } = null!;
+    public string EvidenceUrl { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Status { get; set; } = "Open"; // Open, Resolved
+    public string ResolutionType { get; set; } = "None"; // None, RefundToStudent, ReleaseToExecutor
+    public string? AdminNotes { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? ResolvedAt { get; set; }
 }

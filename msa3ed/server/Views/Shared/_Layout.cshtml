@@ -99,6 +99,18 @@
                 <i class="fas fa-wallet w-6 text-center"></i>
                 <span class="mx-3 font-semibold">إدارة المحافظ</span>
             </a>
+            <a href="/Admin/Withdrawals" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Withdrawals" ? "active" : "")">
+                <i class="fas fa-money-bill-wave w-6 text-center"></i>
+                <span class="mx-3 font-semibold">طلبات السحب</span>
+            </a>
+            <a href="/Admin/Disputes" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "Disputes" || ViewContext.RouteData.Values["action"]?.ToString() == "DisputeDetails" ? "active" : "")">
+                <i class="fas fa-exclamation-triangle w-6 text-center"></i>
+                <span class="mx-3 font-semibold">النزاعات</span>
+            </a>
+            <a href="/Admin/MarketplaceSettings" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "MarketplaceSettings" ? "active" : "")">
+                <i class="fas fa-store-slash w-6 text-center"></i>
+                <span class="mx-3 font-semibold">إعدادات السوق</span>
+            </a>
             <a href="/Admin/AuditLogs" class="nav-link flex items-center px-4 py-3 text-white rounded-lg transition-colors @(ViewContext.RouteData.Values["action"]?.ToString() == "AuditLogs" ? "active" : "")">
                 <i class="fas fa-clipboard-list w-6 text-center"></i>
                 <span class="mx-3 font-semibold">سجل العمليات</span>

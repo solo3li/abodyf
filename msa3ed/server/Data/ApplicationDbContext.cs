@@ -33,6 +33,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<SystemSetting> SystemSettings { get; set; } = null!;
     public DbSet<WalletTransaction> WalletTransactions { get; set; } = null!;
     public DbSet<AuditLog> AuditLogs { get; set; } = null!;
+    public DbSet<WithdrawalRequest> WithdrawalRequests { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
+    public DbSet<Dispute> Disputes { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,5 +54,11 @@ public class ApplicationDbContext : DbContext
 
         // Configure SystemSetting
         modelBuilder.Entity<SystemSetting>().HasKey(s => s.Key);
+
+        // Seed initial settings
+        modelBuilder.Entity<SystemSetting>().HasData(
+            new SystemSetting { Key = "MinWithdrawalAmount", Value = "100", Description = "Minimum balance required to request a withdrawal" },
+            new SystemSetting { Key = "CommissionRate", Value = "10", Description = "Platform commission percentage" }
+        );
     }
 }

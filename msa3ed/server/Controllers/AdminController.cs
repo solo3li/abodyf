@@ -39,7 +39,9 @@ public class AdminController : Controller
             TotalOrders = await _db.Orders.CountAsync(),
             PendingKyc = await _db.KycRequests.CountAsync(k => k.Status == "Pending"),
             OpenTickets = await _db.Tickets.CountAsync(t => t.Status == "Open"),
-            TotalRevenue = await _db.Payments.Where(p => p.Status == "Completed").SumAsync(p => p.Amount)
+            TotalRevenue = await _db.Payments.Where(p => p.Status == "Completed").SumAsync(p => p.Amount),
+            PendingWithdrawals = await _db.WithdrawalRequests.CountAsync(w => w.Status == "Pending"),
+            ActiveDisputes = await _db.Disputes.CountAsync(d => d.Status == "Open")
         };
 
         ViewBag.Stats = stats;
@@ -1271,5 +1273,206 @@ public class AdminController : Controller
 
         ViewBag.EntityType = entityType;
         return View(logs);
+    }
+
+    // --- Withdrawal Management ---
+    [HttpGet("Withdrawals")]
+    public async Task<IActionResult> Withdrawals(string? status)
+    {
+        var query = _db.WithdrawalRequests.Include(w => w.Executor).AsQueryable();
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(w => w.Status == status);
+
+        var withdrawals = await query.OrderByDescending(w => w.CreatedAt).ToListAsync();
+        ViewBag.Status = status;
+        return View(withdrawals);
+    }
+
+    [HttpPost("Withdrawals/Resolve/{id}")]
+    public async Task<IActionResult> ResolveWithdrawal(Guid id, string status, string? adminNotes)
+    {
+        var adminIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        await using var tx = await _db.Database.BeginTransactionAsync();
+        try
+        {
+            var request = await _db.WithdrawalRequests.Include(w => w.Executor).FirstOrDefaultAsync(w => w.Id == id);
+            if (request == null || request.Status != "Pending") return BadRequest();
+
+            request.Status = status;
+            request.AdminNotes = adminNotes;
+            request.ProcessedAt = DateTime.UtcNow;
+
+            if (status == "Approved")
+            {
+                if (request.Executor.WalletBalance < request.Amount)
+                {
+                    TempData["Error"] = "رصيد المستخدم غير كافٍ لإتمام السحب";
+                    return RedirectToAction(nameof(Withdrawals));
+                }
+
+                request.Executor.WalletBalance -= request.Amount;
+
+                _db.WalletTransactions.Add(new WalletTransaction
+                {
+                    UserId = request.ExecutorId,
+                    Amount = -request.Amount,
+                    Type = "Withdrawal",
+                    Description = $"سحب رصيد (طلب #{id.ToString().Substring(0, 8)})"
+                });
+            }
+
+            await _auditLogService.LogActionAsync(adminId, "ResolveWithdrawal", "WithdrawalRequest", id.ToString(), $"تم {status} طلب السحب. ملاحظات: {adminNotes}");
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            await _notificationService.SendNotificationAsync(request.ExecutorId, $"تم {status} طلب سحب الرصيد الخاص بك.", "طلب سحب");
+
+            return RedirectToAction(nameof(Withdrawals));
+        }
+        catch (Exception ex)
+        {
+            await tx.RollbackAsync();
+            TempData["Error"] = "حدث خطأ: " + ex.Message;
+            return RedirectToAction(nameof(Withdrawals));
+        }
+    }
+
+    // --- Dispute Management ---
+    [HttpGet("Disputes")]
+    public async Task<IActionResult> Disputes(string? status)
+    {
+        var query = _db.Disputes.Include(d => d.Order).Include(d => d.OpenedByUser).AsQueryable();
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(d => d.Status == status);
+
+        var disputes = await query.OrderByDescending(d => d.CreatedAt).ToListAsync();
+        ViewBag.Status = status;
+        return View(disputes);
+    }
+
+    [HttpGet("Disputes/{id}")]
+    public async Task<IActionResult> DisputeDetails(Guid id)
+    {
+        var dispute = await _db.Disputes
+            .Include(d => d.Order).ThenInclude(o => o.Student)
+            .Include(d => d.Order).ThenInclude(o => o.Executor)
+            .Include(d => d.OpenedByUser)
+            .FirstOrDefaultAsync(d => d.Id == id);
+
+        if (dispute == null) return NotFound();
+
+        return View(dispute);
+    }
+
+    [HttpPost("Disputes/Resolve/{id}")]
+    public async Task<IActionResult> ResolveDispute(Guid id, string resolution, string? adminNotes)
+    {
+        var adminIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        var dispute = await _db.Disputes.Include(d => d.Order).FirstOrDefaultAsync(d => d.Id == id);
+        if (dispute == null || dispute.Status == "Resolved") return BadRequest();
+
+        dispute.Status = "Resolved";
+        dispute.ResolutionType = resolution;
+        dispute.AdminNotes = adminNotes;
+        dispute.ResolvedAt = DateTime.UtcNow;
+
+        if (resolution == "RefundToStudent")
+        {
+            dispute.Order.Status = "Cancelled";
+            // Refund logic (assuming ReleaseEscrow wasn't called yet)
+            var escrow = await _db.Escrows.FirstOrDefaultAsync(e => e.OrderId == dispute.OrderId);
+            if (escrow != null && escrow.Status == "Held")
+            {
+                var student = await _db.Users.FindAsync(dispute.Order.StudentId);
+                if (student != null)
+                {
+                    student.WalletBalance += escrow.Amount;
+                    _db.WalletTransactions.Add(new WalletTransaction
+                    {
+                        UserId = student.Id,
+                        Amount = escrow.Amount,
+                        Type = "Refund",
+                        Description = $"استرداد مبالغ النزاع (طلب #{dispute.OrderId.ToString().Substring(0, 8)})"
+                    });
+                }
+                escrow.Status = "Refunded";
+            }
+        }
+        else if (resolution == "ReleaseToExecutor")
+        {
+            dispute.Order.Status = "Completed";
+            // Release logic manually bypasses the "Disputed" check in EscrowService since it's an admin resolution
+            var escrow = await _db.Escrows.FirstOrDefaultAsync(e => e.OrderId == dispute.OrderId);
+            if (escrow != null && escrow.Status == "Held" && dispute.Order.ExecutorId.HasValue)
+            {
+                var executor = await _db.Users.FindAsync(dispute.Order.ExecutorId.Value);
+                if (executor != null)
+                {
+                    var commissionSetting = await _db.SystemSettings.FindAsync("CommissionRate");
+                    decimal commissionRate = commissionSetting != null ? decimal.Parse(commissionSetting.Value) : 10m;
+                    decimal commissionAmount = escrow.Amount * (commissionRate / 100m);
+                    decimal executorAmount = escrow.Amount - commissionAmount;
+
+                    executor.WalletBalance += executorAmount;
+                    _db.WalletTransactions.Add(new WalletTransaction
+                    {
+                        UserId = executor.Id,
+                        Amount = executorAmount,
+                        Type = "EscrowRelease",
+                        Description = $"مستحقات النزاع (طلب #{dispute.OrderId.ToString().Substring(0, 8)})"
+                    });
+                }
+                escrow.Status = "Released";
+            }
+        }
+
+        await _auditLogService.LogActionAsync(adminId, "ResolveDispute", "Dispute", id.ToString(), $"تم حل النزاع بقرار: {resolution}. ملاحظات: {adminNotes}");
+
+        await _db.SaveChangesAsync();
+
+        await _notificationService.SendNotificationAsync(dispute.Order.StudentId, $"تم حل النزاع الخاص بالطلب #{dispute.OrderId.ToString().Substring(0, 8)} بقرار: {resolution}", "حل نزاع");
+        if (dispute.Order.ExecutorId.HasValue)
+            await _notificationService.SendNotificationAsync(dispute.Order.ExecutorId.Value, $"تم حل النزاع الخاص بالطلب #{dispute.OrderId.ToString().Substring(0, 8)} بقرار: {resolution}", "حل نزاع");
+
+        return RedirectToAction(nameof(Disputes));
+    }
+
+    [HttpGet("MarketplaceSettings")]
+    public async Task<IActionResult> MarketplaceSettings()
+    {
+        var settings = await _db.SystemSettings
+            .Where(s => s.Key == "MinWithdrawalAmount" || s.Key == "CommissionRate")
+            .ToDictionaryAsync(s => s.Key, s => s.Value);
+
+        ViewBag.MinWithdrawal = settings.ContainsKey("MinWithdrawalAmount") ? settings["MinWithdrawalAmount"] : "100";
+        ViewBag.CommissionRate = settings.ContainsKey("CommissionRate") ? settings["CommissionRate"] : "10";
+
+        return View();
+    }
+
+    [HttpPost("MarketplaceSettings")]
+    public async Task<IActionResult> MarketplaceSettings(string minWithdrawal, string commissionRate)
+    {
+        var adminIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var adminId = string.IsNullOrEmpty(adminIdStr) ? Guid.Empty : Guid.Parse(adminIdStr);
+
+        var minSetting = await _db.SystemSettings.FindAsync("MinWithdrawalAmount");
+        if (minSetting != null) minSetting.Value = minWithdrawal;
+        else _db.SystemSettings.Add(new SystemSetting { Key = "MinWithdrawalAmount", Value = minWithdrawal });
+
+        var commSetting = await _db.SystemSettings.FindAsync("CommissionRate");
+        if (commSetting != null) commSetting.Value = commissionRate;
+        else _db.SystemSettings.Add(new SystemSetting { Key = "CommissionRate", Value = commissionRate });
+
+        await _auditLogService.LogActionAsync(adminId, "UpdateMarketplaceSettings", "SystemSetting", "All", $"تم تحديث الحد الأدنى للسحب إلى {minWithdrawal} والعمولة إلى {commissionRate}%");
+
+        await _db.SaveChangesAsync();
+        TempData["Message"] = "تم حفظ الإعدادات بنجاح";
+        return RedirectToAction(nameof(MarketplaceSettings));
     }
 }

@@ -46,6 +46,24 @@
     </a>
 </div>
 
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
+    <a href="/Admin/Withdrawals?status=Pending" class="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center hover:border-orange-500 transition-all">
+        <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-xl mr-4 group-hover:bg-orange-600 group-hover:text-white transition-all"><i class="fas fa-hand-holding-usd"></i></div>
+        <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">سحب معلق</p>
+            <h3 class="text-2xl font-black text-gray-800">@stats?.PendingWithdrawals</h3>
+        </div>
+    </a>
+    
+    <a href="/Admin/Disputes?status=Open" class="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center hover:border-red-500 transition-all">
+        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center text-xl mr-4 group-hover:bg-red-600 group-hover:text-white transition-all"><i class="fas fa-gavel"></i></div>
+        <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">نزاعات مفتوحة</p>
+            <h3 class="text-2xl font-black text-gray-800">@stats?.ActiveDisputes</h3>
+        </div>
+    </a>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
         <div class="flex justify-between items-center mb-8">

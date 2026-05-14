@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/src/msa3ed/server/Uis.Server.csproj": {}
+    "/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj": {}
   },
   "projects": {
-    "/src/msa3ed/server/Uis.Server.csproj": {
+    "/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/src/msa3ed/server/Uis.Server.csproj",
+        "projectUniqueName": "/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj",
         "projectName": "Uis.Server",
-        "projectPath": "/src/msa3ed/server/Uis.Server.csproj",
+        "projectPath": "/root/UIS/abodyf/msa3ed/server/Uis.Server.csproj",
         "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/src/msa3ed/server/obj/",
+        "outputPath": "/root/UIS/abodyf/msa3ed/server/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/root/.nuget/NuGet/NuGet.Config"
@@ -24,6 +24,7 @@
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -38,10 +39,11 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "FFMpegCore": {
@@ -65,6 +67,10 @@
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[10.0.1, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -90,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.203/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/root/.dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "إعدادات السوق";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid py-4" dir="rtl">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-primary fw-bold">إعدادات السوق والعمولات</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Message"]</div>
+                    }
+
+                    <form action="@Url.Action("MarketplaceSettings")" method="post">
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <div class="p-3 bg-light rounded border border-info border-start-0 border-end-0 border-bottom-0 border-3">
+                                    <h6 class="text-info mb-1"><i class="fas fa-info-circle me-2"></i> معلومات النظام</h6>
+                                    <p class="text-xs mb-0">تحكم في العمولات والحدود الدنيا للسحب التي تطبق على جميع المنفذين والطلبات في المنصة.</p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-dark">عمولة المنصة (%)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                                    <input type="number" name="commissionRate" class="form-control" value="@ViewBag.CommissionRate" min="0" max="100" step="0.1" required>
+                                </div>
+                                <p class="text-xs text-muted mt-1">النسبة التي يتم خصمها من قيمة الطلب عند تحويل المستحقات للمنفذ.</p>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-dark">الحد الأدنى للسحب (ج.م)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-wallet"></i></span>
+                                    <input type="number" name="minWithdrawal" class="form-control" value="@ViewBag.MinWithdrawal" min="1" step="1" required>
+                                </div>
+                                <p class="text-xs text-muted mt-1">أقل مبلغ يجب أن يتوفر في محفظة المنفذ ليتمكن من طلب سحب الرصيد.</p>
+                            </div>
+                        </div>
+
+                        <hr class="horizontal dark my-4">
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-5">حفظ الإعدادات</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">كيفية الاحتساب:</h6>
+                        <div class="text-sm">
+                            <p class="mb-2"><strong>إجمالي الربح:</strong> سعر الخدمة × (نسبة العمولة ÷ 100)</p>
+                            <p class="mb-0"><strong>مستحقات المنفذ:</strong> سعر الخدمة - إجمالي الربح</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

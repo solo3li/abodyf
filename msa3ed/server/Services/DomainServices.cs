@@ -118,6 +118,8 @@ public class EscrowService : IEscrowService
 
         var order = await _db.Orders.Include(o => o.Executor).FirstOrDefaultAsync(o => o.Id == orderId);
         if (order == null || order.ExecutorId == null) return (false, "Order or Executor not found");
+        
+        if (order.Status == "Disputed") return (false, "لا يمكن تحرير المستحقات طالما يوجد نزاع مفتوح على هذا الطلب");
 
         var commissionSetting = await _db.SystemSettings.FindAsync("CommissionRate");
         decimal commissionRate = commissionSetting != null ? decimal.Parse(commissionSetting.Value) : 10m;
@@ -236,7 +238,11 @@ public class ChatService : IChatService
     }
 }
 
-public interface IFileService { Task<string> UploadFileAsync(Stream fileStream, string fileName); }
+public interface IFileService 
+{ 
+    Task<string> UploadFileAsync(Stream fileStream, string fileName); 
+    Task<string> SaveFileAsync(IFormFile file, string folder); 
+}
 public class FileService : IFileService
 {
     public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
@@ -250,6 +256,15 @@ public class FileService : IFileService
         using var stream = new FileStream(path, FileMode.Create);
         await fileStream.CopyToAsync(stream);
         return $"/uploads/{fileName}";
+    }
+
+    public async Task<string> SaveFileAsync(IFormFile file, string folder)
+    {
+        if (file == null || file.Length == 0) throw new ArgumentException("No file uploaded");
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var relativePath = Path.Combine(folder, fileName);
+        using var stream = file.OpenReadStream();
+        return await UploadFileAsync(stream, relativePath);
     }
 }
 

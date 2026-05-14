@@ -25,17 +25,18 @@ public class AudioService : IAudioService
             // This requires ffmpeg to be installed on the system
             var analysis = await FFProbe.AnalyseAsync(filePath);
             var duration = analysis.Duration;
-            
+
             // To get 100 points, we'll sample at intervals
             int points = 80;
             var peaks = new List<int>();
-            
+
             // For a real production system, we'd pipe to a stream and read samples.
             // Here we'll generate a dummy set of points based on duration as a placeholder 
             // since actual PCM pipe reading is complex for a single task.
             // But we'll make it look "real" using a random seed based on file size.
             var random = new Random((int)new FileInfo(filePath).Length);
-            for(int i = 0; i < points; i++) {
+            for (int i = 0; i < points; i++)
+            {
                 peaks.Add(random.Next(10, 100));
             }
 

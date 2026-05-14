@@ -37,7 +37,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         // Configure Many-to-Many between User and Role
         modelBuilder.Entity<User>()
             .HasMany(u => u.Roles)

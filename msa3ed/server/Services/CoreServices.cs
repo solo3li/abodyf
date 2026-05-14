@@ -13,22 +13,24 @@ using Uis.Server.DTOs;
 
 namespace Uis.Server.Services;
 
-public interface IEmailService 
-{ 
-    Task SendEmailAsync(string to, string subject, string body); 
+public interface IEmailService
+{
+    Task SendEmailAsync(string to, string subject, string body);
     Task SendOtpEmailAsync(string to, string code);
     Task SendWelcomeEmailAsync(string to, string name);
-    Task SendTemplatedEmailAsync(string to, string subject, string title, string message, string? buttonText = null, string? buttonUrl = null); 
+    Task SendTemplatedEmailAsync(string to, string subject, string title, string message, string? buttonText = null, string? buttonUrl = null);
 }
 
-public class EmailService : IEmailService {
+public class EmailService : IEmailService
+{
     private readonly IConfiguration _config;
     private readonly IServiceProvider _serviceProvider;
-    public EmailService(IConfiguration config, IServiceProvider serviceProvider) { 
-        _config = config; 
+    public EmailService(IConfiguration config, IServiceProvider serviceProvider)
+    {
+        _config = config;
         _serviceProvider = serviceProvider;
     }
-    
+
     private async Task<string> GetSettingAsync(string key, string defaultValue)
     {
         using var scope = _serviceProvider.CreateScope();
@@ -37,7 +39,8 @@ public class EmailService : IEmailService {
         return setting?.Value ?? defaultValue;
     }
 
-    public async Task SendEmailAsync(string to, string subject, string body) {
+    public async Task SendEmailAsync(string to, string subject, string body)
+    {
         var smtpServer = await GetSettingAsync("Email.SmtpServer", _config["EmailSettings:SmtpServer"] ?? "");
         var smtpPort = await GetSettingAsync("Email.SmtpPort", _config["EmailSettings:SmtpPort"] ?? "587");
         var senderName = await GetSettingAsync("Email.SenderName", _config["EmailSettings:SenderName"] ?? "UIS");
@@ -66,7 +69,7 @@ public class EmailService : IEmailService {
                 <span style='font-size: 48px; font-weight: 900; color: #6366F1; letter-spacing: 15px; font-family: monospace;'>{code}</span>
             </div>
             <p style='font-size: 14px; font-weight: 500;'>الرمز صالح لمدة 10 دقائق فقط. لا تشارك هذا الرمز مع أي شخص.</p>", baseTemplate: baseTemplate);
-        
+
         await SendEmailAsync(to, "رمز التحقق الخاص بك - UIS", body);
     }
 
@@ -76,13 +79,14 @@ public class EmailService : IEmailService {
         var body = EmailTemplates.Wrap("مرحباً بك في رحاب UIS", $@"
             <p>أهلاً بك يا <strong>{name}</strong> في عائلة UIS!</p>
             <p>نحن سعداء جداً بانضمامك إلينا. الآن يمكنك البدء في طلب الخدمات الجامعية أو العمل كمنفذ للمشاريع.</p>
-            <p style='margin-top: 15px;'>اكتشف عالمنا الجديد وجرب خدماتنا المتميزة.</p>", 
+            <p style='margin-top: 15px;'>اكتشف عالمنا الجديد وجرب خدماتنا المتميزة.</p>",
             "ابدأ الآن", "https://uis-app.com/get-started", baseTemplate: baseTemplate);
 
         await SendEmailAsync(to, "مرحباً بك في UIS!", body);
     }
 
-    public async Task SendTemplatedEmailAsync(string to, string subject, string title, string message, string? buttonText = null, string? buttonUrl = null) {
+    public async Task SendTemplatedEmailAsync(string to, string subject, string title, string message, string? buttonText = null, string? buttonUrl = null)
+    {
         var baseTemplate = await GetSettingAsync("Email.Template.Base", EmailTemplates.GetDefaultBaseTemplate());
         var body = EmailTemplates.Wrap(title, message, buttonText, buttonUrl, baseTemplate: baseTemplate);
         await SendEmailAsync(to, subject, body);
@@ -90,17 +94,21 @@ public class EmailService : IEmailService {
 }
 
 public interface IAuthService { Task<AuthResponseDto?> LoginAsync(LoginDto dto); Task<AuthResponseDto?> RegisterAsync(RegisterDto dto); }
-public class AuthService : IAuthService {
+public class AuthService : IAuthService
+{
     private readonly ApplicationDbContext _db; private readonly IJwtService _jwt; private readonly IOtpService _otp;
     public AuthService(ApplicationDbContext db, IJwtService jwt, IOtpService otp) { _db = db; _jwt = jwt; _otp = otp; }
-    public async Task<AuthResponseDto?> LoginAsync(LoginDto dto) {
+    public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
+    {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null || user.PasswordHash != dto.Password) return null;
-        
+
         var token = _jwt.GenerateToken(user);
-        return new AuthResponseDto {
+        return new AuthResponseDto
+        {
             Token = token,
-            User = new UserDto {
+            User = new UserDto
+            {
                 Id = user.Id,
                 Name = user.FullName,
                 Email = user.Email,
@@ -109,18 +117,21 @@ public class AuthService : IAuthService {
             }
         };
     }
-    public async Task<AuthResponseDto?> RegisterAsync(RegisterDto dto) {
+    public async Task<AuthResponseDto?> RegisterAsync(RegisterDto dto)
+    {
         if (await _db.Users.AnyAsync(u => u.Email == dto.Email)) return null;
 
         var studentRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
-        if (studentRole == null) {
+        if (studentRole == null)
+        {
             studentRole = new Role { Name = "Student", IsSystemRole = true };
             _db.Roles.Add(studentRole);
         }
 
-        var user = new User { 
-            Email = dto.Email, 
-            FullName = dto.FullName, 
+        var user = new User
+        {
+            Email = dto.Email,
+            FullName = dto.FullName,
             PasswordHash = dto.Password,
             IsAdmin = false,
             IsExecutor = false,
@@ -129,13 +140,15 @@ public class AuthService : IAuthService {
         };
 
         user.Roles.Add(studentRole);
-        _db.Users.Add(user); 
-        await _db.SaveChangesAsync(); 
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync();
 
         var token = _jwt.GenerateToken(user);
-        return new AuthResponseDto {
+        return new AuthResponseDto
+        {
             Token = token,
-            User = new UserDto {
+            User = new UserDto
+            {
                 Id = user.Id,
                 Name = user.FullName,
                 Email = user.Email,
@@ -147,42 +160,49 @@ public class AuthService : IAuthService {
 }
 
 public interface IOtpService { Task<string> GenerateOtpAsync(string email); Task<bool> VerifyOtpAsync(string email, string code); Task<bool> VerifyOtpWithBypassAsync(string email, string code); }
-public class OtpService : IOtpService {
-    private readonly ApplicationDbContext _db; 
+public class OtpService : IOtpService
+{
+    private readonly ApplicationDbContext _db;
     private readonly IEmailService _emailService;
     public OtpService(ApplicationDbContext db, IEmailService emailService) { _db = db; _emailService = emailService; }
-    public async Task<string> GenerateOtpAsync(string email) {
+    public async Task<string> GenerateOtpAsync(string email)
+    {
         var code = new Random().Next(1000, 9999).ToString();
         var otp = new EmailOtp { Email = email, Code = code, ExpiryDate = DateTime.UtcNow.AddMinutes(10) };
-        _db.EmailOtps.Add(otp); 
-        await _db.SaveChangesAsync(); 
-        
+        _db.EmailOtps.Add(otp);
+        await _db.SaveChangesAsync();
+
         await _emailService.SendOtpEmailAsync(email, code);
-        
+
         return otp.Code;
     }
-    public async Task<bool> VerifyOtpAsync(string email, string code) {
+    public async Task<bool> VerifyOtpAsync(string email, string code)
+    {
         var otp = await _db.EmailOtps.FirstOrDefaultAsync(o => o.Email == email && o.Code == code && !o.IsUsed && o.ExpiryDate > DateTime.UtcNow);
         if (otp == null) return false;
         otp.IsUsed = true; await _db.SaveChangesAsync(); return true;
     }
-    public async Task<bool> VerifyOtpWithBypassAsync(string email, string code) {
+    public async Task<bool> VerifyOtpWithBypassAsync(string email, string code)
+    {
         // For backward compatibility, we return true if user exists, effectively bypassing OTP
         return await _db.Users.AnyAsync(u => u.Email == email);
     }
 }
 
 public interface IJwtService { string GenerateToken(User user); }
-public class JwtService : IJwtService {
+public class JwtService : IJwtService
+{
     private readonly IConfiguration _config; public JwtService(IConfiguration config) { _config = config; }
-    public string GenerateToken(User user) {
-        var claims = new List<Claim> { 
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), 
-            new Claim(ClaimTypes.Email, user.Email) 
+    public string GenerateToken(User user)
+    {
+        var claims = new List<Claim> {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
         };
 
         // Add all roles to claims
-        foreach (var role in user.Roles) {
+        foreach (var role in user.Roles)
+        {
             claims.Add(new Claim(ClaimTypes.Role, role.Name));
         }
 
@@ -193,18 +213,21 @@ public class JwtService : IJwtService {
     }
 }
 
-public interface IUserService { 
-    Task<User?> GetUserByIdAsync(Guid id); 
-    Task<IEnumerable<User>> GetAllUsersAsync(); 
+public interface IUserService
+{
+    Task<User?> GetUserByIdAsync(Guid id);
+    Task<IEnumerable<User>> GetAllUsersAsync();
     Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto);
     Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl);
 }
-public class UserService : IUserService {
+public class UserService : IUserService
+{
     private readonly ApplicationDbContext _db; public UserService(ApplicationDbContext db) { _db = db; }
     public async Task<User?> GetUserByIdAsync(Guid id) => await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
     public async Task<IEnumerable<User>> GetAllUsersAsync() => await _db.Users.Include(u => u.Roles).ToListAsync();
 
-    public async Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto) {
+    public async Task<bool> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
+    {
         if (string.IsNullOrWhiteSpace(dto.FullName)) throw new ArgumentException("Full Name is required");
         if (string.IsNullOrWhiteSpace(dto.University)) throw new ArgumentException("University is required");
 
@@ -220,7 +243,8 @@ public class UserService : IUserService {
         return true;
     }
 
-    public async Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl) {
+    public async Task<bool> UpdateProfilePictureAsync(Guid userId, string imageUrl)
+    {
         var user = await _db.Users.FindAsync(userId);
         if (user == null) return false;
         user.ProfilePicture = imageUrl;

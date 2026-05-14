@@ -43,7 +43,7 @@ public class AdminController : Controller
         };
 
         ViewBag.Stats = stats;
-        
+
         // Recent Orders for dashboard
         var recentOrders = await _db.Orders.Include(o => o.Student).Include(o => o.Service).OrderByDescending(o => o.CreatedAt).Take(5).ToListAsync();
         ViewBag.RecentOrders = recentOrders;
@@ -100,7 +100,7 @@ public class AdminController : Controller
     {
         user.PasswordHash = password;
         user.CreatedAt = DateTime.UtcNow;
-        
+
         if (roleIds != null)
         {
             foreach (var roleId in roleIds)
@@ -125,7 +125,7 @@ public class AdminController : Controller
     {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == id);
         if (user == null) return NotFound();
-        
+
         ViewBag.AllRoles = await _db.Roles.ToListAsync();
         return View(user);
     }
@@ -154,7 +154,7 @@ public class AdminController : Controller
         existingUser.Roles.Clear();
         existingUser.IsAdmin = false;
         existingUser.IsExecutor = false;
-        
+
         if (roleIds != null)
         {
             foreach (var roleId in roleIds)
@@ -219,9 +219,9 @@ public class AdminController : Controller
             .OrderByDescending(o => o.CreatedAt)
             .Take(5)
             .ToListAsync();
-        
+
         ViewBag.KycRequest = await _db.KycRequests.FirstOrDefaultAsync(k => k.UserId == id);
-        
+
         // Load all roles for the change role dropdown
         ViewBag.AllRoles = await _db.Roles.OrderBy(r => r.Name).ToListAsync();
 
@@ -233,17 +233,17 @@ public class AdminController : Controller
     {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == userId);
         var role = await _db.Roles.FindAsync(roleId);
-        
+
         if (user != null && role != null)
         {
             if (!user.Roles.Any(r => r.Id == roleId))
             {
                 user.Roles.Add(role);
-                
+
                 // Sync boolean flags
                 if (role.Name == "Admin") user.IsAdmin = true;
                 if (role.Name == "Executor") user.IsExecutor = true;
-                
+
                 await _db.SaveChangesAsync();
             }
         }
@@ -255,15 +255,15 @@ public class AdminController : Controller
     {
         var user = await _db.Users.Include(u => u.Roles).FirstOrDefaultAsync(u => u.Id == userId);
         var role = user?.Roles.FirstOrDefault(r => r.Id == roleId);
-        
+
         if (user != null && role != null)
         {
             user.Roles.Remove(role);
-            
+
             // Sync boolean flags
             if (role.Name == "Admin") user.IsAdmin = false;
             if (role.Name == "Executor") user.IsExecutor = false;
-            
+
             await _db.SaveChangesAsync();
         }
         return RedirectToAction(nameof(UserDetails), new { id = userId });
@@ -306,7 +306,7 @@ public class AdminController : Controller
         if (request != null)
         {
             request.Status = "Approved";
-            
+
             // Grant Executor role and flag
             request.User.IsExecutor = true;
             var executorRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "Executor");
@@ -314,7 +314,7 @@ public class AdminController : Controller
             {
                 request.User.Roles.Add(executorRole);
             }
-            
+
             await _db.SaveChangesAsync();
             await _notificationService.SendNotificationAsync(request.UserId, "تم توثيق حسابك بنجاح! يمكنك الآن البدء في تقديم الخدمات كمنفذ.", "توثيق الحساب");
 
@@ -545,7 +545,7 @@ public class AdminController : Controller
             query = query.Where(s => s.IsActive == isActive.Value);
 
         var services = await query.OrderByDescending(s => s.Id).ToListAsync();
-        
+
         ViewBag.Categories = await _db.Categories.ToListAsync();
         ViewBag.Search = search;
         ViewBag.SelectedCategoryId = categoryId;
@@ -679,7 +679,7 @@ public class AdminController : Controller
             query = query.Where(o => o.ExecutorId == executorId.Value);
 
         var orders = await query.OrderByDescending(o => o.CreatedAt).ToListAsync();
-        
+
         ViewBag.Search = search;
         ViewBag.Status = status;
         ViewBag.MinPrice = minPrice;
@@ -687,7 +687,7 @@ public class AdminController : Controller
         ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
         ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
         ViewBag.ExecutorId = executorId;
-        
+
         ViewBag.Executors = await _db.Users.Where(u => u.IsExecutor).OrderBy(u => u.FullName).ToListAsync();
 
         return View(orders);
@@ -718,7 +718,7 @@ public class AdminController : Controller
 
         ViewBag.Payment = await _db.Payments.FirstOrDefaultAsync(p => p.OrderId == id);
         ViewBag.Escrow = await _db.Escrows.FirstOrDefaultAsync(e => e.OrderId == id);
-        
+
         // Load Chat and Messages
         ViewBag.Chat = await _db.Chats
             .Include(c => c.Messages.OrderBy(m => m.SentAt))
@@ -756,13 +756,13 @@ public class AdminController : Controller
         }
 
         var tickets = await query.OrderByDescending(t => t.Status == "Open").ThenByDescending(t => t.CreatedAt).ToListAsync();
-        
+
         ViewBag.Search = search;
         ViewBag.Status = status;
         ViewBag.UserId = userId;
         ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
         ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
-        
+
         ViewBag.Users = await _db.Users.OrderBy(u => u.FullName).ToListAsync();
 
         return View(tickets);
@@ -803,9 +803,12 @@ public class AdminController : Controller
         {
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(request.Attachment.FileName);
             var url = await _fileService.UploadFileAsync(request.Attachment.OpenReadStream(), fileName);
-            message.Attachments.Add(new MessageAttachment { 
-                Url = url, FileName = request.Attachment.FileName, 
-                FileType = request.AttachmentType ?? "file", FileSize = request.Attachment.Length 
+            message.Attachments.Add(new MessageAttachment
+            {
+                Url = url,
+                FileName = request.Attachment.FileName,
+                FileType = request.AttachmentType ?? "file",
+                FileSize = request.Attachment.Length
             });
         }
 
@@ -813,7 +816,8 @@ public class AdminController : Controller
         await _db.SaveChangesAsync();
 
         // Real-time broadcast
-        await _hub.Clients.Group("ticket-" + request.TicketId.ToString()).SendAsync("ReceiveTicketMessage", new {
+        await _hub.Clients.Group("ticket-" + request.TicketId.ToString()).SendAsync("ReceiveTicketMessage", new
+        {
             Id = message.Id,
             Content = message.Content,
             SentAt = message.SentAt,
@@ -822,12 +826,13 @@ public class AdminController : Controller
             Attachments = message.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize })
         });
 
-        return Json(new { 
-            success = true, 
-            senderName = "مدير النظام", 
-            content = message.Content, 
+        return Json(new
+        {
+            success = true,
+            senderName = "مدير النظام",
+            content = message.Content,
             attachments = message.Attachments.Select(a => new { a.Url, a.FileName, a.FileType, a.FileSize }),
-            time = message.SentAt.ToLocalTime().ToString("HH:mm") 
+            time = message.SentAt.ToLocalTime().ToString("HH:mm")
         });
     }
 
@@ -857,9 +862,12 @@ public class AdminController : Controller
         {
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
             var url = await _fileService.UploadFileAsync(attachment.OpenReadStream(), fileName);
-            message.Attachments.Add(new MessageAttachment { 
-                Url = url, FileName = attachment.FileName, 
-                FileType = attachmentType ?? "file", FileSize = attachment.Length 
+            message.Attachments.Add(new MessageAttachment
+            {
+                Url = url,
+                FileName = attachment.FileName,
+                FileType = attachmentType ?? "file",
+                FileSize = attachment.Length
             });
         }
 
@@ -867,7 +875,8 @@ public class AdminController : Controller
         await _db.SaveChangesAsync();
 
         // Real-time broadcast
-        await _hub.Clients.Group("ticket-" + ticketId.ToString()).SendAsync("ReceiveTicketMessage", new {
+        await _hub.Clients.Group("ticket-" + ticketId.ToString()).SendAsync("ReceiveTicketMessage", new
+        {
             Id = message.Id,
             Content = message.Content,
             SentAt = message.SentAt,
@@ -935,8 +944,8 @@ public class AdminController : Controller
 
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(c => c.Order.Id.ToString().Contains(search) || 
-                                     c.Student.FullName.Contains(search) || 
+            query = query.Where(c => c.Order.Id.ToString().Contains(search) ||
+                                     c.Student.FullName.Contains(search) ||
                                      c.Executor.FullName.Contains(search));
         }
 
@@ -953,11 +962,11 @@ public class AdminController : Controller
         }
 
         var chats = await query.OrderByDescending(c => c.Messages.Max(m => m.SentAt)).ToListAsync();
-        
+
         ViewBag.Search = search;
         ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
         ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
-        
+
         return View(chats);
     }
 
@@ -1008,7 +1017,7 @@ public class AdminController : Controller
         }
 
         var payments = await query.OrderByDescending(p => p.CreatedAt).ToListAsync();
-        
+
         ViewBag.Search = search;
         ViewBag.Status = status;
         ViewBag.MinAmount = minAmount;
@@ -1040,7 +1049,7 @@ public class AdminController : Controller
     public async Task<IActionResult> GetDashboardStats()
     {
         var last7Days = Enumerable.Range(0, 7).Select(i => DateTime.UtcNow.Date.AddDays(-i)).Reverse();
-        
+
         var orderData = await _db.Orders
             .Where(o => o.CreatedAt >= DateTime.UtcNow.Date.AddDays(-7))
             .GroupBy(o => o.CreatedAt.Date)
@@ -1072,7 +1081,7 @@ public class AdminController : Controller
         }
 
         var notifications = await query.OrderByDescending(n => n.CreatedAt).Take(100).ToListAsync();
-        
+
         ViewBag.Users = await _db.Users.OrderBy(u => u.FullName).ToListAsync();
         ViewBag.Search = search;
         ViewBag.UserId = userId;

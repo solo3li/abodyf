@@ -18,7 +18,8 @@ public class OfferService : IOfferService
     private readonly ApplicationDbContext _db;
     public OfferService(ApplicationDbContext db) { _db = db; }
 
-    public async Task<CustomOffer> SendOfferAsync(Guid chatId, Guid executorId, CustomOffer offer) {
+    public async Task<CustomOffer> SendOfferAsync(Guid chatId, Guid executorId, CustomOffer offer)
+    {
         var chat = await _db.Chats.FindAsync(chatId);
         if (chat == null) throw new Exception("Chat not found");
 
@@ -26,10 +27,11 @@ public class OfferService : IOfferService
         offer.StudentId = chat.StudentId == executorId ? chat.ExecutorId.Value : chat.StudentId.Value;
         offer.Status = "Pending";
         offer.CreatedAt = DateTime.UtcNow;
-        
+
         _db.CustomOffers.Add(offer);
-        
-        var message = new Message {
+
+        var message = new Message
+        {
             ChatId = chatId,
             SenderId = executorId,
             Content = $"أرسل عرضاً مخصصاً: {offer.Title}",
@@ -37,7 +39,7 @@ public class OfferService : IOfferService
             SentAt = DateTime.UtcNow
         };
         _db.Messages.Add(message);
-        
+
         await _db.SaveChangesAsync();
         return offer;
     }
@@ -45,17 +47,18 @@ public class OfferService : IOfferService
     public async Task<Guid> AcceptOfferAsync(Guid offerId)
     {
         var offer = await _db.CustomOffers.FindAsync(offerId);
-        if (offer == null || offer.Status != "Pending") 
+        if (offer == null || offer.Status != "Pending")
             throw new Exception("Invalid offer or already processed.");
 
         offer.Status = "Accepted";
-        
+
         // Use a generic or placeholder service if needed, but here we require a ServiceId
         // For custom offers, we might need a "Custom Service" or link to the original service
-        var service = await _db.Services.FirstOrDefaultAsync(s => s.ExecutorId == offer.ExecutorId) 
+        var service = await _db.Services.FirstOrDefaultAsync(s => s.ExecutorId == offer.ExecutorId)
                       ?? await _db.Services.FirstAsync();
 
-        var order = new Order {
+        var order = new Order
+        {
             StudentId = offer.StudentId,
             ExecutorId = offer.ExecutorId,
             ServiceId = service.Id,
@@ -71,7 +74,8 @@ public class OfferService : IOfferService
     public async Task WithdrawOfferAsync(Guid offerId)
     {
         var offer = await _db.CustomOffers.FindAsync(offerId);
-        if (offer != null) {
+        if (offer != null)
+        {
             offer.Status = "Withdrawn";
             await _db.SaveChangesAsync();
         }

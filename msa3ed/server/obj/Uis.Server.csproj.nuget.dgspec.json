@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/msa3ed/server/Uis.Server.csproj": {}
+    "/src/msa3ed/server/Uis.Server.csproj": {}
   },
   "projects": {
-    "/msa3ed/server/Uis.Server.csproj": {
+    "/src/msa3ed/server/Uis.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/msa3ed/server/Uis.Server.csproj",
+        "projectUniqueName": "/src/msa3ed/server/Uis.Server.csproj",
         "projectName": "Uis.Server",
-        "projectPath": "/msa3ed/server/Uis.Server.csproj",
+        "projectPath": "/src/msa3ed/server/Uis.Server.csproj",
         "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/msa3ed/server/obj/",
+        "outputPath": "/src/msa3ed/server/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/root/.nuget/NuGet/NuGet.Config"

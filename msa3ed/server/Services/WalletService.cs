@@ -18,10 +18,10 @@ public class WalletService : IWalletService
     public async Task<(bool Success, decimal NewBalance, string Message)> TopUpAsync(Guid userId, decimal amount)
     {
         if (amount <= 0) return (false, 0, "المبلغ يجب أن يكون أكبر من 0");
-        
+
         var maxTopUpSetting = await _db.SystemSettings.FindAsync("MaxWalletTopUp");
         var maxTopUp = maxTopUpSetting != null ? decimal.Parse(maxTopUpSetting.Value) : 10000m;
-        
+
         if (amount > maxTopUp) return (false, 0, $"لا يمكن شحن أكثر من {maxTopUp} ج.م في المرة الواحدة");
 
         await using var tx = await _db.Database.BeginTransactionAsync();

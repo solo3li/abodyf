@@ -105,7 +105,10 @@ builder.Services.AddScoped<Uis.Server.Services.IWalletService, Uis.Server.Servic
 builder.Services.AddScoped<Uis.Server.Services.IAuditLogService, Uis.Server.Services.AuditLogService>();
 
 // Configure SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -140,12 +143,40 @@ else
     app.UseHsts();
 }
 
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An unhandled exception occurred during {Method} {Path}", context.Request.Method, context.Request.Path);
+
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = "Internal Server Error",
+                message = app.Environment.IsDevelopment() ? ex.Message : "An unexpected error occurred."
+            });
+        }
+        else
+        {
+            throw;
+        }
+    }
+});
+
 // app.UseHttpsRedirection(); // Disabled to prevent redirecting Cloudflare Tunnel HTTP traffic which breaks CORS preflight
 app.UseStaticFiles(); // For local file storage and static assets
 
-app.UseRouting();
-
 app.UseCors("AllowAll");
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -153,6 +184,9 @@ app.UseAuthorization();
 // Map SignalR Hubs
 app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<PrivateChatHub>("/hubs/private-chat");
+
+// Map Web API Controllers
+app.MapControllers();
 
 // Map MVC Controllers (Admin) and API Controllers
 app.MapControllerRoute(

@@ -13,7 +13,7 @@ public class User
     public string? Major { get; set; }
     public string? Bio { get; set; }
     public string? ProfilePicture { get; set; }
-    
+
     // Boolean flags for easy access control
     public bool IsAdmin { get; set; } = false;
     public bool IsExecutor { get; set; } = false;
@@ -21,7 +21,7 @@ public class User
 
     // Many-to-many relationship with Roles
     public ICollection<Role> Roles { get; set; } = new List<Role>();
-    
+
     // Wallet
     public decimal WalletBalance { get; set; } = 0.00m;
 
@@ -101,7 +101,7 @@ public class Service
     public Category Category { get; set; } = null!;
     public bool IsActive { get; set; } = true;
     public string? ImageUrl { get; set; }
-    
+
     // New fields
     public Guid? ExecutorId { get; set; }
     public User? Executor { get; set; }
@@ -150,10 +150,10 @@ public class Chat
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public ChatType Type { get; set; } = ChatType.OrderChat;
-    
+
     public Guid? OrderId { get; set; }
     public Order? Order { get; set; }
-    
+
     // For direct chats not linked to orders
     public Guid? StudentId { get; set; }
     public User? Student { get; set; }

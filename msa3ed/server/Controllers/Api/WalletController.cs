@@ -35,7 +35,8 @@ public class WalletController : ControllerBase
             .Where(t => t.UserId == uid)
             .OrderByDescending(t => t.CreatedAt)
             .Take(50)
-            .Select(t => new {
+            .Select(t => new
+            {
                 t.Id,
                 t.Amount,
                 t.Type,
@@ -44,7 +45,8 @@ public class WalletController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(new {
+        return Ok(new
+        {
             Balance = user.WalletBalance,
             Currency = "ج.م",
             Transactions = transactions
@@ -65,7 +67,8 @@ public class WalletController : ControllerBase
             return BadRequest(new { message = result.Message });
         }
 
-        return Ok(new {
+        return Ok(new
+        {
             success = true,
             newBalance = result.NewBalance,
             message = result.Message

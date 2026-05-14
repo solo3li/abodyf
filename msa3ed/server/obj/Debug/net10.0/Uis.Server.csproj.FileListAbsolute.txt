@@ -625,3 +625,5 @@
 /msa3ed/server/obj/Debug/net10.0/Uis.Server.csproj.Up2Date
 /msa3ed/server/obj/Debug/net10.0/Uis.Server.genruntimeconfig.cache
 /msa3ed/server/obj/Debug/net10.0/ref/Uis.Server.dll
+/src/msa3ed/server/bin/Debug/net10.0/FFMpegCore.dll
+/src/msa3ed/server/bin/Debug/net10.0/Instances.dll

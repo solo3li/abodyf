@@ -77,7 +77,7 @@ public static class EmailTemplates
             <span style='font-size: 48px; font-weight: 900; color: {PrimaryColor}; letter-spacing: 15px; font-family: monospace;'>{code}</span>
         </div>
         <p style='font-size: 14px; font-weight: 500;'>الرمز صالح لمدة 10 دقائق فقط. لا تشارك هذا الرمز مع أي شخص.</p>";
-        
+
         return Wrap("تأكيد هويتك", content);
     }
 
@@ -87,7 +87,7 @@ public static class EmailTemplates
         <p>أهلاً بك يا <strong>{name}</strong> في عائلة UIS!</p>
         <p>نحن سعداء جداً بانضمامك إلينا. الآن يمكنك البدء في طلب الخدمات الجامعية أو العمل كمنفذ للمشاريع.</p>
         <p style='margin-top: 15px;'>اكتشف عالمنا الجديد وجرب خدماتنا المتميزة.</p>";
-        
+
         return Wrap("مرحباً بك في رحاب UIS", content, "ابدأ الآن", "https://uis-app.com/get-started");
     }
 

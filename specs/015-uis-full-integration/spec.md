@@ -5,6 +5,15 @@
 **Status**: Draft  
 **Input**: User description: "full integration uis to adapt with backend + ceate nessary pages"
 
+## Clarifications
+
+### Session 2026-05-14
+- Q: Does the system trigger the actual bank/wallet transfer for withdrawals? → A: Record-keeping only (manual transfer + proof upload).
+- Q: What are the possible statuses for a Dispute? → A: Open, UnderReview, Resolved-Refunded, Resolved-Released, Rejected.
+- Q: When should reviews become visible? → A: Immediate Visibility (public as soon as submitted).
+- Q: Is a user restricted to only one "Pending" withdrawal request? → A: Single (only one "Pending" request allowed at a time).
+- Q: How should users be informed of a deposit rejection? → A: Internal Notification (SignalR alert + Admin notes).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Financial Management (Priority: P1)
@@ -32,7 +41,7 @@ As a student, I want to leave a rating and review for an executor after my order
 **Acceptance Scenarios**:
 
 1. **Given** an order status is "Completed", **When** the student navigates to order details, **Then** they see a review form (1-5 stars + comment).
-2. **Given** a review is submitted, **When** anyone views the executor's profile, **Then** the new review and updated average rating are visible.
+2. **Given** a review is submitted, **When** anyone views the executor's profile, **Then** the new review and updated average rating are visible immediately.
 
 ---
 
@@ -53,6 +62,7 @@ As a user, I want to open a dispute for an order if I am unhappy with the servic
 ### Edge Cases
 
 - **Insufficient Balance**: System handles withdrawal requests larger than the current balance by showing an error.
+- **Concurrent Withdrawals**: System prevents submitting a new withdrawal request if one is already in "Pending" status.
 - **Duplicate Reviews**: System prevents a student from leaving multiple reviews for the same order.
 - **Admin Session Timeout**: System ensures admin actions (approving deposits) require a valid active session.
 
@@ -61,19 +71,20 @@ As a user, I want to open a dispute for an order if I am unhappy with the servic
 ### Functional Requirements
 
 - **FR-001**: System MUST provide an "Admin Deposits" page to list, filter, and resolve (Approve/Reject) manual deposit requests.
-- **FR-002**: System MUST provide an "Admin Withdrawals" page to process payouts with screenshot proof storage.
+- **FR-002**: System MUST provide an "Admin Withdrawals" page to record manual payouts and store screenshot proof of transfer.
 - **FR-003**: System MUST provide a "User Wallet" interface for both students and executors to view balance and transaction history.
 - **FR-004**: System MUST allow students to upload images as proof of payment for manual top-ups.
 - **FR-005**: System MUST allow students to submit 1-5 star ratings and text comments for completed orders.
 - **FR-006**: System MUST update executor stats (Average Rating, Review Count) automatically when a new review is saved.
 - **FR-007**: System MUST provide a "Disputes" dashboard for admins to view evidence and resolve conflicts.
+- **FR-008**: System MUST notify users in real-time via SignalR when their deposit or withdrawal request status changes.
 
 ### Key Entities
 
 - **DepositRequest**: Represents a user's request to add funds. Attributes: UserId, Amount, ScreenshotUrl, Status, CreatedAt.
 - **WithdrawalRequest**: Represents an executor's request to cash out. Attributes: ExecutorId, Amount, Status, AdminNotes.
 - **Review**: Represents user feedback. Attributes: OrderId, FromUserId, ToUserId, Rating, Comment.
-- **Dispute**: Represents a conflict. Attributes: OrderId, OpenedByUserId, Description, Status, EvidenceUrl.
+- **Dispute**: Represents a conflict. Attributes: OrderId, OpenedByUserId, Description, Status (Open, UnderReview, Resolved-Refunded, Resolved-Released, Rejected), EvidenceUrl.
 
 ## Success Criteria *(mandatory)*
 
